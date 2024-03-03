@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Calculator</title>
+    <style>
+        table {
+            width: 45%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            float: left;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+    <h2>Tax Calculator 1 [Old Tax Regime]</h2>
+
+    <table>
+        <tr>
+            <th>Salary Component</th>
+            <th>Amount (INR)</th>
+        </tr>
+        <tr>
+            <td>Gross Salary [put 50K less here bcz of Standard deduction]</td>
+            <td><input type="number" id="GrossSalary1" placeholder="Enter Gross Salary" required></td>
+        </tr>
+        <tr>
+            <td>HRA (House Rent Allowance)</td>
+            <td><input type="number" id="hra1" placeholder="Enter HRA" required></td>
+        </tr>
+        <tr>
+            <td>Savings NSC, LIC etc (80C) [Max Limit 1.5 Lakh]</td>
+            <td><input type="number" id="otherSavings1" placeholder="Enter Other Savings" required></td>
+        </tr>
+        <tr>
+            <td>Health Insurance/CheckUp (80D) [Max Limit 25k for each(self+Father+Mother) Total Max Limit 75K]</td>
+            <td><input type="number" id="health1" placeholder="Enter Insurance Premium + Health CheckUp" required></td>
+        </tr>
+        <tr>
+	    <td>Total Taxable Amount</td>
+	    <td id="ta1">0</td>            
+	</tr>
+    </table>
+    
+    
+
+    <h3>Tax Calculation Result 1</h3>
+    <table>
+        <tr>
+            <th>Income Range</th>
+            <th>Tax Rate</th>
+            <th>Tax Amount</th>
+        </tr>
+        <tr>
+            <td>Up to 2,50,000</td>
+            <td>0%</td>
+            <td id="taxAmount11">0</td>
+        </tr>
+        <tr>
+            <td>2,50,001 to 5,00,000</td>
+            <td>5%</td>
+            <td id="taxAmount21">0</td>
+        </tr>
+        <tr>
+            <td>5,00,001 to 10,00,000</td>
+            <td>20%</td>
+            <td id="taxAmount31">0</td>
+        </tr>
+        <tr>
+            <td>Above 10,00,000</td>
+            <td>30%</td>
+            <td id="taxAmount41">0</td>
+        </tr>
+        <tr>
+            <td>Total Tax</td>
+            <td></td>
+            <td id="totalTax1">0</td>
+        </tr>
+    </table>
+
+    <div class="clearfix"></div>
+
+    <h4> 
+    <a href = "t24k.com/special_notes.html">special notes</a>
+    </h4>
+
+    <h2>Tax Calculator 2 [New Tax Regime]</h2>
+
+    <table>
+        <tr>
+            <th>Salary Component</th>
+            <th>Amount (INR)</th>
+        </tr>
+        <tr>
+            <td>Gross Salary [put 50K less here bcz of Standard deduction]</td>
+            <td><input type="number" id="GrossSalary2" placeholder="Enter Gross Salary" required></td>
+        </tr>
+        <tr>
+            <td>HRA (House Rent Allowance) [Not Applicable]</td>
+            <td><input type="number" id="hra2" value="0" readonly></td>
+        </tr>
+        <tr>
+            <td>Savings NSC, LIC etc (80C) [Not Applicable]</td>
+            <td><input type="number" id="otherSavings2" value="0" readonly></td>
+        </tr>
+        <tr>
+            <td>Health Insurance/CheckUp (80D) [Not Applicable]</td>
+            <td><input type="number" id="health2" value="0" readonly></td>
+        </tr>
+    </table>
+
+    <h3>Tax Calculation Result 2</h3>
+    <table>
+        <tr>
+            <th>Income Range</th>
+            <th>Tax Rate</th>
+            <th>Tax Amount</th>
+        </tr>
+        <tr>
+            <td>Up to 3,00,000</td>
+            <td>0%</td>
+            <td id="taxAmount12">0</td>
+        </tr>
+        <tr>
+            <td>3,00,001 to 6,00,000</td>
+            <td>5%</td>
+            <td id="taxAmount22">0</td>
+        </tr>
+        <tr>
+            <td>6,00,001 to 9,00,000</td>
+            <td>10%</td>
+            <td id="taxAmount32">0</td>
+        </tr>
+        <tr>
+            <td>9,00,001 to 12,00,000</td>
+            <td>15%</td>
+            <td id="taxAmount42">0</td>
+        </tr>
+        <tr>
+            <td>12,00,001 to 15,00,000</td>
+            <td>20%</td>
+            <td id="taxAmount52">0</td>
+        </tr>
+        <tr>
+            <td>Above 15,00,000</td>
+            <td>30%</td>
+            <td id="taxAmount62">0</td>
+        </tr>
+        <tr>
+            <td>Total Tax</td>
+            <td></td>
+            <td id="totalTax2">0</td>
+        </tr>
+    </table>
+
+    <button onclick="calculateTax()">Calculate Tax</button>
+
+    <script>
+        function calculateTax() {
+            // Calculate Tax for Calculator 1
+            const GrossSalary1 = parseFloat(document.getElementById('GrossSalary1').value) || 0;
+            const hra1 = parseFloat(document.getElementById('hra1').value) || 0;
+            let otherSavings1 = parseFloat(document.getElementById('otherSavings1').value) || 0;
+
+            // Limit Other Savings to a maximum of 150,000
+            otherSavings1 = Math.min(otherSavings1, 150000);
+
+            let health1 = parseFloat(document.getElementById('health1').value) || 0;
+	    health1 = Math.min(health1, 75000);
+
+            const taxableIncome1 = GrossSalary1 - hra1 - otherSavings1 - health1;
+            const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, taxAmount4: taxAmount41, totalTax: totalTax1 } = calculateTaxDetails(taxableIncome1);
+	    //ta1
+	    document.getElementById('ta1').textContent = taxableIncome1.toFixed(2);
+	// Come Here
+
+            // Display the result for Calculator 1
+            document.getElementById('taxAmount11').textContent = taxAmount11.toFixed(2);
+            document.getElementById('taxAmount21').textContent = taxAmount21.toFixed(2);
+            document.getElementById('taxAmount31').textContent = taxAmount31.toFixed(2);
+            document.getElementById('taxAmount41').textContent = taxAmount41.toFixed(2);
+            document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
+
+            // Calculate Tax for Calculator 2
+            const GrossSalary2 = parseFloat(document.getElementById('GrossSalary2').value) || 0;
+            const hra2 = 0; // Default value for HRA in Calculator 2
+            const otherSavings2 = 0; // Default value for Other Savings in Calculator 2
+            const taxableIncome2 = GrossSalary2 - hra2 - otherSavings2;
+            const { taxAmount1: taxAmount12, taxAmount2: taxAmount22, taxAmount3: taxAmount32, taxAmount4: taxAmount42, taxAmount5: taxAmount52, taxAmount6: taxAmount62, totalTax: totalTax2 } = calculateTaxDetails2(taxableIncome2);
+	// Come Here
+
+            // Display the result for Calculator 2
+            document.getElementById('taxAmount12').textContent = taxAmount12.toFixed(2);
+            document.getElementById('taxAmount22').textContent = taxAmount22.toFixed(2);
+            document.getElementById('taxAmount32').textContent = taxAmount32.toFixed(2);
+            document.getElementById('taxAmount42').textContent = taxAmount42.toFixed(2);
+            document.getElementById('taxAmount52').textContent = taxAmount52.toFixed(2);
+            document.getElementById('taxAmount62').textContent = taxAmount62.toFixed(2);
+            document.getElementById('totalTax2').textContent = totalTax2.toFixed(2);
+
+            // Display Total Tax for both calculators separately
+            document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
+            document.getElementById('totalTax2').textContent = totalTax2.toFixed(2);
+        }
+
+        function calculateTaxDetails(income) {
+            // Calculator 1 Tax Calculation (existing logic)
+            let taxAmount1 = 0, taxAmount2 = 0, taxAmount3 = 0, taxAmount4 = 0, totalTax = 0;
+
+            if (income <= 250000) {
+                taxAmount1 = 0;
+                taxAmount2 = 0;
+                taxAmount3 = 0;
+                taxAmount4 = 0;
+                totalTax = 0;
+            } else if (income <= 500000) {
+                taxAmount1 = 0;
+                taxAmount2 = (income - 250000) * 0.05;
+                taxAmount3 = 0;
+                taxAmount4 = 0;
+                totalTax = taxAmount2;
+            } else if (income <= 1000000) {
+                taxAmount1 = 0;
+                taxAmount2 = 250000 * 0.05;
+                taxAmount3 = (income - 500000) * 0.2;
+                taxAmount4 = 0;
+                totalTax = taxAmount2 + taxAmount3;
+            } else {
+                taxAmount1 = 0;
+                taxAmount2 = 250000 * 0.05;
+                taxAmount3 = 500000 * 0.2;
+                taxAmount4 = (income - 1000000) * 0.3;
+                totalTax = taxAmount2 + taxAmount3 + taxAmount4;
+            }
+
+            return { taxAmount1, taxAmount2, taxAmount3, taxAmount4, totalTax };
+        }
+
+        function calculateTaxDetails2(income) {
+            // Calculator 2 Tax Calculation (new logic)
+            let taxAmount1 = 0, taxAmount2 = 0, taxAmount3 = 0, taxAmount4 = 0, taxAmount5 = 0, taxAmount6 = 0, totalTax = 0;
+
+            if (income <= 300000) {
+                taxAmount1 = 0;
+                taxAmount2 = 0;
+                taxAmount3 = 0;
+                taxAmount4 = 0;
+                taxAmount5 = 0;
+                taxAmount6 = 0;
+                totalTax = 0;
+            } else if (income <= 600000) {
+                taxAmount1 = 0;
+                taxAmount2 = (income - 300000) * 0.05;
+                taxAmount3 = 0;
+                taxAmount4 = 0;
+                taxAmount5 = 0;
+                taxAmount6 = 0;
+                totalTax = taxAmount2;
+            } else if (income <= 900000) {
+                taxAmount1 = 0;
+                taxAmount2 = 300000 * 0.05;
+                taxAmount3 = (income - 600000) * 0.1;
+                taxAmount4 = 0;
+                taxAmount5 = 0;
+                taxAmount6 = 0;
+                totalTax = taxAmount2 + taxAmount3;
+            } else if (income <= 1200000) {
+                taxAmount1 = 0;
+                taxAmount2 = 300000 * 0.05;
+                taxAmount3 = 300000 * 0.1;
+                taxAmount4 = (income - 900000) * 0.15;
+                taxAmount5 = 0;
+                taxAmount6 = 0;
+                totalTax = taxAmount2 + taxAmount3 + taxAmount4;
+            } else if (income <= 1500000) {
+                taxAmount1 = 0;
+                taxAmount2 = 300000 * 0.05;
+                taxAmount3 = 300000 * 0.1;
+                taxAmount4 = 300000 * 0.15;
+                taxAmount5 = (income - 1200000) * 0.2;
+                taxAmount6 = 0;
+                totalTax = taxAmount2 + taxAmount3 + taxAmount4 + taxAmount5;
+            } else {
+                taxAmount1 = 0;
+                taxAmount2 = 300000 * 0.05;
+                taxAmount3 = 300000 * 0.1;
+                taxAmount4 = 300000 * 0.15;
+                taxAmount5 = 300000 * 0.2;
+                taxAmount6 = (income - 1500000) * 0.3;
+                totalTax = taxAmount2 + taxAmount3 + taxAmount4 + taxAmount5 + taxAmount6;
+            }
+
+            return { taxAmount1, taxAmount2, taxAmount3, taxAmount4, taxAmount5, taxAmount6, totalTax };
+        }
+    </script>
+    <table>
+    <tr> <th> Required Links For all Calculations </th> </tr>
+    <tr> <td> <a href="hra_2.html"> Click for HRA Calculation </a> </td> </tr>
+    <tr> <td> <a href="http://www.t20.com"> Click for NPS Calculation (National Pension Scheme) </a> </td> </tr>
+    <tr> <td> <a href="https://t20.com"> Click for Home Loan Calculation </a> </td> </tr>
+    <tr> <td> <a href="https://www.yourhomepage.com"> Click for Donations Calculation [80G] </a> </td> </tr>
+    <tr> <td> <a href="https://www.yourhomepage.com"> Click for Tution Fee Calculation (Up to 2 Child) </a> </td> </tr>
+    <tr> <td> <a href="https://t20.com"> Click for Everything about Health Insurance [80D] </a> </td> </tr>
+    <tr> <td> <a href="https://t20.com"> Click for Home Loan - Personal Advice </a> </td> </tr>
+    </table>
+   <br><br>
+</body>
+</html>
