@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRA Exemption Calculator</title>
+
+<style>
+        table {
+            width: 45%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            float: left;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+
+    <script>
+        function calculateHRAExemption() {
+            // Collect inputs
+            var basicSalary = parseFloat(document.getElementById('basicSalary').value);
+            var actualHRA = parseFloat(document.getElementById('actualHRA').value);
+            var actualRentPaid = parseFloat(document.getElementById('actualRentPaid').value);
+            var metroOption = document.getElementById('metroOption').checked;
+
+            // Calculate HRA Exemption
+            var optionA = metroOption ? 0.5 * basicSalary : 0.4 * basicSalary;
+            var optionB = Math.max(0, actualRentPaid - 0.1 * basicSalary);
+            var optionC = actualHRA;
+
+            var hraExemption = Math.min(optionA, optionB, optionC);
+
+            // Display results in a single table
+            var resultTable = document.getElementById('resultTable');
+            resultTable.innerHTML = `
+                <tr>
+                    <td>Basic Salary</td>
+                    <td>${basicSalary}</td>
+                </tr>
+                <tr>
+                    <td>Actual HRA Received</td>
+                    <td>${actualHRA}</td>
+                </tr>
+                <tr>
+                    <td>Actual Rent Paid</td>
+                    <td>${actualRentPaid}</td>
+                </tr>
+                <tr>
+                    <td>Metro Selected</td>
+                    <td>${metroOption ? 'Yes' : 'No'}</td>
+                </tr>
+                <tr>
+                    <td>Option A (50% of Basic for Metro else 40% of Basic)</td>
+                    <td>${optionA}</td>
+                </tr>
+                <tr>
+                    <td>Option B (Actual Rent Paid - 10% of Basic)</td>
+                    <td>${optionB}</td>
+                </tr>
+                <tr>
+                    <td>Option C (Actual HRA Received)</td>
+                    <td>${optionC}</td>
+                </tr>
+                <tr>
+                    <td>HRA Exemption (Minimum of A, B, C)</td>
+                    <td>${hraExemption}</td>
+                </tr>
+            `;
+        }
+    </script>
+</head>
+<body>
+
+    <h1>HRA Exemption Calculator</h1>
+
+
+    <table>
+        <tr>
+            <th>Component</th>
+            <th>Amount (INR)</th>
+        </tr>
+        <tr>
+            <td>Basic Salary</td>
+            <td><input type="number" id="basicSalary" placeholder="Enter Basic Salary" required></td>
+        </tr>
+        <tr>
+            <td>HRA (House Rent Allowance) Received in Salary component </td>
+            <td><input type="number" id="actualHRA" placeholder="Enter HRA Received" required></td>
+        </tr>
+        <tr>
+            <td>Actual Rent Paid</td>
+            <td><input type="number" id="actualRentPaid" placeholder="Enter Actual Rent Paid" required></td>
+        </tr>
+	<tr>
+            <td>Metro [Delhi/Calcutta/Bombay/Madras - are only considered]</td>
+            <td><input type="checkbox" id="metroOption"></td>
+        </tr>
+    </table>
+
+    <button onclick="calculateHRAExemption()">Calculate HRA Exemption</button>
+
+    <table border="1" id="resultTable">
+        <!-- Results will be displayed here -->
+    </table>
+
+</body>
+</html>
