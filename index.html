@@ -98,7 +98,13 @@
     <div class="clearfix"></div>
 
     <h4> 
-    Health & Education Cess with surcharge: totalTax1*4/100
+    <table>
+	    <tr>
+		        <td>Health & Education Cess with surcharge:</td>
+	    <td id="he">0</td>
+	    
+	    </tr>
+    </table>
     <a href = "special_notes.html">special notes</a>
     </h4>
 
@@ -198,7 +204,11 @@
             document.getElementById('taxAmount31').textContent = taxAmount31.toFixed(2);
             document.getElementById('taxAmount41').textContent = taxAmount41.toFixed(2);
             document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
-
+	    if (totalTax1>12500)
+	    {
+ 	        let cess = totalTax1*4/100;
+		document.getElementById('he').textContent = cess.toFixed(2);
+	    }
             // Calculate Tax for Calculator 2
             const GrossSalary2 = parseFloat(document.getElementById('GrossSalary2').value) || 0;
             const hra2 = 0; // Default value for HRA in Calculator 2
