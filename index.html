@@ -305,7 +305,7 @@
             otherSavings1 = Math.min(otherSavings1, 150000);
 
             let health1 = parseFloat(document.getElementById('health1').value) || 0;
-	    health1 = Math.min(health1, 75000);
+	    health1 = Math.min(health1, 100000);
 
             const taxableIncome1 = GrossSalary1 - hra1 - otherSavings1 - health1;
             const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, taxAmount4: taxAmount41, totalTax: totalTax1 } = calculateTaxDetails(taxableIncome1);
