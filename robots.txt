@@ -1,2 +1,2 @@
 User-agent: *
-Disallow: /About-us/
+Disallow: /contact-us/
