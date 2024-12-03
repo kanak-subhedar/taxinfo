@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backlink Generator</title>
+</head>
+<body>
+    <h1>Backlink Generator for YouTube Videos</h1>
+    <label for="videoUrl">Enter YouTube Video URL:</label>
+    <input type="text" id="videoUrl" placeholder="e.g., https://www.youtube.com/watch?v=icLb0sUpojY">
+    <button onclick="generateBacklinks()">Generate Backlinks</button>
+
+    <h2>Generated Backlinks</h2>
+    <textarea id="output" rows="20" cols="100" readonly></textarea>
+
+    <script>
+        function extractVideoId(url) {
+            const urlObj = new URL(url);
+            return urlObj.searchParams.get("v") || urlObj.pathname.split("/").pop();
+        }
+
+        function generateBacklinks() {
+            const videoUrl = document.getElementById("videoUrl").value.trim();
+            if (!videoUrl) {
+                alert("Please enter a valid YouTube video URL.");
+                return;
+            }
+
+            try {
+                const videoId = extractVideoId(videoUrl);
+                if (!videoId) {
+                    alert("Could not extract the video ID from the URL. Please check the input.");
+                    return;
+                }
+
+                const platforms = [
+                    "http://www.you2repeat.com/watch/?v=",
+                    "http://www.102touchfm.co.uk/music/artist/stupid-boots/video/",
+                    "https://trendtube.wdeco.jp/playlist/shadowbox/?",
+                    "https://video.ultra-zone.net/watch?v=",
+                    "https://kazhit.net/watch/",
+                    "http://listenonrepeat.com/watch/?v=",
+                    "http://www.wastedhumanity.com/",
+                    "http://ytapi.com/embed/",
+                    "http://www.audiowala.net/watch?v=",
+                    "http://www.youtuberepeater.com/watch?v=",
+                    "http://youtubeonrepeat.com/watch/?v=",
+                    "http://www.youvidi.com/watch/",
+                    "https://www.vdyoutube.com/nl/watch?v=",
+                    "https://endlessvideo.com/watch?v=",
+                    "https://www.clip.fail/video/",
+                    "https://www.getavideos.xyz/watch?v=",
+                    "http://godialy.com/video/",
+                    "http://2ch.io/www.youtube.com/watch?v=",
+                    "http://32youtube.com/download.php?q=",
+                    "https://myvideoday.ru/video/",
+                    "http://d.hatena.ne.jp/video/youtube/",
+                    "http://vlclip.xyz/video/funny-videos-2016-stupid-people-doing-stupid-things/",
+                    "http://heartvod.com/play=",
+                    "http://lifevidos.ru/watch/",
+                    "http://playithub.com/watch/",
+                    "http://www.jutube.cz/watch/",
+                    "http://deturl.com/play.asp?v=",
+                    "http://beonrepeat.com/watch?v=",
+                    "http://www.miniclips.pk/watch/",
+                    "http://www.ytrepeat.com/watch/?v=",
+                    "http://trending.gr/tweets.php?video=",
+                    "http://www.tonvid.com/info.php?video_id=",
+                    "http://kazhit.net/watch/",
+                    "https://listenonrepeat.com/watch/?v=",
+                    "https://clipmega.com/watch?v=",
+                    "http://www.audiowala.live/watch?v=",
+                    "https://reppeat.com/watch/?v=",
+                    "https://popular50.com/in/rising/watch/?v=",
+                    "https://www.clipsion.com/v/",
+                    "http://wwqw.you2repeat.com/watch/?v=",
+                    "http://video.abdouexpress.com/watch?v=",
+                    "http://lenasever.ru/video/",
+                    "https://vine-vine.tk/video/",
+                    "https://vodeocatalog.com/ru/video/",
+                    "https://www.lend-money.ru/video/",
+                    "https://myyouland.ru/mobile/video/",
+                    "https://www.tvonlayn.ru/video/",
+                    "https://eachnow.com/watch?v=",
+                    "https://vtrende.pw/video/",
+                    "https://ruslar.pro/video/",
+                    "https://live-kino.ru/mobile/video/",
+                    "http://vlclip.xyz/video/istana_balon_spongebob_oklik/",
+                    "http://vlclip.xyz/video/oklik_bojonegoro_terbaru_2019/",
+                    "https://getlink.pro/v/",
+                    "https://video.ultra-zone.net/watch.en.html.gz?v=",
+                    "https://secure.action.news/watch?v=",
+                    "http://androidmafia.ru/video/",
+                    "https://www.musiclessons.com/youtube/watch?v=",
+                    "http://yourepetir.com/watch?v=",
+                    "http://www.vidtunez.com/watch?v=&lang=en-us",
+                    "https://ascendents.net/?v=",
+                    "https://videogg.com/watch?v=",
+                    "http://videoonline.pk/watch.php?v=",
+                    "https://salda.ws/video.php?id=",
+                    "http://fooyoh.com/nowwatch/watch/"
+                ];
+
+                const backlinks = platforms.map(platform => platform + videoId);
+                document.getElementById("output").value = backlinks.join("\n");
+            } catch (error) {
+                alert("An error occurred while processing the URL. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
