@@ -148,7 +148,7 @@ body{
    margin-left: 0;
  }
 /* closing brackets at 127 & 150 */
-  .contact-inputs{
+  .contact-inputs:focus{
     border:2px solid #ff994f;
     
   }
