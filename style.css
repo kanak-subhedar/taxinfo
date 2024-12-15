@@ -124,7 +124,7 @@ body{
    width: 75%;
    margin-left: 55px;
 }
-
+}
 @media (max-width: 820px) {
   .container{
     margin: 40px 0;
@@ -147,7 +147,7 @@ body{
    width: 100%;
    margin-left: 0;
  }
-/* closing brackets at 127 & 150 */
+} /* closing brackets at 127 & 150 */
   .contact-inputs:focus{
     border: 2px solid #ff994f;
     
