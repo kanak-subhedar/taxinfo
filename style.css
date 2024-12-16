@@ -150,6 +150,6 @@ body{
  
 } /* closing brackets at 127 & 150 */
   
- .right-side .input-box:focus{
+ .container .content .right-side .input-box:focus{
   border: 2px solid #ff994f;
 } 
