@@ -148,11 +148,7 @@ body{
    margin-left: 0;
  }
 } /* closing brackets at 127 & 150 */
-  .contact-inputs:focus{
-    border: 2px solid #ff994f;
-    
-  }
-
-.right-side .input-box:focus{
+  
+.input-box:focus{
   border: 2px solid #ff994f;
 }
