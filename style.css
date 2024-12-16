@@ -100,7 +100,7 @@ body{
   display: inline-block;
   margin-top: 12px;
 }
-/*
+
 .right-side .button input[type="button"]{
   color: #fff;
   font-size: 18px;
@@ -115,7 +115,7 @@ body{
 .button input[type="button"]:hover{
   background: #5029bc;
 }
-*/
+
 @media (max-width: 950px) {
   .container{
     width: 90%;
@@ -150,6 +150,6 @@ body{
  }
 } /* closing brackets at 127 & 150 */
   
-.input-box:focus{
+.right-side .input-box:focus{
   border: 2px solid #ff994f;
 }
