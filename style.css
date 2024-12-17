@@ -101,7 +101,7 @@ body{
   margin-top: 12px;
 }
 
-.right-side .button input[type="button"]{
+.right-side .button input[type="submit"]{
   color: #fff;
   font-size: 18px;
   outline: none;
