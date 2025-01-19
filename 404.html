@@ -1,15 +1,46 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <!-- Google Add-Sense code -->
-	
-    <title>Page Not Found</title>
-    </head>
-
-    <body>
-<center>
-<h2>If you have clicked a link then the page is Getting Prepared Soon</h2>
-    <h3>Else Page Not Found.</h3> <br><br>
-    <a href="https://t24k.com"> Return Home </a>
-</center>
-    </body>
+<head>
+    <title>Redirecting...</title>
+    <script>
+        const redirects = {
+            "https://t24k.com/FD_RD": "https://t24k.com/fd-rd",
+            "https://t24k.com/hra_2.html": "https://t24k.com/house-rent-allowance"
+	    "https://t24k.com/hloan": "https://t24k.com/home-loan"
+	    "https://t24k.com/NPS": "https://t24k.com/national-pension-scheme"
+	    "https://t24k.com/help": "https://t24k.com/help-for-tax-optimization"
+	    "https://t24k.com/doncalc": "https://t24k.com/donation-calculation"
+	    "https://t24k.com/hra_2": "https://t24k.com/house-rent-allowance"
+	    "https://t24k.com/Exemption_Children": "https://t24k.com/children-fees-exemption"
+        };
+        const pathname = window.location.pathname;
+        if (redirects[pathname]) {
+            window.location.href = redirects[pathname];
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
 </html>
+
+<!--
+======
+html
+    head
+	    title: Page Not Found title
+        Google Add-Sense code
+	
+
+    head
+
+    body
+center
+h2 If you have clicked a link then the page is Getting Prepared Soon h2
+    h3 Else Page Not Found. h3 <br><br>
+    a href="https://t24k.com" Return Home 
+center
+    body
+html
+-->
+
