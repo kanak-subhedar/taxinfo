@@ -30,6 +30,6 @@
 <url><loc>https://t24k.com/income-tax-calculator</loc><changefreq>always</changefreq><priority>0.95</priority></url>
 <url><loc>https://t24k.com/health</loc><changefreq>always</changefreq><priority>0.95</priority></url>
 <url><loc>https://t24k.com/home-loan</loc><changefreq>always</changefreq><priority>0.95</priority></url>
-<url><loc>https://t24k.com/diseases.html</loc><changefreq>hourly</changefreq><priority>0.95</priority></url>
+<url><loc>https://t24k.com/diseases</loc><changefreq>hourly</changefreq><priority>0.95</priority></url>
 <url><loc>https://t24k.com/fd-rd</loc><changefreq>always</changefreq><priority>0.95</priority></url>
 </urlset>
