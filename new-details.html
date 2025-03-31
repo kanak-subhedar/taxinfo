@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Details</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .tabs { display: flex; justify-content: center; margin: 20px 0; }
+        .tab { padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; margin: 0 5px; background: #f4f4f4; }
+        .tab:hover { background: #ddd; }
+        .content { display: none; padding: 20px; }
+        .active { display: block; }
+        .image { width: 100%; max-width: 500px; margin-top: 15px; }
+        a { display: block; margin-top: 10px; font-weight: bold; }
+    </style>
+    <script>
+        function showTab(tabIndex) {
+            let contents = document.querySelectorAll('.content');
+            contents.forEach((content, index) => {
+                content.style.display = index === tabIndex ? 'block' : 'none';
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Tax Details</h1>
+    <div class="tabs">
+        <div class="tab" onclick="showTab(0)">Income Tax</div>
+        <div class="tab" onclick="showTab(1)">Deductions</div>
+        <div class="tab" onclick="showTab(2)">Investments</div>
+        <div class="tab" onclick="showTab(3)">Savings</div>
+        <div class="tab" onclick="showTab(4)">GST</div>
+        <div class="tab" onclick="showTab(5)">Wealth Planning</div>
+    </div>
+    
+    <div class="content active">
+        <h2>Income Tax Overview</h2>
+        <p>Understand how income tax is calculated and how to optimize your tax returns.</p>
+        <img src="wealth-planning.jpg" alt="Income Tax" class="image">
+        <a href="https://t24k.com">Learn More</a>
+    </div>
+    <div class="content">
+        <h2>Tax Deductions</h2>
+        <p>Explore various deductions available to save on taxes.</p>
+        <img src="wealth-planning.jpg" alt="Tax Deductions" class="image">
+        <a href="https://t24k.com">Learn More</a>
+    </div>
+    <div class="content">
+        <h2>Best Tax-saving Investments</h2>
+        <p>Find out the best investment options to reduce your tax liability.</p>
+        <img src="wealth-planning.jpg" alt="Investments" class="image">
+        <a href="https://t24k.com">Learn More</a>
+    </div>
+    <div class="content">
+        <h2>Smart Savings</h2>
+        <p>Discover savings strategies to increase wealth while minimizing tax burdens.</p>
+        <img src="wealth-planning.jpg" alt="Savings" class="image">
+        <a href="https://t24k.com">Learn More</a>
+    </div>
+    <div class="content">
+        <h2>Goods and Services Tax (GST)</h2>
+        <p>Know everything about GST and how it affects your business and daily life.</p>
+        <img src="wealth-planning.jpg" alt="GST" class="image">
+        <a href="https://t24k.com">Learn More</a>
+    </div>
+    <div class="content">
+        <h2>Wealth Planning & Tax Management</h2>
+        <p>Plan your wealth efficiently with strategic tax planning.</p>
+        <img src="wealth-planning.jpg" alt="Wealth Planning" class="image">
+        <a href="https://t24k.com">Learn More</a>
+    </div>
+</body>
+</html>
