@@ -1,10 +1,30 @@
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
-     crossorigin="anonymous"></script>
-<!-- Add1 -->
-<ins class="adsbygoogle"
-     style="display:inline-block;width:728px;height:90px"
-     data-ad-client="ca-pub-6272193760158994"
-     data-ad-slot="2015302205"></ins>
 <script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
+  document.addEventListener("DOMContentLoaded", function () {
+    const adHTML = `
+      <div class="custom-ad-container">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
+                crossorigin="anonymous"></script>
+        <!-- Add1 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-6272193760158994"
+             data-ad-slot="2015302205"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+    `;
+
+    const paragraphs = document.querySelectorAll("p");
+
+    // Prevent duplicates by checking if ad already inserted
+    if (!document.querySelector(".custom-ad-container")) {
+      if (paragraphs.length >= 3) {
+        paragraphs[2].insertAdjacentHTML("beforebegin", adHTML);
+      }
+      if (paragraphs.length >= 6) {
+        paragraphs[5].insertAdjacentHTML("beforebegin", adHTML);
+      }
+    }
+  });
 </script>
