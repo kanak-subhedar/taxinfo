@@ -15,15 +15,16 @@
       </div>
     `;
 
-    const paragraphs = document.querySelectorAll("p");
+    // Select all h1 to h6 tags
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
 
-    // Prevent duplicates by checking if ad already inserted
+    // Ensure ads aren't inserted multiple times
     if (!document.querySelector(".custom-ad-container")) {
-      if (paragraphs.length >= 3) {
-        paragraphs[2].insertAdjacentHTML("beforebegin", adHTML);
+      if (headings.length >= 4) {
+        headings[3].insertAdjacentHTML("afterend", adHTML);
       }
-      if (paragraphs.length >= 6) {
-        paragraphs[5].insertAdjacentHTML("beforebegin", adHTML);
+      if (headings.length >= 6) {
+        headings[5].insertAdjacentHTML("afterend", adHTML);
       }
     }
   });
