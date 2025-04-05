@@ -1,14 +1,31 @@
-<!-- Google AdSense script -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
-        crossorigin="anonymous"></script>
-
-<ins class="adsbygoogle"
-     style="display:block; text-align:center;"
-     data-ad-client="ca-pub-6272193760158994"
-     data-ad-slot="2015302205"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-
 <script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
+  document.addEventListener("DOMContentLoaded", function () {
+    const adHTML = `
+      <div class="custom-ad-container" style="text-align: center; margin: 20px 0;">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
+                crossorigin="anonymous"></script>
+        <!-- Add1 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-6272193760158994"
+             data-ad-slot="2015302205"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+    `;
+
+    // Get all h1 to h6 tags in order
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+    // Insert first ad after the 4th heading
+    if (headings.length >= 4) {
+      headings[3].insertAdjacentHTML("afterend", adHTML);
+    }
+
+    // Insert second ad after the 6th heading (which is headings[5])
+    if (headings.length >= 6) {
+      headings[5].insertAdjacentHTML("afterend", adHTML);
+    }
+  });
 </script>
