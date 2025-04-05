@@ -1,31 +1,30 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const adHTML = `
-      <div class="custom-ad-container" style="text-align: center; margin: 20px 0;">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
-                crossorigin="anonymous"></script>
-        <!-- Add1 -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:728px;height:90px"
-             data-ad-client="ca-pub-6272193760158994"
-             data-ad-slot="2015302205"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
+    const adContainer1 = document.createElement("div");
+    adContainer1.className = "custom-ad-container";
+    adContainer1.innerHTML = `
+      <ins class="adsbygoogle"
+           style="display:inline-block;width:728px;height:90px"
+           data-ad-client="ca-pub-6272193760158994"
+           data-ad-slot="2015302205"></ins>
     `;
 
-    // Get all h1 to h6 tags in order
+    const adContainer2 = adContainer1.cloneNode(true);
+
     const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
 
-    // Insert first ad after the 4th heading
     if (headings.length >= 4) {
-      headings[3].insertAdjacentHTML("afterend", adHTML);
+      headings[3].insertAdjacentElement("afterend", adContainer1);
+      (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
-    // Insert second ad after the 6th heading (which is headings[5])
     if (headings.length >= 6) {
-      headings[5].insertAdjacentHTML("afterend", adHTML);
+      headings[5].insertAdjacentElement("afterend", adContainer2);
+      (adsbygoogle = window.adsbygoogle || []).push({});
     }
   });
 </script>
+
+<!-- Place this once in <head> or before </body> -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
+        crossorigin="anonymous"></script>
