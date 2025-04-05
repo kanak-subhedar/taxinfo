@@ -1,0 +1,40 @@
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+    // Only create ad if enough headings exist
+    if (headings.length >= 4) {
+      const ad1 = document.createElement("ins");
+      ad1.className = "adsbygoogle";
+      ad1.style = "display:inline-block;width:728px;height:90px";
+      ad1.setAttribute("data-ad-client", "ca-pub-6272193760158994");
+      ad1.setAttribute("data-ad-slot", "2015302205");
+
+      const wrapper1 = document.createElement("div");
+      wrapper1.className = "custom-ad-container";
+      wrapper1.appendChild(ad1);
+
+      headings[3].insertAdjacentElement("afterend", wrapper1);
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+
+    if (headings.length >= 6) {
+      const ad2 = document.createElement("ins");
+      ad2.className = "adsbygoogle";
+      ad2.style = "display:inline-block;width:728px;height:90px";
+      ad2.setAttribute("data-ad-client", "ca-pub-6272193760158994");
+      ad2.setAttribute("data-ad-slot", "2015302205");
+
+      const wrapper2 = document.createElement("div");
+      wrapper2.className = "custom-ad-container";
+      wrapper2.appendChild(ad2);
+
+      headings[5].insertAdjacentElement("afterend", wrapper2);
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+  });
+</script>
+
+<!-- Load AdSense script only once -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
+        crossorigin="anonymous"></script>
