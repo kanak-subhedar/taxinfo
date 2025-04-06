@@ -8,30 +8,30 @@
 
     function insertAdAfterHeading(index) {
       if (headings.length > index) {
-        // Create placeholder
-        const placeholder = document.createElement("div");
-        placeholder.className = "custom-ad-container";
-        placeholder.style = "width:728px;height:90px;background:#f9f9f9;text-align:center;line-height:90px;color:#999;";
-        placeholder.innerText = "Loading ad...";
+        // Create wrapper with placeholder
+        const placeholderWrapper = document.createElement("div");
+        placeholderWrapper.className = "custom-ad-container";
+        placeholderWrapper.style = "width:728px;height:90px;background:#f1f1f1;border:1px dashed #ccc;text-align:center;line-height:90px;font-size:14px;color:#666;";
+        placeholderWrapper.innerText = "🔄 Loading ad...";
 
         // Insert placeholder
-        headings[index].insertAdjacentElement("afterend", placeholder);
+        headings[index].insertAdjacentElement("afterend", placeholderWrapper);
 
-        // Replace placeholder with ad after a short delay
+        // Insert ad after short delay
         setTimeout(() => {
-          placeholder.innerText = ""; // Clear text
+          placeholderWrapper.innerText = ""; // Clear placeholder text
           const ad = document.createElement("ins");
           ad.className = "adsbygoogle";
           ad.style = "display:inline-block;width:728px;height:90px";
           ad.setAttribute("data-ad-client", "ca-pub-6272193760158994");
           ad.setAttribute("data-ad-slot", "2015302205");
-          placeholder.appendChild(ad);
+          placeholderWrapper.appendChild(ad);
           (adsbygoogle = window.adsbygoogle || []).push({});
-        }, 100); // 100ms delay (adjust if needed)
+        }, 300); // 300ms delay gives enough time to see the placeholder
       }
     }
 
-    // Call for desired heading indices (e.g. 3 and 5 for after 4th and 6th headings)
+    // Insert after 4th and 6th headings
     insertAdAfterHeading(3);
     insertAdAfterHeading(8);
   });
