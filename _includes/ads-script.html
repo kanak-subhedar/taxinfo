@@ -1,0 +1,38 @@
+<!-- Load AdSense script only once -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
+        crossorigin="anonymous"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+    function insertAdAfterHeading(index) {
+      if (headings.length > index) {
+        // Create placeholder
+        const placeholder = document.createElement("div");
+        placeholder.className = "custom-ad-container";
+        placeholder.style = "width:728px;height:90px;background:#f9f9f9;text-align:center;line-height:90px;color:#999;";
+        placeholder.innerText = "Loading ad...";
+
+        // Insert placeholder
+        headings[index].insertAdjacentElement("afterend", placeholder);
+
+        // Replace placeholder with ad after a short delay
+        setTimeout(() => {
+          placeholder.innerText = ""; // Clear text
+          const ad = document.createElement("ins");
+          ad.className = "adsbygoogle";
+          ad.style = "display:inline-block;width:728px;height:90px";
+          ad.setAttribute("data-ad-client", "ca-pub-6272193760158994");
+          ad.setAttribute("data-ad-slot", "2015302205");
+          placeholder.appendChild(ad);
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        }, 100); // 100ms delay (adjust if needed)
+      }
+    }
+
+    // Call for desired heading indices (e.g. 3 and 5 for after 4th and 6th headings)
+    insertAdAfterHeading(3);
+    insertAdAfterHeading(8);
+  });
+</script>
