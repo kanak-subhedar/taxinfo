@@ -4,8 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const xml2js = require("xml2js");
 
-const SITEMAP_PATH = path.join(__dirname, "../../sitemap.xml");
-const PUBLIC_DIR = path.join(__dirname, "../../");
+const SITEMAP_PATH = path.join(__dirname, "../sitemap.xml");
+const PUBLIC_DIR = path.join(__dirname, "../");
 
 function getLastModifiedTime(urlPath) {
   // Remove domain part, keeping only the path
