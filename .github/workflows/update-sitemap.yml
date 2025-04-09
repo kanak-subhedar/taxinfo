@@ -21,7 +21,10 @@ jobs:
         run: npm install
 
       - name: Run sitemap update script
-        run: node scripts/updateSitemap.js
+        run: node scripts/update-sitemap.js
+
+     - name: Debug sitemap content
+       run: cat sitemap.xml
 
       - name: Commit and push changes
         run: |
