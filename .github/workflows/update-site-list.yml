@@ -1,0 +1,31 @@
+name: update-site-list
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Runs every 30 minutes
+  workflow_dispatch:
+
+jobs:
+  generate-site-list:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate site-list.html
+        run: |
+          echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Site List</title></head><body><h1>Site Pages</h1><ul>" > site-list.html
+          for file in *.html; do
+            if [[ "$file" != "site-list.html" ]]; then
+              echo "<li><a href='$file'>$file</a></li>" >> site-list.html
+            fi
+          done
+          echo "</ul></body></html>" >> site-list.html
+
+      - name: Commit and push site-list.html
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add site-list.html
+          git commit -m "Update site-list.html index" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:main
