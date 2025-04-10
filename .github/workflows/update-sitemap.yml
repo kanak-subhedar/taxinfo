@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}  # 👈 THIS is the key change
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -27,12 +29,9 @@ jobs:
         run: cat sitemap.xml
 
       - name: Commit and push changes
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git
           git add sitemap.xml
           git commit -m "Update sitemap.xml via GitHub Actions" || echo "No changes to commit"
-          git push origin HEAD:main
+          git push
