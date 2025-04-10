@@ -27,9 +27,11 @@ jobs:
         run: cat sitemap.xml
 
       - name: Commit and push changes
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add sitemap.xml
           git commit -m "Update sitemap.xml via GitHub Actions" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:main
+          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main
