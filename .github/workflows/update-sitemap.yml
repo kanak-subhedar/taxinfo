@@ -1,13 +1,9 @@
-name: update-sitemap-and-site-list
+name: update-sitemap
 
 on:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: false
 
 jobs:
   update:
@@ -15,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}  # 👈 THIS is the key change
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -27,20 +25,13 @@ jobs:
       - name: Run sitemap update script
         run: node scripts/update-sitemap.cjs
 
-      - name: Run site list update script
-        run: node scripts/generate-site-list.cjs
-
-      - name: Debug outputs
-        run: |
-          echo "Sitemap content:"
-          cat sitemap.xml
-          echo "Site list content:"
-          cat site-list.html
+      - name: Debug sitemap content
+        run: cat sitemap.xml
 
       - name: Commit and push changes
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add sitemap.xml site-list.html
-          git commit -m "Update sitemap.xml and site-list.html via GitHub Actions" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:main
+          git add sitemap.xml
+          git commit -m "Update sitemap.xml via GitHub Actions" || echo "No changes to commit"
+          git push
