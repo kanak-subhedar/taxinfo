@@ -43,7 +43,8 @@ jobs:
         run: |
           git config user.name "kanak-subhedar"
           git config user.email "girish.kanakagiri@gmail.com"
-          git remote set-url origin https://kanak-subhedar:${GH_PAT}@github.com/${{ github.repository }}.git
+          git remote remove origin
+          git remote add origin https://kanak-subhedar:${GH_PAT}@github.com/${{ github.repository }}.git
           git add sitemap.xml site-list.html
           git commit -m "Update sitemap.xml and site-list.html via GitHub Actions" || echo "No changes to commit"
           git push origin HEAD:main
