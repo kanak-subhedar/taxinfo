@@ -3,99 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="T24K offers three income tax calculators - old regime, new regime, and the latest for FY 2025-26. Calculate your tax easily now!">
+  <meta name="description" content="Accurate Income Tax Calculators for Old, New, and FY 2025-26 Regimes - Instantly calculate your tax liability online at T24K.com">
   <title>Income Tax Calculators - T24K</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
-    h2 { color: #333; }
-    form { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; }
-    label, input { display: block; margin-bottom: 10px; }
-    input[type="number"] { padding: 5px; width: 200px; }
-    button { padding: 10px 20px; }
-    table { margin-top: 20px; border-collapse: collapse; }
-    table, th, td { border: 1px solid #ccc; padding: 10px; }
-    .result { margin-top: 20px; background: #f9f9f9; padding: 10px; border-left: 4px solid #4caf50; }
-    .adsense { margin-top: 20px; background: #fff5d7; padding: 10px; text-align: center; border: 1px dashed #ccc; font-size: 14px; color: #555; }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .calculator {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .adsense {
+      margin-top: 20px;
+      text-align: center;
+      background: #eee;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
   <h1>Income Tax Calculators</h1>
 
   <!-- Old Regime Calculator -->
-  <h2>Old Regime Tax Calculator</h2>
-  <form id="oldRegimeForm">
-    <label>Annual Income (₹): <input type="number" id="oldIncome" required></label>
-    <label>Total Deductions (₹): <input type="number" id="oldDeductions" required></label>
-    <button type="button" onclick="calculateOldRegime()">Calculate Old Regime Tax</button>
-    <div id="oldResult" class="result"></div>
-    <div class="adsense">[AdSense Ad Here Below Old Regime]</div>
-  </form>
+  <div class="calculator">
+    <h2>Old Regime Calculator</h2>
+    <label for="oldIncome">Enter Total Income:</label>
+    <input type="number" id="oldIncome" placeholder="e.g. 600000">
+    <button onclick="calculateOld()">Calculate Tax</button>
+    <table id="oldResult" style="display:none;"></table>
+    <div class="adsense">AdSense Placeholder Below Old Regime</div>
+  </div>
 
   <!-- New Regime Calculator -->
-  <h2>New Regime Tax Calculator</h2>
-  <form id="newRegimeForm">
-    <label>Annual Income (₹): <input type="number" id="newIncome" required></label>
-    <button type="button" onclick="calculateNewRegime()">Calculate New Regime Tax</button>
-    <div id="newResult" class="result"></div>
-    <div class="adsense">[AdSense Ad Here Below New Regime]</div>
-  </form>
+  <div class="calculator">
+    <h2>New Regime Calculator</h2>
+    <label for="newIncome">Enter Total Income:</label>
+    <input type="number" id="newIncome" placeholder="e.g. 700000">
+    <button onclick="calculateNew()">Calculate Tax</button>
+    <table id="newResult" style="display:none;"></table>
+    <div class="adsense">AdSense Placeholder Below New Regime</div>
+  </div>
 
   <!-- FY 2025-26 Calculator -->
-  <h2>Income Tax Calculator FY 2025-26</h2>
-  <form id="fy2025Form">
-    <label>Annual Income (₹): <input type="number" id="fyIncome" required></label>
-    <label>Total Deductions (₹): <input type="number" id="fyDeductions" required></label>
-    <button type="button" onclick="calculateFY2025()">Calculate FY 2025-26 Tax</button>
-    <div id="fyResult" class="result"></div>
-    <div class="adsense">[AdSense Ad Here Below FY 2025-26]</div>
-  </form>
+  <div class="calculator">
+    <h2>FY 2025-26 Calculator</h2>
+    <label for="fyIncome">Enter Total Income:</label>
+    <input type="number" id="fyIncome" placeholder="e.g. 800000">
+    <button onclick="calculateFY()">Calculate Tax</button>
+    <table id="fyResult" style="display:none;"></table>
+    <div class="adsense">AdSense Placeholder Below FY 2025-26</div>
+  </div>
 
   <script>
-    function calculateOldRegime() {
-      const income = parseFloat(document.getElementById("oldIncome").value);
-      const deductions = parseFloat(document.getElementById("oldDeductions").value);
-      const taxable = income - deductions;
-      let tax = 0;
-      if (taxable <= 250000) tax = 0;
-      else if (taxable <= 500000) tax = (taxable - 250000) * 0.05;
-      else if (taxable <= 1000000) tax = 12500 + (taxable - 500000) * 0.2;
-      else tax = 112500 + (taxable - 1000000) * 0.3;
-      const cess = tax * 0.04;
-      const total = tax + cess;
-      document.getElementById("oldResult").innerText = `Total Tax Payable (Old Regime): ₹${total.toFixed(2)}`;
+    function formatCurrency(value) {
+      return '₹' + value.toLocaleString('en-IN');
     }
 
-    function calculateNewRegime() {
-      const income = parseFloat(document.getElementById("newIncome").value);
+    function calculateOld() {
+      const income = parseFloat(document.getElementById('oldIncome').value);
       let tax = 0;
-      const slabs = [0, 300000, 600000, 900000, 1200000, 1500000];
-      const rates = [0, 0.05, 0.1, 0.15, 0.2, 0.3];
-      for (let i = slabs.length - 1; i > 0; i--) {
-        if (income > slabs[i]) {
-          tax += (income - slabs[i]) * rates[i];
-          income = slabs[i];
-        }
-      }
-      const cess = tax * 0.04;
-      const total = tax + cess;
-      document.getElementById("newResult").innerText = `Total Tax Payable (New Regime): ₹${total.toFixed(2)}`;
+      if (income > 250000) tax += (Math.min(income, 500000) - 250000) * 0.05;
+      if (income > 500000) tax += (Math.min(income, 1000000) - 500000) * 0.2;
+      if (income > 1000000) tax += (income - 1000000) * 0.3;
+      showResult('oldResult', income, tax);
     }
 
-    function calculateFY2025() {
-      const income = parseFloat(document.getElementById("fyIncome").value);
-      const deductions = parseFloat(document.getElementById("fyDeductions").value);
-      let taxable = income - deductions;
-      if (taxable < 0) taxable = 0;
+    function calculateNew() {
+      const income = parseFloat(document.getElementById('newIncome').value);
       let tax = 0;
-      if (taxable <= 300000) tax = 0;
-      else if (taxable <= 600000) tax = (taxable - 300000) * 0.05;
-      else if (taxable <= 900000) tax = 15000 + (taxable - 600000) * 0.1;
-      else if (taxable <= 1200000) tax = 45000 + (taxable - 900000) * 0.15;
-      else if (taxable <= 1500000) tax = 90000 + (taxable - 1200000) * 0.2;
-      else tax = 150000 + (taxable - 1500000) * 0.3;
-      const cess = tax * 0.04;
-      const total = tax + cess;
-      document.getElementById("fyResult").innerText = `Total Tax Payable (FY 2025-26): ₹${total.toFixed(2)}`;
+      if (income > 300000) tax += (Math.min(income, 600000) - 300000) * 0.05;
+      if (income > 600000) tax += (Math.min(income, 900000) - 600000) * 0.1;
+      if (income > 900000) tax += (Math.min(income, 1200000) - 900000) * 0.15;
+      if (income > 1200000) tax += (Math.min(income, 1500000) - 1200000) * 0.2;
+      if (income > 1500000) tax += (income - 1500000) * 0.3;
+      showResult('newResult', income, tax);
+    }
+
+    function calculateFY() {
+      const income = parseFloat(document.getElementById('fyIncome').value);
+      let tax = 0;
+      if (income > 300000) tax += (Math.min(income, 600000) - 300000) * 0.05;
+      if (income > 600000) tax += (Math.min(income, 900000) - 600000) * 0.1;
+      if (income > 900000) tax += (Math.min(income, 1200000) - 900000) * 0.15;
+      if (income > 1200000) tax += (Math.min(income, 1500000) - 1200000) * 0.2;
+      if (income > 1500000) tax += (income - 1500000) * 0.3;
+      showResult('fyResult', income, tax);
+    }
+
+    function showResult(id, income, tax) {
+      const table = document.getElementById(id);
+      table.style.display = 'table';
+      table.innerHTML = `
+        <tr><th>Total Income</th><th>Estimated Tax</th></tr>
+        <tr><td>${formatCurrency(income)}</td><td>${formatCurrency(tax)}</td></tr>
+      `;
     }
   </script>
 </body>
