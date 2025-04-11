@@ -1,4 +1,4 @@
-name: generate-site-list
+name: update-site-list
 
 on:
   schedule:
