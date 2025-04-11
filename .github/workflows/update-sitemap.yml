@@ -1,4 +1,4 @@
-name: update-sitemap
+name: update-sitemap-and-site-list
 
 on:
   schedule:
@@ -27,21 +27,20 @@ jobs:
       - name: Run sitemap update script
         run: node scripts/update-sitemap.cjs
 
-      - name: Run site-list generator
+      - name: Run site list update script
         run: node scripts/generate-site-list.cjs
 
-      - name: Debug output files
+      - name: Debug outputs
         run: |
+          echo "Sitemap content:"
           cat sitemap.xml
+          echo "Site list content:"
           cat site-list.html
 
       - name: Commit and push changes
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:$GH_PAT@github.com/${{ github.repository }}.git
           git add sitemap.xml site-list.html
           git commit -m "Update sitemap.xml and site-list.html via GitHub Actions" || echo "No changes to commit"
-          git push origin HEAD:main
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:main
