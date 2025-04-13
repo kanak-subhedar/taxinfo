@@ -466,7 +466,16 @@
 
             const taxableIncome1 = GrossSalary1 - hra1 - otherSavings1 - health1;
             const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, taxAmount4: taxAmount41, totalTax: totalTax1 } = calculateTaxDetails(taxableIncome1);
-	    //ta1
+	    //compare
+	    const GrossSalary1 = parseFloat(document.getElementById('GrossSalary1').value) || 0;
+            //const hra1 = 0; // Default value for HRA in Calculator 2
+            //const otherSavings1 = 0; // Default value for Other Savings in Calculator 2
+            //const taxableIncome1 = GrossSalary2 - hra2 - otherSavings2;
+            const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, 
+		   taxAmount4: taxAmount41, taxAmount5: taxAmount51, taxAmount6: 
+		   taxAmount61, totalTax: totalTax1 } = calculateTaxDetails1(taxableIncome1);
+	
+		//ta1
 	    document.getElementById('ta1').textContent = taxableIncome1.toFixed(2);
 	// Come Here
 
