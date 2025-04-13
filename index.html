@@ -322,8 +322,77 @@
 
   <!-- Calculator 2 (preserved as is) -->
   <div class="calculator-block">
-    <h2>Tax Calculator 2 [New Regime till March 2025]</h2>
-    <p>[Calculator 2 interface goes here]</p>
+    <h2>Tax Calculator 2 [New Regime till March 2025, then this is old Regime]</h2>
+        <table>
+        <tr>
+            <th>Salary Component</th>
+            <th>Amount (INR)</th>
+        </tr>
+        <tr>
+            <td>Gross Salary [put 50K less here bcz of Standard deduction]</td>
+            <td><input type="number" id="GrossSalary2" placeholder="Enter Gross Salary" required></td>
+        </tr>
+        <tr>
+            <td>HRA (House Rent Allowance) [Not Applicable]</td>
+            <td><input type="number" id="hra2" value="0" readonly></td>
+        </tr>
+        <tr>
+            <td>Savings NSC, LIC etc (80C) [Not Applicable]</td>
+            <td><input type="number" id="otherSavings2" value="0" readonly></td>
+        </tr>
+        <tr>
+            <td>Health Insurance/CheckUp (80D) [Not Applicable]</td>
+            <td><input type="number" id="health2" value="0" readonly></td>
+        </tr>
+    </table>
+
+<br>
+<button onclick="calculateTax2()">Calculate Tax 1</button>
+	  
+    <h3>Tax Calculation Result 2</h3>
+    <table>
+        <tr>
+            <th>Income Range</th>
+            <th>Tax Rate</th>
+            <th>Tax Amount</th>
+        </tr>
+        <tr>
+            <td>Up to 3,00,000</td>
+            <td>0%</td>
+            <td id="taxAmount12">0</td>
+        </tr>
+        <tr>
+            <td>3,00,001 to 6,00,000</td>
+            <td>5%</td>
+            <td id="taxAmount22">0</td>
+        </tr>
+        <tr>
+            <td>6,00,001 to 9,00,000</td>
+            <td>10%</td>
+            <td id="taxAmount32">0</td>
+        </tr>
+        <tr>
+            <td>9,00,001 to 12,00,000</td>
+            <td>15%</td>
+            <td id="taxAmount42">0</td>
+        </tr>
+        <tr>
+            <td>12,00,001 to 15,00,000</td>
+            <td>20%</td>
+            <td id="taxAmount52">0</td>
+        </tr>
+        <tr>
+            <td>Above 15,00,000</td>
+            <td>30%</td>
+            <td id="taxAmount62">0</td>
+        </tr>
+        <tr>
+            <td>Total Tax</td>
+            <td></td>
+            <td id="totalTax2">0</td>
+        </tr>
+	
+    </table>
     <div class="ads">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6272193760158994" data-ad-slot="2015302205" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
