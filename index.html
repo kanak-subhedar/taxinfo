@@ -475,15 +475,15 @@
 	    document.getElementById('ta1').textContent = taxableIncome1.toFixed(2);
 		
             const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, taxAmount4: taxAmount41, totalTax: totalTax1 } = calculateTaxDetails1(taxableIncome1);
-	    
+	
 	// Come Here
-
+// taxAmount1, taxAmount2, taxAmount3, taxAmount4, totalTax
             // Display the result for Calculator 1
-            document.getElementById('taxAmount11').textContent = taxAmount11.toFixed(2);
-            document.getElementById('taxAmount21').textContent = taxAmount21.toFixed(2);
-            document.getElementById('taxAmount31').textContent = taxAmount31.toFixed(2);
-            document.getElementById('taxAmount41').textContent = taxAmount41.toFixed(2);
-            document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
+            document.getElementById('taxAmount1').textContent = taxAmount11.toFixed(2);
+            document.getElementById('taxAmount2').textContent = taxAmount21.toFixed(2);
+            document.getElementById('taxAmount3').textContent = taxAmount31.toFixed(2);
+            document.getElementById('taxAmount4').textContent = taxAmount41.toFixed(2);
+            document.getElementById('totalTax').textContent = totalTax1.toFixed(2);
 
 	            // Display Total Tax for both calculators separately
             //document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
