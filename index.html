@@ -1,63 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Income Tax Calculators - T24K.com</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Accurate tax calculators for Old and New Regimes including latest 2025 slab. Includes breakdown and rebate details. - T24K.com" />
-  <link rel="canonical" href="https://t24k.com/" />
+  <title>Income Tax calculators & earning options by T24K.com</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate your exact tax liability with T24K's advanced Income Tax Calculator. Get personalized results with exemptions, deductions & yearly breakdown with T24K.com">
+  <link rel="canonical" href="https://t24k.com">
+
+  <!-- Favicon --- like company label -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+  
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994" crossorigin="anonymous"></script>
   <style>
-    body { font-family: Arial; background: #f9f9f9; padding: 20px; }
-    h1, h2 { color: #003366; }
-    .nav, .footer, .ad { text-align: center; margin: 20px 0; }
-    .nav a, .footer a { margin: 0 10px; text-decoration: none; color: #003366; }
-    .calc-block { background: #fff; padding: 20px; margin: 30px 0; border-radius: 10px; border: 1px solid #ccc; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
-    th { background: #f0f0f0; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1, h2 {
+      color: #003366;
+    }
+    .calculator-block {
+      background: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .ads {
+      text-align: center;
+      margin: 20px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .footer, .menu {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .menu a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #0066cc;
+    }
+
+    /* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+    footer1 {
+            position: static;
+            bottom: 0;
+            width: 100%;
+            background-color: blue;
+            color: black;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .footer-menu1 {
+	    background-color: #FAAF10;
+	    color: white;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .footer-menu1 a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+        }
+        .footer-menu1 a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }    
   </style>
 </head>
 <body>
   <h1>Income Tax Calculators by T24K</h1>
 
-  <div class="nav">
-    <a href="/">Home</a>
-    <a href="/income-tax-rebate">Tax Rebate</a>
-    <a href="/about-us">About Us</a>
-    <a href="/contact-us">Contact</a>
+	<div class="dropdown">
+  <button class="dropbtn">Tax_Exemptions</button>
+  <div class="dropdown-content">
+    <a href="https://t24k.com/agriculture-and-capital-gain-tax">Capital-Gain & Agriculture Tax Exemption</a>
+    <a href="https://t24k.com/tax-on-interest-of-saving-account">Interest on Savings-Account</a>
+    <a href="https://t24k.com/vehile-purchase-tax-saving">Vehicle Purchase Tax</a>
+	  <!--
+    Donation for this site
+	  -->
+    <a href="https://t24k.com/about-us">About this site</a>
+    <a href="https://t24k.com/income-tax-calculator">Tax Calculator Information</a>
+    <a href="https://t24k.com/self-education">Interest on Education loan for Self</a>
+    <a href="https://t24k.com/start-up">Start-Up Investments</a>
+    <a href="https://t24k.com/taxes-on-fixed-deposit-and-recurring-deposit-interest">Income from FD/RD interest</a>
   </div>
+</div>
 
-  <!-- Calculator 1 -->
-  <div class="calc-block">
+	<div class="dropdown">
+  <button class="dropbtn">Exemptions_under_80</button>
+  <div class="dropdown-content">   
+    <a href="https://t24k.com/ccf-80">Tax-Saving Bonds-80CCF</a>
+    <a href="https://t24k.com/options-under-80c">Options for 80C</a>
+    <a href="https://t24k.com/donation-calculation">Donation Calculation_Exemption on 80G</a>
+    <a href="https://t24k.com/ccg-80">Rajiv Gandhi Equity Savings Scheme (RGESS) - 80CCG</a>
+    <a href="https://t24k.com/leave-travel-allowance">Leave Travel Allowance (LTA)</a>
+    <a href="https://t24k.com/employee-gratuity-fund">Employee Gratuity Fund</a>
+   </div>
+  </div>
+	
+<div class="dropdown">
+  <button class="dropbtn">Medical Exemptions</button>
+  <div class="dropdown-content">
+    <a href="https://t24k.com/health-insurance#Health_Expense">Medical-Expenses</a>
+    <a href="https://t24k.com/health-insurance">Medical-Insurance(Health Insurance-Premium)</a>
+    <a href="https://t24k.com/health-insurance#Senior_Health">Medical-Insurance(For Senior Citizen)</a>
+    <a href="https://t24k.com/disease-treatment#80DDB">Section 80 DDB</a>
+    <a href="https://t24k.com/disease-treatment#80DD">section 80 DD</a>
+  </div>
+</div>
+
+<div class="dropdown">
+  <button class="dropbtn">Provident Fund</button>
+  <div class="dropdown-content">
+    <a href="https://t24k.com/options-under-80c#epf">PF Exemption for Tax</a>
+    <a href="https://t24k.com/national-pension-scheme">National Pension Scheme(NPS)80CCD(1B) Tier-I</a>
+    <a href="https://t24k.com/nps-tier-ii">NPS Tier-II</a>
+    <a href="https://t24k.com/options-under-80c#vpf">VPF</a>
+    <a href="https://t24k.com/options-under-80c#ppf">PPF</a>
+  </div>
+</div>
+
+<div class="dropdown">
+  <button class="dropbtn">House Property</button>
+  <div class="dropdown-content">
+    <a href="https://t24k.com/house-rent-allowance">HRA Exemption - 10/13A</a>
+    <a href="https://t24k.com/options-under-80c#hlprinc">Home Loan Exemption on Principal-Repayment</a>
+    <a href="https://t24k.com/spouse-home-loan#section24b">Home Loan Exemption on interest-paid</a>
+    <a href="https://t24k.com/HomeLoan_NewTwo_1.xlsx">Home Loan Calculation (For purchasing/building the property)</a>
+    <a href="https://t24k.com/saving-capital-gain">Saving Capital Gain (Buying/Building House Property)</a>
+    <a href="https://t24k.com/home-loan">Home Loan Personal Advice</a>
+  </div>
+</div>
+
+<div class="dropdown">
+  <button class="dropbtn">PSC(Parents, Spouce & Children)</button>
+  <div class="dropdown-content">
+    <a href="https://t24k.com/health-insurance#PHI">Parents Health Insrance Exemption</a>
+    <a href="https://t24k.com/children-fees-exemption">Children Education Exemption</a>
+    <a href="https://t24k.com/spouse-home-loan">Spouce also Home Loan Exemption</a>
+    <a href="https://t24k.com/child-investment">Investment to child for Exemption</a>
+    <!-- a href="https://t24k.com/SCSS">Senior Citizens Savings Scheme (SCSS)</a -->
+  </div>
+</div>
+
+<!-- Temparary comment till line 188
+<div class="dropdown">
+  <button class="dropbtn">Additional</button>
+  <div class="dropdown-content">
+    <a href="https://sellcodes.com/s/67LHHs" target="_blank">Buy or Sell codes</a>
+    <a href="https://sellcodes.com/xIlOcuqW" target="_blank">Basic Chat Application</a>
+    <a href="https://t24k.com/best-use-of-internet">Best Use of Internet</a>
+    <a href="https://t24k.com/mobile_world/mobiles">Mobiles</a>
+    <a href="https://t24k.com/fd_rd">FD and RD</a>
+    <a href="https://www.freshersworld.com" target="_blank">Jobs for Freshers</a>
+    <a href="https://www.naukri.com" target="_blank">Naukari for you</a> 
+    <a href="https://www.fiverr.com" target="_blank">Work independently</a>
+    <a href="https://t24k.com/cheaters" target="_blank"> Cheaters </a>
+    <a href="https://t24k.com/no-cost-emi" >No_Cost/Zero_Cost EMI</a>
+    <a href="https://www.earningguys.com" target="_blank">Small Extra Earning</a>
+    
+  </div>
+</div>  
+	-->
+<!-- we care for you menu
+<div class="dropdown">
+  <button class="dropbtn">We Care for You</button>
+  <div class="dropdown-content">
+    <a href="https://t24k.com/about-us">About US</a>
+    <a href="https://t24k.com/contact-us">Contact US</a>
+    <a href="https://t24k.com/disclosure">Disclosure</a>
+    <a href="https://t24k.com/privacy-policy">Privacy Policy</a>
+  </div>
+</div>    
+	-->
+
+
+  <!-- Calculator 1 (preserved as is) -->
+  <div class="calculator-block">
     <h2>Tax Calculator 1 [Old Regime]</h2>
-    <p>[Calculator 1 UI remains unchanged here]</p>
-    <div class="ad">
+       <table>
+        <tr>
+            <th>Salary Component</th>
+            <th>Amount (INR)</th>
+        </tr>
+        <tr>
+            <td>Gross Salary [put 50K less here bcz of Standard deduction]</td>
+            <td><input type="number" id="GrossSalary1" placeholder="Enter Gross Salary" required></td>
+        </tr>
+        <tr>
+            <td>HRA (House Rent Allowance) <a href="/hra_2.html">HRA Amount</a></td>
+            <td><input type="number" id="hra1" placeholder="Enter HRA" required></td>
+        </tr>
+        <tr>
+            <td>Savings NSC, LIC etc (80C) [Max Limit 1.5 Lakh]</td>
+            <td><input type="number" id="otherSavings1" placeholder="Enter Other Savings" required></td>
+        </tr>
+        <tr>
+            <td>Health Insurance/CheckUp (80D) [ Limit 25k for (Self+Spouce+Dependant-Children) & 25k for parents. For Senior Citizen parents the limit
+		    changes to 50K. If you are also Senior Citizen(with 60 Years or above) then Total Max Limit 1 Lack</td>
+            <td><input type="number" id="health1" placeholder="Enter Insurance Premium + Health CheckUp" required></td>
+        </tr>
+        <tr>
+	    <td>Total Taxable Amount</td>
+	    <td id="ta1">0</td>            
+	</tr>
+    </table>
+
+        <h3>Tax Calculation Result 1</h3>
+    <table>
+        <tr>
+            <th>Income Range</th>
+            <th>Tax Rate</th>
+            <th>Tax Amount</th>
+        </tr>
+        <tr>
+            <td>Up to 2,50,000</td>
+            <td>0%</td>
+            <td id="taxAmount11">0</td>
+        </tr>
+        <tr>
+            <td>2,50,001 to 5,00,000</td>
+            <td>5%</td>
+            <td id="taxAmount21">0</td>
+        </tr>
+        <tr>
+            <td>5,00,001 to 10,00,000</td>
+            <td>20%</td>
+            <td id="taxAmount31">0</td>
+        </tr>
+        <tr>
+            <td>Above 10,00,000</td>
+            <td>30%</td>
+            <td id="taxAmount41">0</td>
+        </tr>
+        <tr>
+            <td>Total Tax</td>
+            <td></td>
+            <td id="totalTax1">0</td>
+        </tr>
+    </table>
+
+    <div class="ads">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6272193760158994" data-ad-slot="2015302205" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </div>
 
-  <!-- Calculator 2 -->
-  <div class="calc-block">
+  <!-- Calculator 2 (preserved as is) -->
+  <div class="calculator-block">
     <h2>Tax Calculator 2 [New Regime till March 2025]</h2>
-    <p>[Calculator 2 UI remains unchanged here]</p>
-    <div class="ad">
+    <p>[Calculator 2 interface goes here]</p>
+    <div class="ads">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6272193760158994" data-ad-slot="2015302205" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </div>
 
   <!-- Calculator 3 -->
-  <div class="calc-block">
+  <div class="calculator-block">
     <h2>Tax Calculator 3 [Effective April 2025]</h2>
     <form id="calc3">
-      <label>Total Income (₹): <input type="number" id="gross3" required></label><br><br>
-      <label>Standard Deduction (₹): <input type="number" id="std3" value="50000"></label><br><br>
+      <label>Total Income (₹): <input type="number" id="gross3"></label><br>
+      <label>Standard Deduction (₹): <input type="number" id="std3" value="50000"></label><br>
       <button type="button" onclick="calculateNewTax2025()">Calculate</button>
     </form>
     <div id="result3"></div>
-    <div class="ad">
+    <div class="ads">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6272193760158994" data-ad-slot="2015302205" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
@@ -68,7 +349,7 @@
       const income = parseFloat(document.getElementById("gross3").value) || 0;
       const std = parseFloat(document.getElementById("std3").value) || 0;
       const ti = income - std;
-      let tax = 0, result = "<h3>Breakdown</h3><table><tr><th>From</th><th>To</th><th>Rate</th><th>Tax</th></tr>";
+      let tax = 0, output = "<h3>Result</h3><table><tr><th>Range</th><th>Rate</th><th>Tax</th></tr>";
 
       const slabs = [
         { limit: 300000, rate: 0 },
@@ -85,31 +366,24 @@
           let taxable = Math.min(ti, slab.limit) - prev;
           let slabTax = taxable * slab.rate;
           tax += slabTax;
-          result += `<tr><td>₹${prev + 1}</td><td>₹${slab.limit}</td><td>${(slab.rate * 100).toFixed(0)}%</td><td>₹${slabTax.toFixed(2)}</td></tr>`;
+          output += `<tr><td>${prev + 1} - ${slab.limit}</td><td>${(slab.rate*100).toFixed(0)}%</td><td>₹${slabTax.toFixed(2)}</td></tr>`;
           prev = slab.limit;
         }
       }
 
       let cess = tax * 0.04;
       let total = tax + cess;
+      output += `<tr><td colspan='2'>Total Tax</td><td>₹${tax.toFixed(2)}</td></tr>`;
+      output += `<tr><td colspan='2'>Cess (4%)</td><td>₹${cess.toFixed(2)}</td></tr>`;
+      output += `<tr><td colspan='2'><strong>Net Payable</strong></td><td><strong>₹${total.toFixed(2)}</strong></td></tr>`;
+      output += `</table>`;
+      output += `<p><a href="https://t24k.com/income-tax-rebate">Check if you qualify for rebate</a></p>`;
 
-      result += `<tr><td colspan="3">Total Tax</td><td>₹${tax.toFixed(2)}</td></tr>`;
-      result += `<tr><td colspan="3">Cess (4%)</td><td>₹${cess.toFixed(2)}</td></tr>`;
-      result += `<tr><td colspan="3"><strong>Net Payable</strong></td><td><strong>₹${total.toFixed(2)}</strong></td></tr>`;
-      result += "</table><br><a href='/income-tax-rebate'>Check Rebate Eligibility</a>";
-
-      document.getElementById("result3").innerHTML = result;
+      document.getElementById("result3").innerHTML = output;
     }
   </script>
 
-  <!-- Footer links & menus -->
   <div class="footer">
-    <p><a href="/options-under-80c">80C Options</a> |
-       <a href="/saving-capital-gain">Capital Gains</a> |
-       <a href="/donation-calculation">Donations</a> |
-       <a href="/start-up">Start-ups</a> |
-       <a href="/employee-gratuity-fund">Gratuity</a> |
-       <a href="/house-rent-allowance">HRA</a></p>
     <p>&copy; 2025 <a href="https://t24k.com">T24K.com</a> | All Rights Reserved.</p>
   </div>
 </body>
