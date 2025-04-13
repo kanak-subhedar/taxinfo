@@ -452,8 +452,8 @@
       document.getElementById("result3").innerHTML = output;
     }
 	// Tax-3 calculation over.
-	  
-        function calculateTax1() {
+	// <button onclick="calculateTax1()">Calculate Tax 1</button>  
+        function calculateTax1(){
             // Calculate Tax for Calculator 1
             const GrossSalary1 = parseFloat(document.getElementById('GrossSalary1').value) || 0;
             const hra1 = parseFloat(document.getElementById('hra1').value) || 0;
@@ -491,7 +491,8 @@
 	    }
 	}
 
-	  function calculateTax2() {
+	  // <button onclick="calculateTax2()">Calculate Tax 2</button>
+	  function calculateTax2(){
             // Calculate Tax for Calculator 2
             const GrossSalary2 = parseFloat(document.getElementById('GrossSalary2').value) || 0;
             const hra2 = 0; // Default value for HRA in Calculator 2
