@@ -347,7 +347,7 @@
     </table>
 
 <br>
-<button onclick="calculateTax2()">Calculate Tax 1</button>
+<button onclick="calculateTax2()">Calculate Tax 2</button>
 	  
     <h3>Tax Calculation Result 2</h3>
     <table>
@@ -452,7 +452,7 @@
       document.getElementById("result3").innerHTML = output;
     }
 	// Tax-3 calculation over.
-        function calculateTax() {
+        function calculateTax1() {
             // Calculate Tax for Calculator 1
             const GrossSalary1 = parseFloat(document.getElementById('GrossSalary1').value) || 0;
             const hra1 = parseFloat(document.getElementById('hra1').value) || 0;
@@ -476,11 +476,18 @@
             document.getElementById('taxAmount31').textContent = taxAmount31.toFixed(2);
             document.getElementById('taxAmount41').textContent = taxAmount41.toFixed(2);
             document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
+
+	            // Display Total Tax for both calculators separately
+            document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
+		
 	    if (totalTax1>12500)
 	    {
  	        let cess = totalTax1*4/100;
 		document.getElementById('he').textContent = cess.toFixed(2);
 	    }
+	}
+
+	  function calculateTax2() {
             // Calculate Tax for Calculator 2
             const GrossSalary2 = parseFloat(document.getElementById('GrossSalary2').value) || 0;
             const hra2 = 0; // Default value for HRA in Calculator 2
@@ -498,8 +505,7 @@
             document.getElementById('taxAmount62').textContent = taxAmount62.toFixed(2);
             document.getElementById('totalTax2').textContent = totalTax2.toFixed(2);
 
-            // Display Total Tax for both calculators separately
-            document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
+            // Display Total Tax for both calculators separately            
             document.getElementById('totalTax2').textContent = totalTax2.toFixed(2);
         }
 
