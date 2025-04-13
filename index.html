@@ -1,98 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Income Tax calculators & earning options by T24K.com</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Calculate your exact tax liability with T24K's advanced Income Tax Calculator. Get personalized results with exemptions, deductions & yearly breakdown with T24K.com">
-  <link rel="canonical" href="https://t24k.com">
+  <title>Income Tax Calculators - T24K.com</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Accurate tax calculators for Old and New Regimes including latest 2025 slab. Includes breakdown and rebate details. - T24K.com" />
+  <link rel="canonical" href="https://t24k.com/" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994" crossorigin="anonymous"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f4f4f4;
-    }
-    h1, h2 {
-      color: #003366;
-    }
-    .calculator-block {
-      background: #fff;
-      padding: 20px;
-      margin: 20px 0;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    .ads {
-      text-align: center;
-      margin: 20px 0;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    .footer, .menu {
-      text-align: center;
-      margin-top: 40px;
-    }
-    .menu a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: #0066cc;
-    }
+    body { font-family: Arial; background: #f9f9f9; padding: 20px; }
+    h1, h2 { color: #003366; }
+    .nav, .footer, .ad { text-align: center; margin: 20px 0; }
+    .nav a, .footer a { margin: 0 10px; text-decoration: none; color: #003366; }
+    .calc-block { background: #fff; padding: 20px; margin: 30px 0; border-radius: 10px; border: 1px solid #ccc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+    th { background: #f0f0f0; }
   </style>
 </head>
 <body>
   <h1>Income Tax Calculators by T24K</h1>
 
-  <div class="menu">
+  <div class="nav">
     <a href="/">Home</a>
-    <a href="/income-tax-rebate">Rebate Info</a>
+    <a href="/income-tax-rebate">Tax Rebate</a>
     <a href="/about-us">About Us</a>
     <a href="/contact-us">Contact</a>
   </div>
 
-  <!-- Calculator 1 (preserved as is) -->
-  <div class="calculator-block">
+  <!-- Calculator 1 -->
+  <div class="calc-block">
     <h2>Tax Calculator 1 [Old Regime]</h2>
-    <p>[Calculator 1 interface goes here]</p>
-    <div class="ads">
+    <p>[Calculator 1 UI remains unchanged here]</p>
+    <div class="ad">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6272193760158994" data-ad-slot="2015302205" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </div>
 
-  <!-- Calculator 2 (preserved as is) -->
-  <div class="calculator-block">
+  <!-- Calculator 2 -->
+  <div class="calc-block">
     <h2>Tax Calculator 2 [New Regime till March 2025]</h2>
-    <p>[Calculator 2 interface goes here]</p>
-    <div class="ads">
+    <p>[Calculator 2 UI remains unchanged here]</p>
+    <div class="ad">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6272193760158994" data-ad-slot="2015302205" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </div>
 
   <!-- Calculator 3 -->
-  <div class="calculator-block">
+  <div class="calc-block">
     <h2>Tax Calculator 3 [Effective April 2025]</h2>
     <form id="calc3">
-      <label>Total Income (₹): <input type="number" id="gross3"></label><br>
-      <label>Standard Deduction (₹): <input type="number" id="std3" value="50000"></label><br>
+      <label>Total Income (₹): <input type="number" id="gross3" required></label><br><br>
+      <label>Standard Deduction (₹): <input type="number" id="std3" value="50000"></label><br><br>
       <button type="button" onclick="calculateNewTax2025()">Calculate</button>
     </form>
     <div id="result3"></div>
-    <div class="ads">
+    <div class="ad">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6272193760158994" data-ad-slot="2015302205" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
@@ -103,7 +68,7 @@
       const income = parseFloat(document.getElementById("gross3").value) || 0;
       const std = parseFloat(document.getElementById("std3").value) || 0;
       const ti = income - std;
-      let tax = 0, output = "<h3>Result</h3><table><tr><th>Range</th><th>Rate</th><th>Tax</th></tr>";
+      let tax = 0, result = "<h3>Breakdown</h3><table><tr><th>From</th><th>To</th><th>Rate</th><th>Tax</th></tr>";
 
       const slabs = [
         { limit: 300000, rate: 0 },
@@ -120,24 +85,31 @@
           let taxable = Math.min(ti, slab.limit) - prev;
           let slabTax = taxable * slab.rate;
           tax += slabTax;
-          output += `<tr><td>${prev + 1} - ${slab.limit}</td><td>${(slab.rate*100).toFixed(0)}%</td><td>₹${slabTax.toFixed(2)}</td></tr>`;
+          result += `<tr><td>₹${prev + 1}</td><td>₹${slab.limit}</td><td>${(slab.rate * 100).toFixed(0)}%</td><td>₹${slabTax.toFixed(2)}</td></tr>`;
           prev = slab.limit;
         }
       }
 
       let cess = tax * 0.04;
       let total = tax + cess;
-      output += `<tr><td colspan='2'>Total Tax</td><td>₹${tax.toFixed(2)}</td></tr>`;
-      output += `<tr><td colspan='2'>Cess (4%)</td><td>₹${cess.toFixed(2)}</td></tr>`;
-      output += `<tr><td colspan='2'><strong>Net Payable</strong></td><td><strong>₹${total.toFixed(2)}</strong></td></tr>`;
-      output += `</table>`;
-      output += `<p><a href="https://t24k.com/income-tax-rebate">Check if you qualify for rebate</a></p>`;
 
-      document.getElementById("result3").innerHTML = output;
+      result += `<tr><td colspan="3">Total Tax</td><td>₹${tax.toFixed(2)}</td></tr>`;
+      result += `<tr><td colspan="3">Cess (4%)</td><td>₹${cess.toFixed(2)}</td></tr>`;
+      result += `<tr><td colspan="3"><strong>Net Payable</strong></td><td><strong>₹${total.toFixed(2)}</strong></td></tr>`;
+      result += "</table><br><a href='/income-tax-rebate'>Check Rebate Eligibility</a>";
+
+      document.getElementById("result3").innerHTML = result;
     }
   </script>
 
+  <!-- Footer links & menus -->
   <div class="footer">
+    <p><a href="/options-under-80c">80C Options</a> |
+       <a href="/saving-capital-gain">Capital Gains</a> |
+       <a href="/donation-calculation">Donations</a> |
+       <a href="/start-up">Start-ups</a> |
+       <a href="/employee-gratuity-fund">Gratuity</a> |
+       <a href="/house-rent-allowance">HRA</a></p>
     <p>&copy; 2025 <a href="https://t24k.com">T24K.com</a> | All Rights Reserved.</p>
   </div>
 </body>
