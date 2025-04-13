@@ -452,31 +452,26 @@
       document.getElementById("result3").innerHTML = output;
     }
 	// Tax-3 calculation over.
+	  
         function calculateTax1() {
             // Calculate Tax for Calculator 1
             const GrossSalary1 = parseFloat(document.getElementById('GrossSalary1').value) || 0;
             const hra1 = parseFloat(document.getElementById('hra1').value) || 0;
-            let otherSavings1 = parseFloat(document.getElementById('otherSavings1').value) || 0;
+            const otherSavings = parseFloat(document.getElementById('otherSavings1').value) || 0;
 
             // Limit Other Savings to a maximum of 150,000
-            otherSavings1 = Math.min(otherSavings1, 150000);
+            let otherSavings1 = Math.min(otherSavings, 150000);
 
-            let health1 = parseFloat(document.getElementById('health1').value) || 0;
-	    health1 = Math.min(health1, 100000);
+            const health = parseFloat(document.getElementById('health1').value) || 0;
+	    let health1 = Math.min(health, 100000);
 
             const taxableIncome1 = GrossSalary1 - hra1 - otherSavings1 - health1;
-            const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, taxAmount4: taxAmount41, totalTax: totalTax1 } = calculateTaxDetails(taxableIncome1);
-	    //compare
-	    const GrossSalary1 = parseFloat(document.getElementById('GrossSalary1').value) || 0;
-            //const hra1 = 0; // Default value for HRA in Calculator 2
-            //const otherSavings1 = 0; // Default value for Other Savings in Calculator 2
-            //const taxableIncome1 = GrossSalary2 - hra2 - otherSavings2;
-            const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, 
-		   taxAmount4: taxAmount41, taxAmount5: taxAmount51, taxAmount6: 
-		   taxAmount61, totalTax: totalTax1 } = calculateTaxDetails1(taxableIncome1);
-	
+
 		//ta1
 	    document.getElementById('ta1').textContent = taxableIncome1.toFixed(2);
+		
+            const { taxAmount1: taxAmount11, taxAmount2: taxAmount21, taxAmount3: taxAmount31, taxAmount4: taxAmount41, totalTax: totalTax1 } = calculateTaxDetails1(taxableIncome1);
+	    
 	// Come Here
 
             // Display the result for Calculator 1
@@ -487,7 +482,7 @@
             document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
 
 	            // Display Total Tax for both calculators separately
-            document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
+            //document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
 		
 	    if (totalTax1>12500)
 	    {
@@ -515,10 +510,10 @@
             document.getElementById('totalTax2').textContent = totalTax2.toFixed(2);
 
             // Display Total Tax for both calculators separately            
-            document.getElementById('totalTax2').textContent = totalTax2.toFixed(2);
+            //document.getElementById('totalTax2').textContent = totalTax2.toFixed(2);
         }
 
-        function calculateTaxDetails(income) {
+function calculateTaxDetails1(income) {
             // Calculator 1 Tax Calculation (existing logic)
             let taxAmount1 = 0, taxAmount2 = 0, taxAmount3 = 0, taxAmount4 = 0, totalTax = 0;
 
