@@ -564,16 +564,23 @@
 		//ta1
 	    document.getElementById('ta1').textContent = taxableIncome1.toFixed(2);
 		
-            const { taxAmount1, taxAmount2, taxAmount3, taxAmount4, totalTax } = calculateTaxDetails1(taxableIncome1);
+            // Use aliasing to match the HTML element IDs
+  const {
+    taxAmount1: taxAmount11,
+    taxAmount2: taxAmount21,
+    taxAmount3: taxAmount31,
+    taxAmount4: taxAmount41,
+    totalTax
+  } = calculateTaxDetails1(taxableIncome1);
 
-	// Come Here
-// taxAmount1, taxAmount2, taxAmount3, taxAmount4, totalTax
-            // Display the result for Calculator 1
-            document.getElementById('taxAmount11').textContent = taxAmount1.toFixed(2);
-            document.getElementById('taxAmount21').textContent = taxAmount2.toFixed(2);
-            document.getElementById('taxAmount31').textContent = taxAmount3.toFixed(2);
-            document.getElementById('taxAmount41').textContent = taxAmount4.toFixed(2);
-            document.getElementById('totalTax1').textContent = totalTax.toFixed(2);
+  // Populate results
+  document.getElementById('taxAmount11').textContent = taxAmount11.toFixed(2);
+  document.getElementById('taxAmount21').textContent = taxAmount21.toFixed(2);
+  document.getElementById('taxAmount31').textContent = taxAmount31.toFixed(2);
+  document.getElementById('taxAmount41').textContent = taxAmount41.toFixed(2);
+  document.getElementById('totalTax1').textContent = totalTax.toFixed(2);
+}
+
 
 	            // Display Total Tax for both calculators separately
             //document.getElementById('totalTax1').textContent = totalTax1.toFixed(2);
@@ -583,7 +590,7 @@
  	   //     let cess = totalTax1*4/100;
 	//	document.getElementById('he').textContent = cess.toFixed(2);
 	  //  }
-	}
+//	}
 
 	  // <button onclick="calculateTax2()">Calculate Tax 2</button>
 	  function calculateTax2(){
