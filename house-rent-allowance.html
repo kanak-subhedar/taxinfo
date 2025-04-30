@@ -163,6 +163,44 @@ layout: default
             `;
         }
     </script>
+	
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "House Rent Allowance (HRA) Calculator - T24K",
+  "url": "https://t24k.com/house-rent-allowance",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "Interactive calculator that helps Indian taxpayers compute HRA exemption based on salary, rent, and metro/non-metro location. Shows detailed breakdown table after submission.",
+  "provider": {
+    "@type": "Organization",
+    "name": "T24K",
+    "url": "https://t24k.com"
+  },
+  "screenshot": "https://t24k.com/assets/screenshots/hra-calculator.png",
+  "inLanguage": "en",
+  "featureList": [
+    "Input: Basic salary, HRA received, rent paid, metro/non-metro selection",
+    "Output: Tax-exempted HRA based on income tax rules",
+    "Calculation Logic: Uses 3-rule method per Indian tax laws",
+    "Result Table: Shows exempted, taxable HRA and explanation"
+  ],
+  "potentialAction": {
+    "@type": "InteractAction",
+    "name": "Calculate HRA Exemption",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://t24k.com/house-rent-allowance",
+      "actionPlatform": [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform"
+      ]
+    }
+  }
+}
+</script>
+	
 </head>
 <body>
 <div class="container">
