@@ -6,23 +6,21 @@ app = Flask(__name__)
 # Route for trial version (no check)
 @app.route("/trial")
 def trial():
-    return send_from_directory("trial", "index.html")
+    return send_from_directory("full", "offline-messaging-tool.html")
 
-# Route for full version (with dummy check for now)
+# Route for full version (with dummy payment check)
 @app.route("/full")
 def full():
-    # TEMP: Replace with Razorpay/Render payment check logic later
     paid = request.args.get("paid", "false")
     if paid == "true":
-        return send_from_directory("full", "index.html")
+        return send_from_directory("full", "offline-messaging-tool.html")
     else:
-        return abort(403, description="Payment required")
+        return abort(403, description="Payment required. Please complete payment to access the full version.")
 
+# Root route
 @app.route("/")
 def root():
-    return "Backend is running. Use /trial or /full routes."
+    return "Backend is running. Use /trial or /full?paid=true"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-    #app.run(host="0.0.0.0", port=10000)
-
