@@ -107,6 +107,19 @@
 .dropdown:hover .dropbtn {
   background-color: #3e8e41;
 }
+
+.ad-slot {
+  width: 100%;
+  min-height: 90px;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .ad-slot {
+    min-height: 50px; /* Adjusted height for mobile ads */
+  }
+}
+	  
     footer1 {
             position: static;
             bottom: 0;
@@ -313,7 +326,11 @@
 </div>    
 	-->
 
-
+<!-- Reserved space for the leaderboard ad -->
+<div class="ad-slot">
+  <!-- AdSense Auto Ad will be injected here -->
+</div>
+	
   <!-- Calculator 1 (preserved as is) -->
   <div class="calculator-block">
     <h2>Tax Calculator 1 [Old Regime]</h2>
