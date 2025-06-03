@@ -134,7 +134,56 @@ layout: default
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>	
-</div>		
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const style = document.createElement("style");
+    style.textContent = `
+      .side-ad.fallback {
+        border: 2px dashed red !important;
+        background-color: #ffeaea !important;
+      }
+      .side-ad .ad-fallback-message {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #000;
+        font-size: 13px;
+        font-weight: bold;
+        text-align: center;
+        pointer-events: none;
+        width: 100%;
+        padding: 10px;
+      }
+    `;
+    document.head.appendChild(style);
+
+    document.querySelectorAll(".side-ad").forEach(ad => {
+      const fallbackMsg = document.createElement("div");
+      fallbackMsg.className = "ad-fallback-message";
+      fallbackMsg.textContent = "Ad not loaded";
+
+      const observer = new MutationObserver(() => {
+        const iframe = ad.querySelector("iframe");
+        if (iframe && iframe.offsetHeight > 0 && iframe.offsetWidth > 0) {
+          // Ad is displayed
+          ad.classList.remove("fallback");
+          if (ad.contains(fallbackMsg)) fallbackMsg.remove();
+          observer.disconnect();
+        } else {
+          // Ad not loaded
+          if (!ad.contains(fallbackMsg)) {
+            ad.classList.add("fallback");
+            ad.appendChild(fallbackMsg);
+          }
+        }
+      });
+
+      observer.observe(ad, { childList: true, subtree: true });
+    });
+  });
+</script>	
     <div class="container">
         <h1>NPS Tier-II Account</h1>
         <h2><a href="https://t24k.com"> Return Home </a></h2>
