@@ -90,12 +90,35 @@ layout: default
             color: #555;
         }
 
+.side-ad {
+  position: fixed;
+  top: 30px;
+  width: 220px;
+  height: 710px;
+  z-index: 999;
+}
+
+.left-ad {
+  left: 10px;
+}
+
+.right-ad {
+  right: 10px;
+}
+
+@media (max-width: 1300px) {
+  .side-ad {
+    display: none;
+  }
+}	
+	
 </style>
 	
 </head>
 	
   <body>
 <!-- left side -->
+<div class="left-ad">
 <ins class="adsbygoogle"
      style="display:inline-block;width:220px;height:710px"
      data-ad-client="ca-pub-6272193760158994"
@@ -103,8 +126,10 @@ layout: default
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
+</div>
 
-<!-- right side -->
+<!-- right side -->	  
+<div class="right-ad">	  
 <ins class="adsbygoogle"
      style="display:inline-block;width:220px;height:710px"
      data-ad-client="ca-pub-6272193760158994"
@@ -112,7 +137,7 @@ layout: default
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-	  
+</div>	  
     <div class="container">	  
     <h1> Health insurances to save income tax </h1>
     <h2> We are preparing everything for your health plan. Top Health insurances, Medi-Assist, Health CheckUp & our personal survey report</h2>
