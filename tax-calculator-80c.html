@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>80C Tax Calculator - Max ₹1,50,000 Deduction</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .instructions {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-left: 4px solid #3498db;
+      margin-bottom: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+    input[type="number"] {
+      width: 120px;
+    }
+    .total-box {
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 18px;
+    }
+    .embed {
+      background: #f3f3f3;
+      padding: 10px;
+      border: 1px dashed #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Section 80C Tax Calculator (Limit: ₹1,50,000)</h1>
+
+  <div class="instructions">
+    <p><strong>How to use this tool:</strong></p>
+    <ul>
+      <li>✅ Tick the checkbox for sections where you <strong>have already invested</strong> and enter the amount.</li>
+      <li>✅ Tick the checkbox for sections where you <strong>plan to invest</strong> but don’t enter the amount — we will calculate it for you.</li>
+      <li>⛔ The total will never exceed ₹1,50,000 (unless you purposefully enter more amount).</li>
+      <li>✅ You can deselect any option to adjust the allocation.</li>
+    </ul>
+  </div>
+
+  <form id="taxForm">
+    <table>
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Checkbox</th>
+          <th>Amount (₹)</th>
+          <th>Percentage of Limit (%)</th>
+        </tr>
+      </thead>
+      <tbody id="taxTable">
+        <tr>
+          <td>Life Insurance Premium</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>ELSS (Equity Linked Saving Scheme)</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>PPF (Public Provident Fund)</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>EPF (Employee Provident Fund)</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>NSC (National Saving Certificate)</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>5-Year FD (Tax Saving Fixed Deposit)</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>Home Loan Principal Repayment</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>Tuition Fees (for children)</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+        <tr>
+          <td>Others (Sukanya Samriddhi, ULIPs, etc.)</td>
+          <td><input type="checkbox" onchange="recalculate()"></td>
+          <td><input type="number" value="0" min="0" disabled onchange="recalculate()"></td>
+          <td class="percent">0%</td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <div class="total-box" id="total">Total Saved/Invested Amount: ₹0</div>
+
+  <h2>📌 Embed This Calculator on Your Site:</h2>
+  <div class="embed">
+    <code>&lt;iframe src="https://t24k.com/80c-tax-calculator" width="100%" height="600" style="border:1px solid #ccc;"&gt;&lt;/iframe&gt;</code>
+  </div>
+
+  <script>
+    function recalculate() {
+      const limit = 150000;
+      const rows = document.querySelectorAll('#taxTable tr');
+      let total = 0;
+      let autoFillRows = [];
+
+      rows.forEach(row => {
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        const amountInput = row.querySelector('input[type="number"]');
+        const percentCell = row.querySelector('.percent');
+
+        if (checkbox.checked) {
+          amountInput.disabled = false;
+          if (amountInput.value > 0) {
+            total += parseInt(amountInput.value) || 0;
+          } else {
+            autoFillRows.push(amountInput);
+          }
+        } else {
+          amountInput.disabled = true;
+          amountInput.value = 0;
+          if (percentCell) percentCell.textContent = '0%';
+        }
+      });
+
+      let remaining = limit - total;
+      if (remaining > 0 && autoFillRows.length > 0) {
+        const share = Math.floor(remaining / autoFillRows.length);
+        autoFillRows.forEach((input, index) => {
+          input.value = (index === autoFillRows.length - 1) ? remaining : share;
+          remaining -= share;
+        });
+      }
+
+      let finalTotal = 0;
+      rows.forEach(row => {
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        const amountInput = row.querySelector('input[type="number"]');
+        const percentCell = row.querySelector('.percent');
+        if (checkbox.checked) {
+          const val = parseInt(amountInput.value) || 0;
+          finalTotal += val;
+          if (percentCell) {
+            const percent = ((val / limit) * 100).toFixed(2);
+            percentCell.textContent = percent + '%';
+          }
+        }
+      });
+
+      document.getElementById('total').innerText = 'Total Eligible Deduction: ₹' + finalTotal.toLocaleString();
+    }
+
+    window.onload = recalculate;
+  </script>
+
+</body>
+</html>
