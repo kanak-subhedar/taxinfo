@@ -188,14 +188,14 @@
   </url>
   <url>
     <loc>https://t24k.com/nps-tier-ii</loc>
-    <lastmod>2025-06-03</lastmod>
+    <lastmod>2025-06-04</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
 
  <url>
     <loc>https://t24k.com/nps-vs-tier-ii-june-2025</loc>
-    <lastmod>2025-06-03</lastmod>
+    <lastmod>2025-06-04</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
@@ -254,6 +254,14 @@
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
+
+  <url>
+    <loc>https://t24k.com/tax-calculator-80c</loc>
+    <lastmod>2025-06-04</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  
   <url>
     <loc>https://t24k.com/tax-on-interest-of-saving-account</loc>
     <lastmod>2025-04-11</lastmod>
@@ -262,7 +270,7 @@
   </url>
   <url>
     <loc>https://t24k.com/tax-saving-guide-india</loc>
-    <lastmod>2025-06-03</lastmod>
+    <lastmod>2025-06-04</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
