@@ -1,0 +1,14 @@
+name: Ping Bing Sitemap
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  ping-bing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Bing of sitemap update
+        run: |
+          curl "https://www.bing.com/ping?sitemap=https://t24k.com/sitemap.xml"
+
