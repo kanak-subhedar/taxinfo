@@ -1,6 +1,7 @@
 name: Ping Bing Sitemap
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
 
