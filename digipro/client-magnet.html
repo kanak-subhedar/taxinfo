@@ -80,9 +80,51 @@
     <p><strong>💸 Only $12.</strong> One sale = cost recovered. [If paid in INR then ₹900 only.]</p>
     
 
-    <a class="button" href="https://yourgumroadlink.gumroad.com/l/clientmagnet">Buy Now</a>
+    <a class="button" id="rzp-button1">Buy Now</a>
 
     <p class="footer-note">You’ll get the PDF having editable email versions right after payment.</p>
   </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "rzp_test_N1D9cINDqkVSHq", // "rzp_test_YOUR_KEY_ID",  Replace with your Razorpay Test Key ID
+        "amount": 90000, // ₹900 in paise
+        "currency": "INR",
+        "name": "Ashish",
+        "description": "Client Magnet PDF",
+        // "image": "https://t24k.com/logo.png", // optional logo
+        "handler": function (response) {
+            // Send payment ID to backend for verification
+            fetch('https://your-render-app.onrender.com/verify-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ razorpay_payment_id: response.razorpay_payment_id })
+            })
+            .then(res => res.blob())
+            .then(blob => {
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
+                link.click();
+            });
+        },
+        "prefill": {
+            "name": "Your Customer",
+            "email": "email@example.com",
+            "contact": "9000090000"
+        },
+        "theme": {
+            "color": "#528FF0"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button1').onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+  
 </body>
 </html>
