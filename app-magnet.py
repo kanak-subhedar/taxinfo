@@ -3,8 +3,8 @@ from flask import Flask, send_from_directory, request, abort
 
 app = Flask(__name__)
 
-RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
-RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
+RAZORPAY_KEY_ID = os.environ.get("RZR_KEY_ID") // "RAZORPAY_KEY_ID"
+RAZORPAY_KEY_SECRET = os.environ.get("RZR_KEY_SEC") // "RAZORPAY_KEY_SECRET"
 
 client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
@@ -29,7 +29,7 @@ def verify_payment():
         client.utility.verify_payment_signature(params_dict)
 
         # If verification succeeds, send the file
-        pdf_path = "private/client-magnet.pdf"
+        pdf_path = "private/Client_Magnet_Cold_Email_Scripts.pdf"
         return send_file(pdf_path, as_attachment=True)
   
     except razorpay.errors.SignatureVerificationError:
