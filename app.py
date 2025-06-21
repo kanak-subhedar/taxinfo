@@ -3,24 +3,37 @@ from flask import Flask, send_from_directory, request, abort
 
 app = Flask(__name__)
 
-# Route for trial version (no check)
-@app.route("/trial")
-def trial():
-    return send_from_directory("full", "offline-messaging-tool.html")
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
 
-# Route for full version (with dummy payment check)
-@app.route("/full")
-def full():
-    paid = request.args.get("paid", "false")
-    if paid == "true":
-        return send_from_directory("full", "offline-messaging-tool.html")
-    else:
-        return abort(403, description="Payment required. Please complete payment to access the full version.")
+client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
-# Root route
 @app.route("/")
-def root():
-    return "Backend is running. Use /trial or /full?paid=true"
+def hello():
+    return "Backend is running"
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+@app.route("/verify", methods=["POST"])
+def verify_payment():
+    try:
+        data = request.json
+        razorpay_order_id = data.get("razorpay_order_id")
+        razorpay_payment_id = data.get("razorpay_payment_id")
+        razorpay_signature = data.get("razorpay_signature")
+
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature
+        }
+
+        client.utility.verify_payment_signature(params_dict)
+
+        # If verification succeeds, send the file
+        pdf_path = "private/client-magnet.pdf"
+        return send_file(pdf_path, as_attachment=True)
+  
+    except razorpay.errors.SignatureVerificationError:
+        return jsonify({"status": "error", "message": "Payment verification failed"}), 403
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
