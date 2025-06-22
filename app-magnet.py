@@ -1,5 +1,28 @@
 import os
 from flask import Flask, request, redirect, render_template_string, send_file
+import razorpay
+
+RAZORPAY_KEY = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+
+client = razorpay.Client(auth=(RAZORPAY_KEY, RAZORPAY_SECRET))
+
+@app.route('/verify-and-download', methods=['POST'])
+def verify_and_download():
+    data = request.json
+    payment_id = data.get('payment_id')
+
+    try:
+        payment = client.payment.fetch(payment_id)
+        if payment['status'] == 'captured':
+            filepath = os.path.join(UPLOAD_FOLDER, 'Client_Magnet_Cold_Email_Scripts.pdf')
+            return send_file('private/Client_Magnet_Cold_Email_Scripts.pdf', as_attachment=True) #return send_file(filepath, as_attachment=True)  
+        else:
+            return "❌ Payment not captured", 403
+    except Exception as e:
+        return f"❌ Verification failed: {str(e)}", 400
+
+#separate
 
 app = Flask(__name__)
 
