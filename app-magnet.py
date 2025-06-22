@@ -10,6 +10,19 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def home():
     return "✅ Client Magnet Server is Running!"
 
+@app.route('/list-uploads')
+def list_uploads():
+    secret_key = "ashish123"
+    if request.args.get("key") != secret_key:
+        return "❌ Unauthorized access", 403
+
+    files = os.listdir(UPLOAD_FOLDER)
+    if not files:
+        return "<p>No files uploaded yet.</p>"
+
+    links = [f"<li><a href='/{UPLOAD_FOLDER}/{fname}'>{fname}</a></li>" for fname in files]
+    return f"<h3>Uploaded Files:</h3><ul>{''.join(links)}</ul>"
+
 @app.route('/upload-pdf', methods=['GET', 'POST'])
 def upload_pdf():
     # Set your secret key here
