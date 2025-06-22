@@ -89,15 +89,15 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     var options = {
-        "key": "rzp_test_N1D9cINDqkVSHq", // "rzp_test_YOUR_KEY_ID",  Replace with your Razorpay Test Key ID
+        //"key": "rzp_test_N1D9cINDqkVSHq", // "rzp_test_YOUR_KEY_ID",  Replace with your Razorpay Test Key ID
         "amount": 90000, // ₹900 in paise
         "currency": "INR",
-        "name": "Ashish",
-        "description": "Client Magnet PDF",
+        "name": "Client Magnet",
+        "description": "download Client Magnet PDF",
         // "image": "https://t24k.com/logo.png", // optional logo
         "handler": function (response) {
             // Send payment ID to backend for verification
-            fetch('https://your-render-app.onrender.com/verify-payment', {
+            fetch('https://client-magnet.onrender.com/verify-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ razorpay_payment_id: response.razorpay_payment_id })
@@ -106,7 +106,7 @@
             .then(blob => {
                 const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
-                link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
+                link.download = "private/Client_Magnet_Cold_Email_Scripts.pdf";
                 link.click();
             });
         },
