@@ -3,8 +3,8 @@ from flask import Flask, send_from_directory, request, abort
 
 app = Flask(__name__)
 
-RAZORPAY_KEY_ID = os.environ.get("RZR_KEY_ID") // "RAZORPAY_KEY_ID"
-RAZORPAY_KEY_SECRET = os.environ.get("RZR_KEY_SEC") // "RAZORPAY_KEY_SECRET"
+RAZORPAY_KEY_ID = os.environ.get("RZR_KEY_ID") # "RAZORPAY_KEY_ID"
+RAZORPAY_KEY_SECRET = os.environ.get("RZR_KEY_SEC") # "RAZORPAY_KEY_SECRET"
 
 client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
