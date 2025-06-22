@@ -6,6 +6,10 @@ app = Flask(__name__)  # ✅ Define the app BEFORE using it
 UPLOAD_FOLDER = 'private'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+@app.route('/')
+def home():
+    return "✅ Client Magnet Server is Running!"
+
 @app.route('/upload-pdf', methods=['GET', 'POST'])
 def upload_pdf():
     if request.method == 'POST':
