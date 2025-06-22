@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, redirect, render_template_string
 
+app = Flask(__name__)  # ✅ Define the app BEFORE using it
 
 UPLOAD_FOLDER = 'private'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
