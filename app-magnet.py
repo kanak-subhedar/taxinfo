@@ -3,7 +3,7 @@ from flask import Flask, request, redirect, render_template_string, send_file
 import razorpay
 
 RAZORPAY_KEY = os.getenv("RZR_KEY_ID")
-RAZORPAY_SECRET = os.getenv("RZR_KEY_SECRET")
+RAZORPAY_SECRET = os.getenv("RZR_KEY_SEC")
 
 client = razorpay.Client(auth=(RAZORPAY_KEY, RAZORPAY_SECRET))
 
