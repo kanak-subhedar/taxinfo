@@ -2,8 +2,8 @@ import os
 from flask import Flask, request, redirect, render_template_string, send_file
 import razorpay
 
-RAZORPAY_KEY = os.getenv("RAZORPAY_KEY_ID")
-RAZORPAY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+RAZORPAY_KEY = os.getenv("RZR_KEY_ID")
+RAZORPAY_SECRET = os.getenv("RZR_KEY_SECRET")
 
 client = razorpay.Client(auth=(RAZORPAY_KEY, RAZORPAY_SECRET))
 
