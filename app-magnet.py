@@ -1,7 +1,7 @@
 import os
-from flask import Flask, request, redirect, render_template_string
+from flask import Flask, request, redirect, render_template_string, send_file
 
-app = Flask(__name__)  # ✅ Define the app BEFORE using it
+app = Flask(__name__)
 
 UPLOAD_FOLDER = 'private'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -25,3 +25,7 @@ def upload_pdf():
             <input type="submit" value="Upload">
         </form>
     ''')
+
+@app.route('/client-magnet.pdf')
+def download_pdf():
+    return send_file('private/Client_Magnet_Cold_Email_Scripts.pdf', as_attachment=True)
