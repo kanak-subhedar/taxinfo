@@ -12,6 +12,13 @@ def home():
 
 @app.route('/upload-pdf', methods=['GET', 'POST'])
 def upload_pdf():
+    # Set your secret key here
+    secret_key = "ashish123"
+
+    # Check if the key is correct
+    if request.args.get("key") != secret_key:
+        return "❌ Unauthorized access", 403
+
     if request.method == 'POST':
         file = request.files['pdf']
         if file:
