@@ -18,6 +18,7 @@ client = razorpay.Client(auth=(RAZORPAY_KEY, RAZORPAY_SECRET))
 def verify_and_download():
     data = request.json
     payment_id = data.get('payment_id')
+    print(f"🧾 Received payment_id: {payment_id}")
 
     try:
         payment = client.payment.fetch(payment_id)
