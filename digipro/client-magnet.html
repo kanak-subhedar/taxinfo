@@ -90,42 +90,46 @@
     <p class="footer-note">You’ll get the PDF having editable email versions right after payment.</p>
   </div>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
 document.getElementById("pay-download").onclick = function () {
   fetch("https://client-magnet.onrender.com/get-key")
-  .then(res => res.json())
-  .then(data => {
-    const options = {
+    .then(res => res.json())
+    .then(data => {
+      const options = {
         key: data.key, // ✅ Securely fetched Razorpay key
         amount: 90000, // ₹900 in paise
         currency: "INR",
         name: "Client Magnet",
         description: "Cold Email Script PDF",
         handler: function (response) {
-            // Send payment_id to your Flask backend
-            fetch("https://client-magnet.onrender.com/verify-and-download", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ payment_id: response.razorpay_payment_id }),
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Payment not verified");
-                return res.blob();
-            })
-            .then(blob => {
-                const link = document.createElement("a");
-                link.href = window.URL.createObjectURL(blob);
-                link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
-                link.click();
-            })
-            .catch(err => alert("❌ " + err.message));
+          // Send payment_id to backend for verification
+          fetch("https://client-magnet.onrender.com/verify-and-download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payment_id: response.razorpay_payment_id }),
+          })
+          .then(res => {
+            if (!res.ok) throw new Error("Payment not verified");
+            return res.blob();
+          })
+          .then(blob => {
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          })
+          .catch(err => alert("❌ " + err.message));
         }
-    };}
+      };
 
-    const rzp = new Razorpay(options);
-    rzp.open();
+      const rzp = new Razorpay(options);
+      rzp.open();
+    })
+    .catch(err => alert("❌ Failed to fetch Razorpay key"));
 };
 </script>
 
