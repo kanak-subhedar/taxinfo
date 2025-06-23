@@ -6,7 +6,8 @@ from flask_cors import CORS  # ✅ 1. Import CORS
 app = Flask(__name__)        # ✅ 2. Create Flask app
 
 CORS(app, origins=["https://t24k.com"])  # ✅ 3. Apply CORS immediately after app is created
-
+UPLOAD_FOLDER = 'private'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 RAZORPAY_KEY = os.getenv("RZR_KEY_ID")
 RAZORPAY_SECRET = os.getenv("RZR_KEY_SEC")
@@ -31,9 +32,6 @@ def verify_and_download():
 #separate
 
 #app = Flask(__name__) // this code is present above
-
-UPLOAD_FOLDER = 'private'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def home():
