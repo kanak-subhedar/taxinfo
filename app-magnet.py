@@ -52,6 +52,10 @@ def list_uploads():
     links = [f"<li><a href='/{UPLOAD_FOLDER}/{fname}'>{fname}</a></li>" for fname in files]
     return f"<h3>Uploaded Files:</h3><ul>{''.join(links)}</ul>"
 
+@app.route('/get-key')
+def get_key():
+    return {"key": os.getenv("RZR_KEY_ID")}
+
 @app.route('/upload-pdf', methods=['GET', 'POST'])
 def upload_pdf():
     # Set your secret key here
