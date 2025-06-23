@@ -114,16 +114,16 @@ document.getElementById("pay-download").onclick = function () {
             if (!res.ok) throw new Error("Payment not verified");
             return res.blob();
           })
-   /*       #// old code  
-          #.then(blob => {
-          #  const link = document.createElement("a");
-          #  link.href = window.URL.createObjectURL(blob);
-          #  link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
-          #  document.body.appendChild(link);
-          #  link.click();
-          # document.body.removeChild(link);
-          #})
-          #// end of old code */
+   /*        old code  
+          .then(blob => {
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
+            document.body.appendChild(link);
+            link.click();
+           document.body.removeChild(link);
+          })
+           end of old code */
           .then(blob => {
             const link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
