@@ -2,6 +2,11 @@ import os
 from flask import Flask, request, redirect, render_template_string, send_file
 import razorpay
 
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, origins=["https://t24k.com"])
+
 RAZORPAY_KEY = os.getenv("RZR_KEY_ID")
 RAZORPAY_SECRET = os.getenv("RZR_KEY_SEC")
 
@@ -24,7 +29,7 @@ def verify_and_download():
 
 #separate
 
-app = Flask(__name__)
+#app = Flask(__name__) // this code is present above
 
 UPLOAD_FOLDER = 'private'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
