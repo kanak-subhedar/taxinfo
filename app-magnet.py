@@ -83,6 +83,6 @@ def upload_pdf():
         </form>
     ''')
 
-@app.route('/client-magnet.pdf')
-def download_pdf():
-    return send_file('private/Client_Magnet_Cold_Email_Scripts.pdf', as_attachment=True)
+# @app.route('/client-magnet.pdf')
+# def download_pdf():
+    # return send_file('private/Client_Magnet_Cold_Email_Scripts.pdf', as_attachment=True)
