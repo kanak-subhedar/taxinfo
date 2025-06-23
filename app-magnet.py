@@ -1,11 +1,12 @@
 import os
 from flask import Flask, request, redirect, render_template_string, send_file
 import razorpay
+from flask_cors import CORS  # ✅ 1. Import CORS
 
-from flask_cors import CORS
+app = Flask(__name__)        # ✅ 2. Create Flask app
 
-app = Flask(__name__)
-CORS(app, origins=["https://t24k.com"])
+CORS(app, origins=["https://t24k.com"])  # ✅ 3. Apply CORS immediately after app is created
+
 
 RAZORPAY_KEY = os.getenv("RZR_KEY_ID")
 RAZORPAY_SECRET = os.getenv("RZR_KEY_SEC")
