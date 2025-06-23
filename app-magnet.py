@@ -22,6 +22,11 @@ def verify_and_download():
 
     try:
         payment = client.payment.fetch(payment_id)
+        # Capture manually in test mode (only needed if auto-capture is OFF)
+        if payment['status'] == 'authorized':
+            client.payment.capture(payment_id, payment['amount'])
+            payment = client.payment.fetch(payment_id)
+            
         if payment['status'] == 'captured':
             filepath = os.path.join(UPLOAD_FOLDER, 'Client_Magnet_Cold_Email_Scripts.pdf')
             return send_file('private/Client_Magnet_Cold_Email_Scripts.pdf', as_attachment=True) #return send_file(filepath, as_attachment=True)  
