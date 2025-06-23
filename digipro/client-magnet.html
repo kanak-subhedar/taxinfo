@@ -94,8 +94,11 @@
 
 <script>
 document.getElementById("pay-download").onclick = function () {
+  fetch("https://client-magnet.onrender.com/get-key")
+  .then(res => res.json())
+  .then(data => {
     const options = {
-        key: "rzp_test_N1D9cINDqkVSHq", // replace with your Razorpay test/live key
+        key: data.key, // ✅ Securely fetched Razorpay key
         amount: 90000, // ₹900 in paise
         currency: "INR",
         name: "Client Magnet",
@@ -119,7 +122,7 @@ document.getElementById("pay-download").onclick = function () {
             })
             .catch(err => alert("❌ " + err.message));
         }
-    };
+    };}
 
     const rzp = new Razorpay(options);
     rzp.open();
