@@ -54,7 +54,7 @@ def list_uploads():
 
 @app.route('/get-key')
 def get_key():
-    return {"key": os.getenv("RZR_KEY_ID")}
+    return jsonify({"key": os.getenv("RZR_KEY_ID")})
 
 @app.route('/upload-pdf', methods=['GET', 'POST'])
 def upload_pdf():
