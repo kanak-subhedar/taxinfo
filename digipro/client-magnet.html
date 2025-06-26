@@ -111,7 +111,7 @@ document.getElementById("pay-download").onclick = function () {
             body: JSON.stringify({ payment_id: response.razorpay_payment_id }),
           })
           .then(res => {
-            if (!res.ok) throw new Error("Payment not verified");
+            if (!res.ok) throw new Error("Payment not verified (If it is verified & still you are seeing this then email: care@t24k.com - We will take care.)");
             return res.blob();
           })
    /*        old code  
