@@ -99,3 +99,29 @@ def increment_sales_count():
         f.seek(0)
         f.write(str(count + 1))
         f.truncate()
+
+@app.route("/list-files")
+def list_files():
+    secret_key = request.args.get("key")
+    if secret_key != "ashish123":
+        return "Unauthorized", 403
+    files = os.listdir(".")
+    return "<br>".join(files)
+
+@app.route("/read-file")
+def read_file():
+    secret_key = request.args.get("key")
+    filename = request.args.get("file")
+
+    if secret_key != "ashish123":
+        return "Unauthorized", 403
+
+    if not filename or not os.path.isfile(filename):
+        return "File not found", 404
+
+    try:
+        with open(filename, "r") as f:
+            content = f.read()
+        return f"<pre>{content}</pre>"  # <pre> preserves formatting
+    except Exception as e:
+        return f"Error reading file: {str(e)}", 500
