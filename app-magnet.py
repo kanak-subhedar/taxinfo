@@ -100,28 +100,24 @@ def increment_sales_count():
         f.write(str(count + 1))
         f.truncate()
 
-@app.route("/list-files")
-def list_files():
-    secret_key = request.args.get("key")
-    if secret_key != "ashish123":
-        return "Unauthorized", 403
-    files = os.listdir(".")
-    return "<br>".join(files)
-
 @app.route("/read-file")
 def read_file():
-    secret_key = request.args.get("key")
+    # 🔐 Read secret key from environment variable
+    expected_key = os.getenv("READ_KEY")  # Make sure this is set on your hosting environment
+    received_key = request.args.get("key")
     filename = request.args.get("file")
 
-    if secret_key != "ashish123":
-        return "Unauthorized", 403
+    if received_key != expected_key:
+        return "❌ Unauthorized", 403
 
-    if not filename or not os.path.isfile(filename):
-        return "File not found", 404
+    # ✅ Allow only specific safe files
+    allowed_files = {"our_count.txt"}
+    if filename not in allowed_files:
+        return "❌ Access denied", 403
 
     try:
         with open(filename, "r") as f:
             content = f.read()
-        return f"<pre>{content}</pre>"  # <pre> preserves formatting
+        return f"<pre>{content}</pre>"
     except Exception as e:
-        return f"Error reading file: {str(e)}", 500
+        return f"❌ Error reading file: {str(e)}", 500
