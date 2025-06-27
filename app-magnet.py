@@ -28,6 +28,7 @@ def verify_and_download():
             payment = client.payment.fetch(payment_id)
             
         if payment['status'] == 'captured':
+            increment_sales_count()  # ✅ Call the function here
             filepath = os.path.join(UPLOAD_FOLDER, 'Client_Magnet_Cold_Email_Scripts.pdf')
             return send_file('private/Client_Magnet_Cold_Email_Scripts.pdf', as_attachment=True) #return send_file(filepath, as_attachment=True)  
         else:
@@ -86,3 +87,15 @@ def upload_pdf():
 # @app.route('/client-magnet.pdf')
 # def download_pdf():
     # return send_file('private/Client_Magnet_Cold_Email_Scripts.pdf', as_attachment=True)
+
+def increment_sales_count():
+    counter_file = "our_count.txt"
+    if not os.path.exists(counter_file):
+        with open(counter_file, "w") as f:
+            f.write("0")
+
+    with open(counter_file, "r+") as f:
+        count = int(f.read().strip())
+        f.seek(0)
+        f.write(str(count + 1))
+        f.truncate()
