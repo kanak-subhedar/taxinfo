@@ -132,11 +132,11 @@ document.getElementById("pay-download").onclick = function () {
             link.click();
             document.body.removeChild(link);
 
-            window.location.href = "/digipro/thank-you.html";
-          /* ✅ Redirect after short delay
+           // window.location.href = "/digipro/thank-you.html";
+           ✅ Redirect after short delay
             setTimeout(() => {
               window.location.href = "/digipro/thank-you.html";
-              }, 2); time out code ends */
+              }, 300);
           })
 
           .catch(err => alert("❌ " + err.message));
