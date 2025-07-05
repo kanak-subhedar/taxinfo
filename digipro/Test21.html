@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cold Email Script Kit – ₹900 | t24k.com</title>
+  <meta name="description" content="Proven cold email scripts to help you get clients, leads, and conversions.">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #f4f4f4; color: #333; }
+    header { background: #222; color: #fff; padding: 40px 20px; text-align: center; }
+    header h1 { margin: 0; font-size: 2.5em; }
+    section { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .features { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .feature { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .preview { background: #fff; padding: 20px; border-radius: 6px; margin-top: 20px; }
+    .button { display: inline-block; margin-top: 20px; padding: 12px 25px; background: #008CBA; color: #fff; text-decoration: none; font-size: 1.2em; border-radius: 5px; }
+    footer { text-align: center; font-size: 0.9em; padding: 20px; background: #eee; margin-top: 40px; }
+    h2 { color: #008CBA; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🚀 Cold Email Script Kit</h1>
+  <p>Write emails that convert. Get new clients and leads using these plug-and-play scripts.</p>
+  <a class="button" href="#buy">Buy Now – ₹900</a>
+</header>
+
+<section>
+  <h2>🔥 What You'll Get</h2>
+  <div class="features">
+    <div class="feature"><strong>✔ 20+ Cold Email Templates</strong><br> Proven frameworks to get replies fast.</div>
+    <div class="feature"><strong>✔ PDF + Editable Word File</strong><br> Use as-is or fully customize it.</div>
+    <div class="feature"><strong>✔ Real-World Examples</strong><br> From SaaS, Agencies, Freelancers & more.</div>
+    <div class="feature"><strong>✔ Bonus Follow-up Scripts</strong><br> 5 powerful sequences that keep your leads warm.</div>
+  </div>
+</section>
+
+<section class="preview">
+  <h2>📄 Preview</h2>
+  <p><em>Cold Email Template for Web Developers:</em></p>
+  <pre>
+Hi [Name],
+
+I noticed your website [their-website.com] could benefit from a faster loading speed. 
+I specialize in optimizing sites like yours and have helped brands improve performance by 40%+.
+
+Would it make sense to discuss?
+
+Cheers,
+[Your Name]
+  </pre>
+</section>
+
+<section id="buy">
+  <h2>💳 Buy & Download Instantly</h2>
+  <p>Price: <strong>₹900 (one-time)</strong></p>
+
+  <!-- ✅ Razorpay button -->
+  <button id="pay-download" class="button">Pay Now & Download</button>
+</section>
+
+<section>
+  <h2>❓ Frequently Asked Questions</h2>
+  <p><strong>Is this beginner-friendly?</strong><br>Yes! You just copy-paste and tweak as needed.</p>
+  <p><strong>When will I receive the file?</strong><br>Instantly after successful payment.</p>
+  <p><strong>Do you offer refunds?</strong><br>Only on accidental over-payments (see T&C).</p>
+</section>
+
+<footer>
+  &copy; 2025 t24k.com | <a href="mailto:care@t24k.com">care@t24k.com</a>
+</footer>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById("pay-download").onclick = function () {
+  fetch("https://client-magnet.onrender.com/get-key")
+    .then(res => res.json())
+    .then(data => {
+      const options = {
+        key: data.key,
+        amount: 90000, // ₹900 in paise
+        currency: "INR",
+        name: "Client Magnet",
+        description: "Cold Email Script Kit",
+        handler: function (response) {
+          fetch("https://client-magnet.onrender.com/verify-and-download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payment_id: response.razorpay_payment_id }),
+          })
+          .then(res => {
+            if (!res.ok) throw new Error("Payment failed.");
+            return res.blob();
+          })
+          .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "cold_email_kit.pdf";
+            a.click();
+          })
+          .catch(err => alert(err.message));
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    });
+};
+</script>
+
+</body>
+</html>
