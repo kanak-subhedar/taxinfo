@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request, redirect, render_template_string, send_file, jsonify, whois
+from flask import Flask, request, redirect, render_template_string, send_file, jsonify
+import whois
 import razorpay
 from flask_cors import CORS  # ✅ 1. Import CORS
 from fetch_client-magnet_email_pdf import fetch_pdf_if_missing
