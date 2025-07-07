@@ -1,4 +1,4 @@
-# fetch_client-magnet_email_pdf.py
+# fetch_client_magnet_email_pdf.py
 
 import os
 import requests
