@@ -2,8 +2,11 @@ import os
 from flask import Flask, request, redirect, render_template_string, send_file, jsonify
 import razorpay
 from flask_cors import CORS  # ✅ 1. Import CORS
+from fetch_pdf import fetch_pdf_if_missing
 
 app = Flask(__name__)        # ✅ 2. Create Flask app
+
+fetch_pdf_if_missing()
 
 CORS(app, origins=["https://t24k.com"])  # ✅ 3. Apply CORS immediately after app is created
 UPLOAD_FOLDER = 'private'
