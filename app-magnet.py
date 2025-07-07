@@ -3,6 +3,8 @@ from flask import Flask, request, redirect, render_template_string, send_file, j
 import razorpay
 from flask_cors import CORS  # ✅ 1. Import CORS
 from fetch_client-magnet_email_pdf import fetch_pdf_if_missing
+from flask import request
+import whois
 
 app = Flask(__name__)        # ✅ 2. Create Flask app
 
@@ -124,3 +126,22 @@ def read_file():
         return f"<pre>{content}</pre>"
     except Exception as e:
         return f"❌ Error reading file: {str(e)}", 500
+
+# service for whois
+
+@app.route('/whois')
+def whois_lookup():
+    domain = request.args.get('domain', '').strip()
+    if not domain:
+        return "❌ No domain provided.", 400
+
+    try:
+        data = whois.whois(domain)
+        if not data:
+            return "⚠️ WHOIS data not found.", 404
+
+        response_lines = [f"{key}: {value}" for key, value in data.items()]
+        return "\n".join(response_lines)
+
+    except Exception as e:
+        return f"❌ Error: {str(e)}", 500
