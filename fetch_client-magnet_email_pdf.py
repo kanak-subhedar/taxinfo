@@ -8,7 +8,9 @@ PDF_FILENAME = "cold_email_script.pdf"
 PDF_LOCAL_PATH = os.path.join(os.getcwd(), PDF_FILENAME)
 
 # Replace YOUR_USERNAME and YOUR_REPO with actual details
-GITHUB_REPO_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/client-magnet-assets/main/cold_email_script.pdf"
+YOUR_USERNAME = name            # private repo
+YOUR_REPO = client-magnet-assets
+GITHUB_REPO_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/cold_email_script.pdf"
 
 def fetch_pdf_if_missing():
     """
