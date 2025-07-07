@@ -101,7 +101,7 @@
       const res = await fetch(`https://client-magnet.onrender.com/whois?domain=${encodeURIComponent(domain)}`);
       if (!res.ok) throw new Error("Request failed.");
       const data = await res.text();
-      resultDiv.textContent = data || "⚠️ No WHOIS data found.";
+      resultDiv.textContent = (data || "⚠️ No WHOIS data found.").replace(/\n/g, "\n\n");
     } catch (err) {
       resultDiv.textContent = "❌ Error fetching WHOIS data. Please try again later.";
     }
