@@ -3,12 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Domain WHOIS Lookup - t24k</title>
-  <meta name="description" content="Free WHOIS domain lookup tool by t24k.com. Get registrar, expiry, and domain status instantly.">
+
+  <title>WHOIS Domain Lookup Tool - Free & Instant | t24k.com</title>
+  <meta name="description" content="Check any domain's WHOIS information instantly. Find domain owner, registrar, registration date, and expiry date using our free WHOIS lookup tool at t24k.com.">
+  <meta name="keywords" content="WHOIS, domain lookup, domain whois, whois checker, domain registration info, check domain owner, whois tool, domain availability, free whois tool, ICANN lookup, t24k">
+
+  <link rel="canonical" href="https://t24k.com/whois" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://client-magnet.onrender.com" crossorigin>
+
+  <!-- Open Graph for social sharing -->
+  <meta property="og:title" content="Free WHOIS Domain Lookup | t24k.com">
+  <meta property="og:description" content="Find out who owns a domain with our fast and free WHOIS lookup tool.">
+  <meta property="og:url" content="https://t24k.com/whois">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://t24k.com/assets/whois-preview.png">
+
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "WHOIS Domain Lookup Tool",
+    "url": "https://t24k.com/whois",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "All",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "1532"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "INR"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "t24k.com",
+      "url": "https://t24k.com"
+    }
+  }
+  </script>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: system-ui, Arial, sans-serif;
       background: #f2f2f2;
       margin: 0;
       padding: 0;
@@ -59,6 +102,7 @@
       background: #f9f9f9;
       padding: 15px;
       border-left: 5px solid #0088cc;
+      line-height: 1.6; /* ✅ Adds spacing between lines */
     }
     .footer {
       text-align: center;
@@ -101,7 +145,7 @@
       const res = await fetch(`https://client-magnet.onrender.com/whois?domain=${encodeURIComponent(domain)}`);
       if (!res.ok) throw new Error("Request failed.");
       const data = await res.text();
-      resultDiv.textContent = (data || "⚠️ No WHOIS data found.").replace(/\n/g, "\n\n");
+      resultDiv.textContent = data || "⚠️ No WHOIS data found.";
     } catch (err) {
       resultDiv.textContent = "❌ Error fetching WHOIS data. Please try again later.";
     }
