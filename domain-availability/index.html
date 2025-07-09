@@ -1,3 +1,133 @@
-<html>
-  This need to be filled.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Check Domain Availability - Free Tool | t24k.com</title>
+  <meta name="description" content="Find out if your desired domain is available. Use our free domain availability checker tool at t24k.com to search instantly.">
+  <meta name="keywords" content="domain availability, check domain, is domain taken, domain search, domain checker, available domains, free domain tool, t24k">
+
+  <link rel="canonical" href="https://t24k.com/domain-availability" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994" crossorigin="anonymous"></script>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 15px 20px;
+      text-align: center;
+    }
+    main {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #result {
+      margin-top: 25px;
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+      background: #f9f9f9;
+      padding: 15px;
+      border-left: 5px solid #28a745;
+      line-height: 1.6;
+    }
+    .footer {
+      text-align: center;
+      margin: 40px 0;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2><i class="fa-solid fa-magnifying-glass"></i> Domain Availability Checker - t24k.com</h2>
+</header>
+
+<main>
+  <h1>Check if a Domain is Available</h1>
+  <input type="text" id="domainInput" placeholder="Enter domain (e.g., mysite.com)" />
+  <button onclick="checkAvailability()">Check Availability</button>
+
+  <div id="result"></div>
+</main>
+
+<div class="footer">
+  &copy; 2025 t24k.com | Built with ❤️ by Ashish
+</div>
+
+<script>
+  async function checkAvailability() {
+    const domain = document.getElementById("domainInput").value.trim();
+    const resultDiv = document.getElementById("result");
+
+    if (!domain) {
+      resultDiv.textContent = "❌ Please enter a domain name.";
+      return;
+    }
+
+    resultDiv.textContent = "🔍 Checking availability for " + domain + "...";
+
+    try {
+      const res = await fetch(`https://client-magnet.onrender.com/check-availability?domain=${encodeURIComponent(domain)}`);
+      if (!res.ok) throw new Error("Server error.");
+      const data = await res.json();
+
+      if (data.available) {
+        resultDiv.textContent = `✅ Domain "${domain}" is available!`;
+      } else {
+        resultDiv.textContent = `❌ Sorry, domain "${domain}" is already taken.`;
+      }
+    } catch (err) {
+      resultDiv.textContent = "❌ Failed to check availability. Please try again.";
+    }
+  }
+</script>
+
+</body>
 </html>
+
