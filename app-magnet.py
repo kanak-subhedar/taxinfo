@@ -144,3 +144,78 @@ def whois_lookup():
 
     except Exception as e:
         return f"❌ Error: {str(e)}", 500
+
+#Additional 4 features - Domain Age Calculation, Expiry Reminder Email, Domain Availability Checker, IP & DNS Records Fetcher
+
+from datetime import datetime
+import socket
+import dns.resolver
+
+@app.route("/domain-age")
+def domain_age():
+    domain = request.args.get('domain', '').strip()
+    if not domain:
+        return "❌ No domain provided", 400
+    try:
+        data = whois.whois(domain)
+        creation = data.creation_date
+        if isinstance(creation, list):
+            creation = creation[0]
+        if not creation:
+            return "⚠️ Creation date not found.", 404
+        today = datetime.utcnow()
+        age_days = (today - creation).days
+        return f"🕓 Domain {domain} is {age_days} days old (Created: {creation.date()})"
+    except Exception as e:
+        return f"❌ Error: {str(e)}", 500
+
+@app.route("/expiry-reminder", methods=["POST"])
+def expiry_reminder():
+    data = request.json
+    domain = data.get("domain", "").strip()
+    email = data.get("email", "").strip()
+
+    if not domain or not email:
+        return "❌ Domain and email are required.", 400
+    # You can log these or store in DB/Google Sheets for now
+    try:
+        with open("reminder_requests.txt", "a") as f:
+            f.write(f"{datetime.now()} | {domain} | {email}\n")
+        return "✅ Reminder request received. You'll be notified via email before expiry (manual process)."
+    except Exception as e:
+        return f"❌ Failed to save request: {str(e)}", 500
+
+@app.route("/check-availability")
+def check_availability():
+    domain = request.args.get("domain", "").strip()
+    if not domain:
+        return "❌ No domain provided", 400
+    try:
+        data = whois.whois(domain)
+        if data.domain_name:
+            return f"❌ Domain {domain} is already registered."
+        else:
+            return f"✅ Domain {domain} seems available!"
+    except:
+        return f"✅ Domain {domain} seems available!"
+
+@app.route("/dns-info")
+def dns_info():
+    domain = request.args.get("domain", "").strip()
+    if not domain:
+        return "❌ No domain provided", 400
+    try:
+        ip = socket.gethostbyname(domain)
+        records = {}
+        for qtype in ['A', 'MX', 'NS', 'TXT']:
+            try:
+                answers = dns.resolver.resolve(domain, qtype)
+                records[qtype] = [r.to_text() for r in answers]
+            except Exception:
+                records[qtype] = []
+        return jsonify({
+            "IP": ip,
+            "DNS": records
+        })
+    except Exception as e:
+        return f"❌ DNS fetch error: {str(e)}", 500
