@@ -189,15 +189,13 @@ def expiry_reminder():
 def check_availability():
     domain = request.args.get("domain", "").strip()
     if not domain:
-        return "❌ No domain provided", 400
+        return jsonify({"error": "No domain provided"}), 400
+
     try:
-        data = whois.whois(domain)
-        if data.domain_name:
-            return f"❌ Domain {domain} is already registered."
-        else:
-            return f"✅ Domain {domain} seems available!"
-    except:
-        return f"✅ Domain {domain} seems available!"
+        socket.gethostbyname(domain)
+        return jsonify({"available": False})  # Registered
+    except socket.gaierror:
+        return jsonify({"available": True})   # Available
 
 @app.route("/dns-info")
 def dns_info():
