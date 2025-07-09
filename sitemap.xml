@@ -91,6 +91,12 @@
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>  https://t24k.com/domain-availability</loc>
+    <lastmod>2025-07-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://t24k.com/donation</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
@@ -288,7 +294,7 @@
   </url>
   <url>
     <loc>https://t24k.com/whois</loc>
-    <lastmod>2025-07-08</lastmod>
+    <lastmod>2025-07-09</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
