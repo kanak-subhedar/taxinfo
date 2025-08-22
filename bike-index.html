@@ -3,100 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Best Bike Guru – Reviews, Tips & Guides</title>
-  <meta name="description" content="Best Bike Guru is your ultimate magazine for cycling and motorbike reviews, maintenance tips, riding guides, and the latest biking trends in 2025.">
-  <meta name="keywords" content="best bikes, bike reviews, biking tips, cycling magazine, bike maintenance, motorbike trends, electric bikes">
-  <meta name="author" content="BestBikeGuru">
+  <title>Best Bike Guru – Your Ultimate Bike & Gear Guide</title>
+  <meta name="description" content="BestBikeGuru.com is your trusted destination for unbiased bike reviews, riding tips, and gear recommendations. Discover the best bikes, compare models, and get expert advice for every rider.">
+  <meta name="keywords" content="best bikes, motorcycle reviews, bicycle guide, mountain bikes, road bikes, electric bikes, cycling gear, riding tips, best bike guru">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://bestbikeguru.com/">
   <style>
-    body { font-family: Georgia, serif; background: #fdfdfd; margin: 0; }
-    header { background: linear-gradient(to right, #0d47a1, #1976d2); color: #fff; padding: 20px; text-align: center; }
-    header h1 { margin: 0; font-size: 2.5em; }
-    nav { background: #222; padding: 10px; text-align: center; }
-    nav a { color: #fff; margin: 0 12px; text-decoration: none; font-weight: bold; }
-    main { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
-    section { background: #fff; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    h2 { border-bottom: 2px solid #eee; padding-bottom: 5px; color: #0d47a1; }
-    article { margin-bottom: 15px; }
-    .sidebar { background: #fafafa; padding: 15px; border-radius: 6px; }
-    footer { background: #111; color: #fff; text-align: center; padding: 15px; margin-top: 30px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f8f9fa; color: #333;
+    }
+    header {
+      background: url('hero-bike.jpg') center/cover no-repeat;
+      color: white; text-align: center;
+      padding: 100px 20px;
+    }
+    header h1 { font-size: 3rem; margin-bottom: 15px; }
+    header p { font-size: 1.2rem; }
+    .cta-btn {
+      background: #ff4500; color: white;
+      padding: 12px 25px; border: none;
+      border-radius: 5px; font-size: 1.2rem;
+      cursor: pointer; margin-top: 20px;
+      text-decoration: none;
+    }
+    .section {
+      max-width: 1100px; margin: auto; padding: 50px 20px;
+    }
+    .section h2 { text-align: center; margin-bottom: 30px; }
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white; border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px; text-align: center;
+    }
+    .card img {
+      max-width: 100%; border-radius: 10px;
+    }
+    footer {
+      background: #222; color: #ccc;
+      text-align: center; padding: 20px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Hero / Landing -->
   <header>
-    <h1>Best Bike Guru</h1>
-    <p>Your Trusted Magazine for Bikes, Tips, and Reviews</p>
+    <h1>Welcome to Best Bike Guru</h1>
+    <p>Your trusted guide for bikes, riding gear & expert reviews</p>
+    <a href="#reviews" class="cta-btn">Explore Now</a>
   </header>
 
-  <nav>
-    <a href="#latest">Latest</a>
-    <a href="#reviews">Reviews</a>
-    <a href="#guides">Guides</a>
-    <a href="#health">Health</a>
-    <a href="#faq">FAQ</a>
-  </nav>
-
-  <main>
-    <div>
-      <section id="latest">
-        <h2>📰 Latest Highlights</h2>
-        <article>
-          <h3>Electric Bikes in 2025 – Game Changer?</h3>
-          <p>E-bikes are redefining urban travel. Affordable, eco-friendly, and trendy, they are becoming the backbone of city commuting. BestBikeGuru explores the top models in 2025.</p>
-        </article>
-        <article>
-          <h3>Top 5 Budget Motorbikes Under ₹1.5 Lakh</h3>
-          <p>From fuel efficiency to stylish designs, our experts list the best value-for-money bikes of 2025.</p>
-        </article>
-      </section>
-
-      <section id="reviews">
-        <h2>🏍️ In-Depth Reviews</h2>
-        <article>
-          <h3>Royal Enfield Hunter 350</h3>
-          <p>A stylish commuter with a strong engine. Perfect for young riders who want power and comfort.</p>
-        </article>
-        <article>
-          <h3>Giant Defy Advanced</h3>
-          <p>A road cyclist’s dream. Lightweight carbon frame with unmatched speed and performance.</p>
-        </article>
-      </section>
-
-      <section id="guides">
-        <h2>📖 Riding & Buying Guides</h2>
-        <p>Whether you’re a new rider or upgrading your gear, our guides help you make the right choice:</p>
-        <ul>
-          <li>How to pick your first bike.</li>
-          <li>10 safety essentials every rider must own.</li>
-          <li>Maintaining your bike like a pro.</li>
-        </ul>
-      </section>
-
-      <section id="health">
-        <h2>💪 Health & Fitness</h2>
-        <article>
-          <p>Cycling isn’t just about transport—it’s a full-body workout. Regular biking improves cardiovascular health, strengthens muscles, and reduces stress. Discover the health benefits of riding daily.</p>
-        </article>
-      </section>
+  <!-- Featured Bikes -->
+  <section class="section" id="featured">
+    <h2>🔥 Featured Bikes 2025</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="bike1.jpg" alt="Best Mountain Bike">
+        <h3>Top Mountain Bike</h3>
+        <p>Discover rugged performance and smooth rides for every terrain.</p>
+      </div>
+      <div class="card">
+        <img src="bike2.jpg" alt="Best Road Bike">
+        <h3>Best Road Bike</h3>
+        <p>Speed, design, and comfort combined – perfect for city & highway.</p>
+      </div>
+      <div class="card">
+        <img src="bike3.jpg" alt="Electric Bike">
+        <h3>Latest Electric Bike</h3>
+        <p>Eco-friendly, powerful, and perfect for modern riders.</p>
+      </div>
     </div>
+  </section>
 
-    <aside class="sidebar">
-      <h2>🔔 Quick Reads</h2>
-      <ul>
-        <li>Top helmets of 2025</li>
-        <li>Best GPS trackers for bikes</li>
-        <li>DIY chain lubrication hacks</li>
-        <li>Best biking apps for Android & iOS</li>
-      </ul>
+  <!-- Reviews -->
+  <section class="section" id="reviews">
+    <h2>⭐ Latest Bike Reviews</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Yamaha MT-15 V2 Review</h3>
+        <p>We tested Yamaha’s latest naked beast. Here’s everything you need to know.</p>
+      </div>
+      <div class="card">
+        <h3>Honda CB350 Review</h3>
+        <p>Retro styling meets modern performance – does it live up to the hype?</p>
+      </div>
+      <div class="card">
+        <h3>Trek FX3 Disc Hybrid</h3>
+        <p>The perfect city commuter? Our in-depth analysis says yes.</p>
+      </div>
+    </div>
+  </section>
 
-      <h2>❓ FAQ</h2>
-      <p><b>Q:</b> Are electric bikes safe?<br><b>A:</b> Yes, modern e-bikes come with safety standards and reliable batteries.</p>
-      <p><b>Q:</b> Which is better – road bike or hybrid?<br><b>A:</b> Road bikes are faster, hybrids are more versatile for daily use.</p>
-    </aside>
-  </main>
+  <!-- Guides -->
+  <section class="section">
+    <h2>📘 Buying Guides</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Best Bikes Under $1000</h3>
+        <p>Affordable options without compromising quality.</p>
+      </div>
+      <div class="card">
+        <h3>Top Helmets in 2025</h3>
+        <p>Ride safe with our tested and recommended helmets.</p>
+      </div>
+      <div class="card">
+        <h3>Must-Have Accessories</h3>
+        <p>From gloves to lights, the essential gear checklist.</p>
+      </div>
+    </div>
+  </section>
 
+  <!-- Testimonials -->
+  <section class="section">
+    <h2>💬 What Riders Say</h2>
+    <div class="grid">
+      <div class="card"><p>"BestBikeGuru helped me pick my first bike. Honest reviews!" – Alex</p></div>
+      <div class="card"><p>"The buying guide saved me a lot of money." – Priya</p></div>
+      <div class="card"><p>"Great mix of expert advice and real-world rider feedback." – Mark</p></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer>
-    <p>© 2025 Best Bike Guru – All Rights Reserved.</p>
+    <p>&copy; 2025 BestBikeGuru.com – All rights reserved.</p>
+    <p><a href="/privacy-policy.html" style="color:#ccc;">Privacy Policy</a> | <a href="/contact.html" style="color:#ccc;">Contact Us</a></p>
   </footer>
+
 </body>
 </html>
