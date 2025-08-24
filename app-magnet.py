@@ -217,3 +217,71 @@ def dns_info():
         })
     except Exception as e:
         return f"❌ DNS fetch error: {str(e)}", 500
+
+
+def fetch_pdf_if_missing():
+    """
+    Checks if the required PDF exists locally.
+    If missing, downloads it from a private GitHub repo using a Personal Access Token (PAT).
+    """
+
+    # File details
+    local_path = "private/Client_Magnet_Cold_Email_Scripts.pdf"
+    github_owner = "YOUR_GITHUB_USERNAME"      # replace with your GitHub username/org
+    github_repo = "YOUR_PRIVATE_REPO"          # replace with repo name
+    file_path_in_repo = "private/Client_Magnet_Cold_Email_Scripts.pdf"  # relative path in repo
+    branch = "main"  # or master, depending on your repo
+
+    # Ensure "private" folder exists
+    os.makedirs("private", exist_ok=True)
+
+    # If file already exists locally → no need to fetch
+    if os.path.exists(local_path):
+        print("[INFO] PDF already exists locally.")
+        return local_path
+
+    # Get PAT from environment variable
+    token = os.getenv("GITHUB_TOKEN")
+    if not token:
+        raise ValueError("GitHub Personal Access Token (PAT) not found in environment variable GITHUB_TOKEN.")
+
+    # GitHub API URL for contents endpoint
+    url = f"https://api.github.com/repos/{github_owner}/{github_repo}/contents/{file_path_in_repo}?ref={branch}"
+
+    # Headers with Authorization
+    headers = {"Authorization": f"token {token}"}
+
+    print(f"[INFO] Fetching PDF from GitHub: {url}")
+
+    # Step 1: Get file metadata (which includes download URL or base64 content)
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        file_info = response.json()
+        
+        # GitHub API returns content base64 encoded for files < 1 MB
+        if "download_url" in file_info and file_info["download_url"]:
+            # For larger files, prefer download_url
+            download_url = file_info["download_url"]
+            pdf_response = requests.get(download_url, headers=headers)
+            
+            if pdf_response.status_code == 200:
+                with open(local_path, "wb") as f:
+                    f.write(pdf_response.content)
+                print(f"[SUCCESS] PDF downloaded and saved at {local_path}")
+                return local_path
+            else:
+                raise Exception(f"Failed to download PDF from {download_url}. Status: {pdf_response.status_code}")
+        elif "content" in file_info:
+            # If small file, content is returned as base64
+            import base64
+            content = base64.b64decode(file_info["content"])
+            with open(local_path, "wb") as f:
+                f.write(content)
+            print(f"[SUCCESS] PDF (base64) downloaded and saved at {local_path}")
+            return local_path
+        else:
+            raise Exception("Unexpected response format from GitHub API.")
+    else:
+        raise Exception(f"GitHub API request failed. Status {response.status_code}: {response.text}")
+
