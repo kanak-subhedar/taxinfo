@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, redirect, render_template_string, send_file, jsonify
+import requests
 import whois
 import razorpay
 from flask_cors import CORS  # ✅ 1. Import CORS
