@@ -1,0 +1,47 @@
+//function fetch_pdf_if_missing() for app-magnet.py
+
+import os
+import requests
+
+def fetch_pdf_if_missing():
+    """
+    Ensure that the PDF exists in /private/.
+    If not, fetch it from a private GitHub repo using PAT.
+    This works even after restart/redeploy on Render.
+    """
+    pdf_path = "private/Client_Magnet_Cold_Email_Scripts.pdf"
+
+    # If file already exists, do nothing
+    if os.path.exists(pdf_path):
+        print("[INFO] PDF already present.")
+        return
+
+    print("[INFO] PDF not found. Fetching from private GitHub repo...")
+
+    # Environment variables (set these in Render dashboard)
+    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")   # Your GitHub PAT
+    GITHUB_REPO = os.getenv("GITHUB_REPO")     # e.g. "yourusername/your-private-repo"
+    PDF_FILE_PATH = os.getenv("PDF_FILE_PATH") # e.g. "private/Client_Magnet_Cold_Email_Scripts.pdf"
+    BRANCH = os.getenv("GITHUB_BRANCH", "main")
+
+    if not GITHUB_TOKEN or not GITHUB_REPO or not PDF_FILE_PATH:
+        raise Exception("❌ Missing environment variables: GITHUB_TOKEN, GITHUB_REPO, PDF_FILE_PATH")
+
+    # GitHub API URL to fetch raw file content
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PDF_FILE_PATH}?ref={BRANCH}"
+
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        file_content = response.json()["content"]
+        import base64
+        decoded = base64.b64decode(file_content)
+
+        os.makedirs("private", exist_ok=True)
+        with open(pdf_path, "wb") as f:
+            f.write(decoded)
+
+        print(f"[SUCCESS] Downloaded PDF to {pdf_path}")
+    else:
+        raise Exception(f"❌ Failed to fetch file from GitHub: {response.status_code} {response.text}")
