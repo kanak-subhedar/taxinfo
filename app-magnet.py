@@ -221,67 +221,51 @@ def dns_info():
 
 def fetch_pdf_if_missing():
     """
-    Checks if the required PDF exists locally.
-    If missing, downloads it from a private GitHub repo using a Personal Access Token (PAT).
+    Ensures that the product PDF exists locally.
+    If missing, fetches it securely from a private GitHub repo using PAT.
     """
-
-    # File details
+    # Local path where Render should keep the PDF
     local_path = "private/Client_Magnet_Cold_Email_Scripts.pdf"
-    github_owner = "YOUR_GITHUB_USERNAME"      # replace with your GitHub username/org
-    github_repo = "YOUR_PRIVATE_REPO"          # replace with repo name
-    file_path_in_repo = "private/Client_Magnet_Cold_Email_Scripts.pdf"  # relative path in repo
-    branch = "main"  # or master, depending on your repo
 
-    # Ensure "private" folder exists
-    os.makedirs("private", exist_ok=True)
-
-    # If file already exists locally → no need to fetch
+    # Only fetch if file is missing
     if os.path.exists(local_path):
-        print("[INFO] PDF already exists locally.")
-        return local_path
+        print("✅ PDF already exists locally.")
+        return
 
-    # Get PAT from environment variable
-    token = os.getenv("GITHUB_TOKEN")
+    print("⚠️ PDF missing, fetching from private GitHub repo...")
+
+    # GitHub repo details
+    owner = "your-github-username"
+    repo = "your-private-repo-name"
+    file_path_in_repo = "private/Client_Magnet_Cold_Email_Scripts.pdf"
+
+    # PAT should be stored in Render Environment Variable → GITHUB_PAT
+    token = os.getenv("GITHUB_PAT")
     if not token:
-        raise ValueError("GitHub Personal Access Token (PAT) not found in environment variable GITHUB_TOKEN.")
+        raise RuntimeError("❌ GitHub PAT not set in environment variables!")
 
-    # GitHub API URL for contents endpoint
-    url = f"https://api.github.com/repos/{github_owner}/{github_repo}/contents/{file_path_in_repo}?ref={branch}"
+    # GitHub API URL (to fetch file contents)
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path_in_repo}"
 
-    # Headers with Authorization
     headers = {"Authorization": f"token {token}"}
 
-    print(f"[INFO] Fetching PDF from GitHub: {url}")
-
-    # Step 1: Get file metadata (which includes download URL or base64 content)
     response = requests.get(url, headers=headers)
 
-    if response.status_code == 200:
-        file_info = response.json()
-        
-        # GitHub API returns content base64 encoded for files < 1 MB
-        if "download_url" in file_info and file_info["download_url"]:
-            # For larger files, prefer download_url
-            download_url = file_info["download_url"]
-            pdf_response = requests.get(download_url, headers=headers)
-            
-            if pdf_response.status_code == 200:
-                with open(local_path, "wb") as f:
-                    f.write(pdf_response.content)
-                print(f"[SUCCESS] PDF downloaded and saved at {local_path}")
-                return local_path
-            else:
-                raise Exception(f"Failed to download PDF from {download_url}. Status: {pdf_response.status_code}")
-        elif "content" in file_info:
-            # If small file, content is returned as base64
-            import base64
-            content = base64.b64decode(file_info["content"])
-            with open(local_path, "wb") as f:
-                f.write(content)
-            print(f"[SUCCESS] PDF (base64) downloaded and saved at {local_path}")
-            return local_path
-        else:
-            raise Exception("Unexpected response format from GitHub API.")
-    else:
-        raise Exception(f"GitHub API request failed. Status {response.status_code}: {response.text}")
+    if response.status_code != 200:
+        raise RuntimeError(f"❌ Failed to fetch file from GitHub. Status: {response.status_code}, Response: {response.text}")
+
+    file_data = response.json()
+
+    # GitHub returns file content base64 encoded → decode it
+    import base64
+    content = base64.b64decode(file_data["content"])
+
+    # Ensure private folder exists
+    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+
+    # Save file locally
+    with open(local_path, "wb") as f:
+        f.write(content)
+
+    print(f"✅ PDF downloaded and saved at {local_path}")
 
