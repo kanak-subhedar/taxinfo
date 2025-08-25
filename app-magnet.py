@@ -236,12 +236,12 @@ def fetch_pdf_if_missing():
     print("⚠️ PDF missing, fetching from private GitHub repo...")
 
     # GitHub repo details
-    owner = "your-github-username"
-    repo = "your-private-repo-name"
+    owner = "kanak-subhedar"
+    repo = " holding_file_for_persistance"
     file_path_in_repo = "private/Client_Magnet_Cold_Email_Scripts.pdf"
 
     # PAT should be stored in Render Environment Variable → GITHUB_PAT
-    token = os.getenv("GITHUB_PAT")
+    token = os.getenv("GITHUB_PAT_FILE_DOWNLOAD")
     if not token:
         raise RuntimeError("❌ GitHub PAT not set in environment variables!")
 
