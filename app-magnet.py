@@ -1,174 +1,101 @@
 import os
-import time
-import base64
 import hmac
 import hashlib
-from flask import Flask, request, render_template_string, send_file, jsonify, abort
+import base64
 import requests
-import whois
-import razorpay
-from flask_cors import CORS
-from fetch_client_magnet_email_pdf import fetch_pdf_if_missing
-import socket
-from datetime import datetime
-import dns.resolver
+from flask import Flask, request, jsonify, send_file, abort
+from io import BytesIO
 
-# ------------------- CONFIG -------------------
-SECRET_DOWNLOAD_KEY = os.getenv("SECRET_DOWNLOAD_KEY", "supersecret")  # 🔐 set this in Render
-UPLOAD_FOLDER = "private"
-PDF_FILENAME = "Client_Magnet_Cold_Email_Scripts.pdf"
-LOCAL_PDF_PATH = os.path.join(UPLOAD_FOLDER, PDF_FILENAME)
-
-# Flask setup
 app = Flask(__name__)
-CORS(app, origins=["https://t24k.com"])
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-fetch_pdf_if_missing()
+# --- Environment Variables ---
+RZR_KEY_ID = os.getenv("RZR_KEY_ID")
+RZR_KEY_SEC = os.getenv("RZR_KEY_SEC")
+RZR_TST_KEY_ID = os.getenv("RZR_TST_KEY_ID")
+RZR_TST_KEY_SEC = os.getenv("RZR_TST_KEY_SEC")
 
-# Razorpay
-RAZORPAY_KEY = os.getenv("RZR_KEY_ID")
-RAZORPAY_SECRET = os.getenv("RZR_KEY_SEC")
-client = razorpay.Client(auth=(RAZORPAY_KEY, RAZORPAY_SECRET))
+GITHUB_OWNER = os.getenv("GITHUB_OWNER")
+GITHUB_REPO = os.getenv("GITHUB_REPO")
+GITHUB_FILE_PATH = os.getenv("GITHUB_FILE_PATH")
+GITHUB_PAT_FILE_DOWNLOAD = os.getenv("GITHUB_PAT_FILE_DOWNLOAD")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-# ------------------- PAYMENT FLOW -------------------
+DOWNLOAD_KEY = os.getenv("DOWNLOAD_KEY")
+READ_KEY = os.getenv("READ_KEY")
 
-@app.route('/verify-and-download', methods=['POST'])
-def verify_and_download():
+# --- Utilities ---
+def verify_razorpay_signature(order_id, payment_id, signature, secret):
+    payload = f"{order_id}|{payment_id}"
+    expected_signature = hmac.new(
+        secret.encode(), payload.encode(), hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected_signature, signature)
+
+def fetch_pdf_from_github():
+    url = f"https://raw.githubusercontent.com/{GITHUB_OWNER}/{GITHUB_REPO}/main/{GITHUB_FILE_PATH}"
+    headers = {"Authorization": f"token {GITHUB_PAT_FILE_DOWNLOAD}"}
+    r = requests.get(url, headers=headers)
+    if r.status_code == 200:
+        return BytesIO(r.content)
+    else:
+        print(f"GitHub fetch failed: {r.status_code} {r.text}")
+        return None
+
+# --- Routes ---
+
+@app.route("/verify-payment", methods=["POST"])
+def verify_payment():
+    """
+    Expects JSON:
+    {
+      "razorpay_order_id": "...",
+      "razorpay_payment_id": "...",
+      "razorpay_signature": "...",
+      "mode": "test" | "live"
+    }
+    """
     data = request.json
-    payment_id = data.get('payment_id')
+    order_id = data.get("razorpay_order_id")
+    payment_id = data.get("razorpay_payment_id")
+    signature = data.get("razorpay_signature")
+    mode = data.get("mode", "live")
 
-    try:
-        payment = client.payment.fetch(payment_id)
+    secret = RZR_TST_KEY_SEC if mode == "test" else RZR_KEY_SEC
 
-        if payment['status'] == 'authorized':
-            client.payment.capture(payment_id, payment['amount'])
-            payment = client.payment.fetch(payment_id)
+    if not order_id or not payment_id or not signature:
+        return jsonify({"success": False, "error": "Missing params"}), 400
 
-        if payment['status'] == 'captured':
-            increment_sales_count()
+    if verify_razorpay_signature(order_id, payment_id, signature, secret):
+        # generate one-time download token
+        token = base64.urlsafe_b64encode(os.urandom(24)).decode()
+        app.config[token] = True  # temporary storage
+        return jsonify({"success": True, "download_token": token})
+    else:
+        return jsonify({"success": False, "error": "Signature mismatch"}), 400
 
-            # ✅ Generate secure signed download link
-            expiry = int(time.time()) + 300  # 5 min validity
-            token = generate_download_token(expiry)
-
-            link = f"{request.host_url}download-pdf?token={token}&exp={expiry}"
-            return jsonify({"download_url": link})
-
-        else:
-            return "❌ Payment not captured", 403
-
-    except Exception as e:
-        return f"❌ Verification failed: {str(e)}", 400
-
-# ------------------- SECURE DOWNLOAD -------------------
-
-def generate_download_token(expiry: int) -> str:
-    """Generate a signed token with expiry timestamp"""
-    msg = f"{PDF_FILENAME}:{expiry}".encode()
-    sig = hmac.new(SECRET_DOWNLOAD_KEY.encode(), msg, hashlib.sha256).digest()
-    return base64.urlsafe_b64encode(sig).decode()
-
-def verify_download_token(token: str, expiry: int) -> bool:
-    if int(expiry) < int(time.time()):
-        return False
-    expected = generate_download_token(int(expiry))
-    return hmac.compare_digest(token, expected)
-
-@app.route("/download-pdf")
-def download_pdf():
+@app.route("/download", methods=["GET"])
+def download_file():
     token = request.args.get("token")
-    expiry = request.args.get("exp")
+    key = request.args.get("key")
 
-    if not token or not expiry:
+    if not token or not key:
         abort(403)
 
-    if not verify_download_token(token, expiry):
+    if key != DOWNLOAD_KEY:
         abort(403)
 
-    return send_file(LOCAL_PDF_PATH, as_attachment=True)
+    if not app.config.get(token):
+        abort(403)
 
-# ------------------- UTILITIES -------------------
+    pdf_data = fetch_pdf_from_github()
+    if pdf_data:
+        return send_file(pdf_data, as_attachment=True, download_name="product.pdf")
+    else:
+        return jsonify({"success": False, "error": "File fetch failed"}), 500
 
-@app.route('/')
+@app.route("/")
 def home():
-    return "✅ Client Magnet Server is Running!"
+    return "✅ Razorpay + Secure Download Server Running"
 
-@app.route('/get-key')
-def get_key():
-    return jsonify({"key": os.getenv("RZR_KEY_ID")})
-
-def increment_sales_count():
-    counter_file = "our_count.txt"
-    if not os.path.exists(counter_file):
-        with open(counter_file, "w") as f:
-            f.write("0")
-
-    with open(counter_file, "r+") as f:
-        count = int(f.read().strip())
-        f.seek(0)
-        f.write(str(count + 1))
-        f.truncate()
-
-# ------------------- WHOIS & DOMAIN TOOLS -------------------
-
-@app.route('/whois')
-def whois_lookup():
-    domain = request.args.get('domain', '').strip()
-    if not domain:
-        return "❌ No domain provided.", 400
-    try:
-        data = whois.whois(domain)
-        if not data:
-            return "⚠️ WHOIS data not found.", 404
-        response_lines = [f"{key}: {value}" for key, value in data.items()]
-        return "\n".join(response_lines)
-    except Exception as e:
-        return f"❌ Error: {str(e)}", 500
-
-@app.route("/domain-age")
-def domain_age():
-    domain = request.args.get('domain', '').strip()
-    if not domain:
-        return "❌ No domain provided", 400
-    try:
-        data = whois.whois(domain)
-        creation = data.creation_date
-        if isinstance(creation, list):
-            creation = creation[0]
-        if not creation:
-            return "⚠️ Creation date not found.", 404
-        today = datetime.utcnow()
-        age_days = (today - creation).days
-        return f"🕓 Domain {domain} is {age_days} days old (Created: {creation.date()})"
-    except Exception as e:
-        return f"❌ Error: {str(e)}", 500
-
-@app.route("/check-availability")
-def check_availability():
-    domain = request.args.get("domain", "").strip()
-    if not domain:
-        return jsonify({"error": "No domain provided"}), 400
-    try:
-        socket.gethostbyname(domain)
-        return jsonify({"available": False})
-    except socket.gaierror:
-        return jsonify({"available": True})
-
-@app.route("/dns-info")
-def dns_info():
-    domain = request.args.get("domain", "").strip()
-    if not domain:
-        return "❌ No domain provided", 400
-    try:
-        ip = socket.gethostbyname(domain)
-        records = {}
-        for qtype in ['A', 'MX', 'NS', 'TXT']:
-            try:
-                answers = dns.resolver.resolve(domain, qtype)
-                records[qtype] = [r.to_text() for r in answers]
-            except Exception:
-                records[qtype] = []
-        return jsonify({"IP": ip, "DNS": records})
-    except Exception as e:
-        return f"❌ DNS fetch error: {str(e)}", 500
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
