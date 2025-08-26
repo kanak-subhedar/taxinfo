@@ -237,7 +237,7 @@ def fetch_pdf_if_missing():
 
     # GitHub repo details 
     owner = "kanak-subhedar"
-    repo = " holding_file_for_persistance"
+    repo = "holding_file_for_persistance"
     file_path_in_repo = "private/Client_Magnet_Cold_Email_Scripts.pdf"
 
     # PAT should be stored in Render Environment Variable → GITHUB_PAT
