@@ -98,33 +98,28 @@ document.getElementById("pay-download").onclick = function () {
     .then(res => res.json())
     .then(data => {
       const options = {
-        key: data.key, // ✅ Securely fetched Razorpay key
-        amount: 200, // ₹2 in paise
+        key: data.key,  // ✅ Securely fetched Razorpay Key ID
+        amount: 200,    // ₹2.00 (in paise)
         currency: "INR",
         name: "Client Magnet",
         description: "Cold Email Script PDF",
         handler: function (response) {
-          // Send payment_id to backend for verification
+          // ✅ Send payment ID to backend for verification
           fetch("https://client-magnet.onrender.com/verify-and-download", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ payment_id: response.razorpay_payment_id }),
+            body: JSON.stringify({
+              payment_id: response.razorpay_payment_id
+            }),
           })
           .then(res => {
-            if (!res.ok) throw new Error("Payment not verified - If it is verified & still you are seeing this then email: care@t24k.com - We will take care & Send you the pdf by email.");
+            if (!res.ok) {
+              throw new Error("Payment verification failed. If payment succeeded but you still see this, email care@t24k.com and we’ll send the PDF.");
+            }
             return res.blob();
           })
-   /*        old code  
           .then(blob => {
-            const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(blob);
-            link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
-            document.body.appendChild(link);
-            link.click();
-           document.body.removeChild(link);
-          })
-           end of old code */
-          .then(blob => {
+            // ✅ Trigger download
             const link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
             link.download = "Client_Magnet_Cold_Email_Scripts.pdf";
@@ -132,23 +127,26 @@ document.getElementById("pay-download").onclick = function () {
             link.click();
             document.body.removeChild(link);
 
-           // window.location.href = "/digipro/thank-you.html";
-           // ✅ Redirect after short delay
+            // ✅ Redirect after short delay
             setTimeout(() => {
               window.location.href = "/digipro/thank-you.html";
-              }, 300);
+            }, 300);
           })
-
-          .catch(err => alert("❌ " + err.message));
+          .catch(err => {
+            alert("❌ " + err.message);
+          });
         }
       };
 
       const rzp = new Razorpay(options);
       rzp.open();
     })
-    .catch(err => alert("❌ Failed to fetch Razorpay key"));
+    .catch(err => {
+      alert("❌ Failed to fetch Razorpay key. Please try again later.");
+    });
 };
 </script>
+
 
   
 </body>
