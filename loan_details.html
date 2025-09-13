@@ -84,6 +84,59 @@ async function calculate(){
   const extra = parseFloat(document.getElementById('extra').value) || 0;
   const lenders = getSelectedLenders();
 
+  const payload = { principal: principal, tenure_years: tenure, lenders: lenders, extra_monthly_payment: extra };
+  const res = await fetch('/api/calculate', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  displayCalculate(data);
+}
 
+function displayCalculate(data){
+  let html = `<strong>Loan:</strong> ₹${data.principal} for ${data.tenure_years} years<br/><br/>`;
+  for (const c of data.comparisons){
+    html += `<div style="border-top:1px dashed #ccc;margin-top:8px;padding-top:8px;">`;
+    html += `<b>${c.lender_name}</b> — ${c.annual_rate_percent}% p.a. | EMI: ₹${c.emi} | Months to repay (with extra): ${c.months_paid}<br/>Total payment: ₹${c.total_payment} | Total interest: ₹${c.total_interest}<br/>`;
+    html += `<details><summary>Show amortization (first 12 rows)</summary><pre>${JSON.stringify(c.schedule.slice(0,12), null, 2)}</pre></details>`;
+    html += `</div>`;
+  }
+  document.getElementById('resultsArea').innerHTML = html;
+}
+
+async function checkEligibility(){
+  const principal = parseFloat(document.getElementById('principal').value) || 0;
+  const tenure = parseFloat(document.getElementById('tenure').value) || 0;
+  const user = {
+    monthly_income: parseFloat(document.getElementById('income').value) || 0,
+    existing_emi: parseFloat(document.getElementById('existing_emi').value) || 0,
+    age: parseInt(document.getElementById('age').value) || 0,
+    employment_months: parseInt(document.getElementById('employment_months').value) || 0,
+    credit_score: parseInt(document.getElementById('credit_score').value) || 0
+  };
+  const payload = { principal: principal, tenure_years: tenure, user: user };
+  const res = await fetch('/api/eligibility', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  displayEligibility(data);
+}
+
+function displayEligibility(data){
+  let html = `<strong>User summary:</strong> Monthly income ₹${data.user.monthly_income}, existing EMI ₹${data.user.existing_emi}, age ${data.user.age}, credit score ${data.user.credit_score}<br/><br/>`;
+  for (const r of data.results){
+    html += `<div style="border-top:1px solid #eee;padding-top:8px;margin-top:8px;">`;
+    html += `<b>${r.lender_name}</b> — Rate ${r.annual_rate_percent}% p.a. | EMI for requested loan: ₹${r.emi_for_requested_loan}<br/>Max affordable loan (same tenure): ₹${r.max_affordable_loan_for_user}<br/>Decision: <b>${r.eligibility.decision}</b><br/>`;
+    if (r.eligibility.reasons.length){
+      html += `<ul>`;
+      for (const reason of r.eligibility.reasons) html += `<li>${reason}</li>`;
+      html += `</ul>`;
+    }
+    html += `</div>`;
+  }
+  document.getElementById('resultsArea').innerHTML = html;
+}
+</script>
+</body>
+</html>
 
   
