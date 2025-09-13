@@ -1,0 +1,89 @@
+INDEX_HTML = """
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Loan EMI & Eligibility Checker</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin:auto; }
+    input, select { padding:8px; margin:6px 0; width:100%; box-sizing: border-box; }
+    .row { display:flex; gap:10px; }
+    .col { flex:1; }
+    .card { padding:12px; border: 1px solid #ddd; border-radius:8px; margin-bottom:12px; }
+    button { padding:10px 14px; }
+    pre { background:#f7f7f7; padding:10px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <h2>Advanced Loan EMI & Eligibility Checker</h2>
+  <div class="card">
+    <h4>Loan Inputs</h4>
+    <div class="row">
+      <div class="col">
+        <label>Loan Amount (₹)</label>
+        <input id="principal" type="number" value="1500000">
+      </div>
+      <div class="col">
+        <label>Tenure (years)</label>
+        <input id="tenure" type="number" value="15">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Extra monthly payment (optional) ₹</label>
+        <input id="extra" type="number" value="0">
+      </div>
+      <div class="col">
+        <label>Choose lenders (Ctrl/Command to multi-select)</label>
+        <select id="lenders" multiple size="3">
+          {% for l in lenders %}
+            <option value="{{l.id}}">{{l.name}} — {{l.annual_rate_percent}}% p.a.</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <button onclick="calculate()">Calculate EMI & Amortization</button>
+  </div>
+
+  <div class="card">
+    <h4>User Profile (for eligibility)</h4>
+    <div class="row">
+      <div class="col"><label>Monthly income (₹)</label><input id="income" type="number" value="60000"></div>
+      <div class="col"><label>Existing EMI (monthly) ₹</label><input id="existing_emi" type="number" value="5000"></div>
+    </div>
+    <div class="row">
+      <div class="col"><label>Age</label><input id="age" type="number" value="30"></div>
+      <div class="col"><label>Employment months</label><input id="employment_months" type="number" value="36"></div>
+    </div>
+    <div class="row">
+      <div class="col"><label>Credit score (CIBIL approx)</label><input id="credit_score" type="number" value="710"></div>
+      <div class="col"><label></label><button onclick="checkEligibility()">Check Eligibility</button></div>
+    </div>
+  </div>
+
+  <div id="output" class="card">
+    <h4>Results</h4>
+    <div id="resultsArea">No results yet.</div>
+  </div>
+
+<script>
+function getSelectedLenders() {
+  const sel = document.getElementById('lenders');
+  let chosen = [];
+  for (let i=0; i<sel.options.length; i++){
+    if (sel.options[i].selected) chosen.push(sel.options[i].value);
+  }
+  return chosen;
+}
+
+async function calculate(){
+  const principal = parseFloat(document.getElementById('principal').value) || 0;
+  const tenure = parseFloat(document.getElementById('tenure').value) || 0;
+  const extra = parseFloat(document.getElementById('extra').value) || 0;
+  const lenders = getSelectedLenders();
+
+
+
+  
