@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan EMI & Eligibility Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .green { background: #d1fae5; }
+    .blue { background: #dbeafe; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #f3f4f6;
+    }
+    .sponsor {
+      text-align: center;
+    }
+    .sponsor img {
+      max-width: 150px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Calculator Section -->
+    <div class="card">
+      <h1>Loan EMI & Eligibility Calculator</h1>
+      
+      <label>Loan Amount (₹)</label>
+      <input type="number" id="amount" value="500000">
+
+      <label>Interest Rate (%)</label>
+      <input type="number" id="rate" value="10" step="0.1">
+
+      <label>Tenure (Months)</label>
+      <input type="number" id="tenure" value="60">
+
+      <label>Monthly Income (₹)</label>
+      <input type="number" id="income" value="40000">
+
+      <button onclick="calculateEmi()">Calculate EMI & Eligibility</button>
+
+      <div id="results"></div>
+    </div>
+
+    <!-- Ads Section -->
+    <div>
+      <div class="card sponsor">
+        <h2>Sponsored by</h2>
+        <img src="https://via.placeholder.com/150" alt="Sponsor Logo">
+        <p>Get the best loan deals at low interest. Contact us today!</p>
+        <button>Apply Now</button>
+      </div>
+
+      <div class="card sponsor" style="margin-top:20px;">
+        <h2>Recommended Loan Provider</h2>
+        <p>XYZ Finance – Trusted by 1M+ borrowers.</p>
+        <button>Check Eligibility</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculateEmi() {
+      const amount = Number(document.getElementById("amount").value);
+      const rate = Number(document.getElementById("rate").value);
+      const tenure = Number(document.getElementById("tenure").value);
+      const income = Number(document.getElementById("income").value);
+
+      const monthlyRate = rate / 12 / 100;
+      const emi = (amount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) /
+                  (Math.pow(1 + monthlyRate, tenure) - 1);
+
+      // Max loan eligibility (40% of monthly income rule)
+      const maxEligibleLoan = (income * 0.4 * tenure * (1 - Math.pow(1 + monthlyRate, -tenure))) / monthlyRate;
+
+      // Loan comparison
+      const lenders = [
+        { lender: "Lender A (9%)", rate: 9 },
+        { lender: "Lender B (10%)", rate: 10 },
+        { lender: "Lender C (11%)", rate: 11 }
+      ];
+      let comparisonRows = "";
+      lenders.forEach(l => {
+        const r = l.rate / 12 / 100;
+        const cEmi = (amount * r * Math.pow(1 + r, tenure)) / (Math.pow(1 + r, tenure) - 1);
+        const total = cEmi * tenure;
+        comparisonRows += `
+          <tr>
+            <td>${l.lender}</td>
+            <td>₹${cEmi.toFixed(2)}</td>
+            <td>₹${total.toFixed(0)}</td>
+          </tr>`;
+      });
+
+      document.getElementById("results").innerHTML = `
+        <div class="result green">Monthly EMI: ₹${emi.toFixed(2)}</div>
+        <div class="result blue">Max Eligible Loan: ₹${maxEligibleLoan.toFixed(0)}</div>
+        <h2>Loan Comparison</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Lender</th>
+              <th>Monthly EMI (₹)</th>
+              <th>Total Repayment (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${comparisonRows}
+          </tbody>
+        </table>
+      `;
+    }
+  </script>
+</body>
+</html>
