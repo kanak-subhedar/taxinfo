@@ -17,8 +17,11 @@ python-docx==1.1.0
 # Utilities
 werkzeug==2.3.7
 
-pydub==0.25.1
+#pydub==0.25.1
+
+git+https://github.com/jiaaro/pydub.git
 
 # New entries for File Management - Enc/Dec, cpm/decomp, format conversion
 Pillow==10.4.0
-pyaudioop==0.2.0
+#pyaudioop==0.2.0
+#pydub==0.25.1
