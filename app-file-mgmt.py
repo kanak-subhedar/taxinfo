@@ -11,8 +11,11 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Generate encryption key (in real app, store securely!)
-SECRET_KEY = Fernet.generate_key()
+# Use stored key from environment, or generate if missing
+SECRET_KEY = os.environ.get("ENCRYPTION_KEY")
+if SECRET_KEY is None:
+    SECRET_KEY = Fernet.generate_key()
+    print("Generated new encryption key:", SECRET_KEY.decode())
 cipher = Fernet(SECRET_KEY)
 
 @app.route("/")
