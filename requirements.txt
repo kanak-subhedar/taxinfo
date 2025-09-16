@@ -21,3 +21,4 @@ pydub==0.25.1
 
 # New entries for File Management - Enc/Dec, cpm/decomp, format conversion
 Pillow==10.4.0
+pyaudioop==0.2.0
