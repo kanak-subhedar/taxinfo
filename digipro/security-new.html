@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Best Free File Management Software - Compress, Decompress, Encrypt, Convert</title>
+  <link rel="canonical" href="https://t24k.com/digipro/best-file-management-software">
+  <meta name="description" content="Best free file management software to compress files, decompress archives, encrypt sensitive data, and convert file formats easily." />
+  <meta name="keywords" content="file compression, file decompression, unzip files, file encryption, file decryption, file format conversion, data security, storage saver, lightweight file tool" />
+  <meta name="author" content="T24K.COM" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+  <!-- Hero Section -->
+  <section class="text-center py-16 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">All-in-One File Management Tool</h1>
+    <p class="text-lg md:text-xl mb-6">Compress, Decompress, Encrypt, and Convert your files with ease.</p>
+    <a href="#tools" class="bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition">Try Online Tools</a>
+  </section>
+
+  <!-- Tools Section -->
+  <section id="tools" class="max-w-4xl mx-auto py-16 px-6 space-y-10">
+
+    <!-- Compression Tool -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">📦 File Compression</h2>
+      <form id="compressForm" enctype="multipart/form-data">
+        <input type="file" name="file" class="block mb-3" required>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Compress</button>
+      </form>
+      <p id="compressResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- Decompression Tool -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">📂 File Decompression (Unzip)</h2>
+      <form id="decompressForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".zip" class="block mb-3" required>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Decompress</button>
+      </form>
+      <p id="decompressResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- Encryption Tool -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">🔐 File Encryption / Decryption</h2>
+      <form id="encryptForm" enctype="multipart/form-data">
+        <input type="file" name="file" class="block mb-3" required>
+        <input type="password" name="password" placeholder="Enter password" class="border p-2 mb-3 rounded w-full" required>
+        <select name="action" class="border p-2 mb-3 rounded w-full">
+          <option value="encrypt">Encrypt</option>
+          <option value="decrypt">Decrypt</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Process</button>
+      </form>
+      <p id="encryptResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- Format Conversion Tool -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">🔄 File Format Conversion</h2>
+      <form id="convertForm" enctype="multipart/form-data">
+        <input type="file" name="file" class="block mb-3" required>
+        <select name="target" class="border p-2 mb-3 rounded w-full" required>
+          <option value="pdf">Convert to PDF</option>
+          <option value="png">Convert to PNG</option>
+          <option value="jpg">Convert to JPG</option>
+          <option value="txt">Convert to TXT</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Convert</button>
+      </form>
+      <p id="convertResult" class="mt-2 text-green-600"></p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 bg-gray-800 text-gray-300">
+    <p>&copy; 2025 T24K.COM - All rights reserved.</p>
+  </footer>
+
+  <!-- JS for API calls -->
+  <script>
+    const API_BASE = "https://your-app.onrender.com"; // Replace with your Render backend URL
+
+    // Compression
+    document.getElementById("compressForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let formData = new FormData(e.target);
+      let res = await fetch(`${API_BASE}/compress`, { method: "POST", body: formData });
+      let blob = await res.blob();
+      let url = window.URL.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.href = url;
+      a.download = "compressed.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.getElementById("compressResult").innerText = "✅ File compressed successfully!";
+    });
+
+    // Decompression
+    document.getElementById("decompressForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let formData = new FormData(e.target);
+      let res = await fetch(`${API_BASE}/decompress`, { method: "POST", body: formData });
+      let blob = await res.blob();
+      let url = window.URL.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.href = url;
+      a.download = "decompressed_files.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.getElementById("decompressResult").innerText = "✅ File decompressed successfully!";
+    });
+
+    // Encryption/Decryption
+    document.getElementById("encryptForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let formData = new FormData(e.target);
+      let action = formData.get("action");
+      let endpoint = action === "decrypt" ? "decrypt" : "encrypt";
+      let res = await fetch(`${API_BASE}/${endpoint}`, { method: "POST", body: formData });
+      let blob = await res.blob();
+      let url = window.URL.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.href = url;
+      a.download = action === "decrypt" ? "decrypted.txt" : "encrypted.enc";
+      document.body.appendChild(a);
+      a.click();
+      document.getElementById("encryptResult").innerText = "✅ File processed successfully!";
+    });
+
+    // Conversion
+    document.getElementById("convertForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let formData = new FormData(e.target);
+      let target = formData.get("target");
+      let res = await fetch(`${API_BASE}/convert`, { method: "POST", body: formData });
+      let blob = await res.blob();
+      let url = window.URL.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.href = url;
+      a.download = `converted.${target}`;
+      document.body.appendChild(a);
+      a.click();
+      document.getElementById("convertResult").innerText = "✅ File converted successfully!";
+    });
+  </script>
+</body>
+</html>
