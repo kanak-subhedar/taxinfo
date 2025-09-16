@@ -103,6 +103,37 @@ def convert_file():
 
     return send_file(output_path, as_attachment=True)
 
+    # 1️⃣b File Decompression (Unzip)
+@app.route("/decompress", methods=["POST"])
+def decompress_file():
+    if "file" not in request.files:
+        return "❌ No file uploaded", 400
+
+    file = request.files["file"]
+    filepath = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
+    file.save(filepath)
+
+    # Ensure it's a ZIP
+    if not zipfile.is_zipfile(filepath):
+        return "❌ Uploaded file is not a valid ZIP archive", 400
+
+    # Create folder for extracted files
+    extract_dir = filepath + "_unzipped"
+    os.makedirs(extract_dir, exist_ok=True)
+
+    with zipfile.ZipFile(filepath, "r") as zf:
+        zf.extractall(extract_dir)
+
+    # Repackage extracted files into a new zip for download
+    output_zip = extract_dir + ".zip"
+    with zipfile.ZipFile(output_zip, "w") as zf:
+        for root, _, files in os.walk(extract_dir):
+            for fname in files:
+                fpath = os.path.join(root, fname)
+                zf.write(fpath, os.path.relpath(fpath, extract_dir))
+
+    return send_file(output_zip, as_attachment=True)
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
