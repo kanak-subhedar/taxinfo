@@ -10,7 +10,7 @@ dnspython==2.4.2
 cryptography==41.0.7
 
 # File handling & conversions
- Pillow==10.0.1
+# Pillow==10.0.1
 PyPDF2==3.0.1
 python-docx==1.1.0
 
@@ -20,4 +20,4 @@ werkzeug==2.3.7
 pydub==0.25.1
 
 # New entries for File Management - Enc/Dec, cpm/decomp, format conversion
-#Pillow==10.4.0
+Pillow==10.4.0
