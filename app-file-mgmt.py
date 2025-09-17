@@ -8,8 +8,10 @@ from pydub import AudioSegment
 from docx import Document
 from PyPDF2 import PdfReader
 from PIL import Image
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
