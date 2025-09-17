@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Best Free File Management Software - Compress, Decompress, Encrypt, Convert</title>
+  <link rel="canonical" href="https://t24k.com/digipro/best-file-management-software">
+  <meta name="description" content="Best free file management software to compress files, decompress archives, encrypt sensitive data, and convert file formats easily." />
+  <meta name="keywords" content="file compression, file decompression, unzip files, file encryption, file decryption, file format conversion, data security, storage saver, lightweight file tool" />
+  <meta name="author" content="T24K.COM" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+  <section class="text-center py-16 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">All-in-One File Management Tool</h1>
+    <p class="text-lg md:text-xl mb-6">Compress, Decompress, Encrypt, and Convert your files with ease.</p>
+    <a href="#tools" class="bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition">Try Online Tools</a>
+  </section>
+
+  <section id="tools" class="max-w-4xl mx-auto py-16 px-6 space-y-10">
+
+    <!-- Compression -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">📦 File Compression</h2>
+      <form id="compressForm" enctype="multipart/form-data">
+        <input type="file" name="file" class="block mb-3" required>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Compress</button>
+      </form>
+      <p id="compressResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- Decompression -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">📂 File Decompression (Unzip)</h2>
+      <form id="decompressForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".zip" class="block mb-3" required>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Decompress</button>
+      </form>
+      <p id="decompressResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- Encryption/Decryption -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">🔐 File Encryption / Decryption</h2>
+      <form id="encryptForm" enctype="multipart/form-data">
+        <input type="file" name="file" class="block mb-3" required>
+        <select name="action" class="border p-2 mb-3 rounded w-full">
+          <option value="encrypt">Encrypt</option>
+          <option value="decrypt">Decrypt</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Process</button>
+      </form>
+      <p id="encryptResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- Audio Convert -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">🎵 Audio Conversion (mp3 / wav / ogg)</h2>
+      <form id="audioForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept="audio/*" class="block mb-3" required>
+        <select name="format" class="border p-2 mb-3 rounded w-full" required>
+          <option value="mp3">MP3</option>
+          <option value="wav">WAV</option>
+          <option value="ogg">OGG</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Convert Audio</button>
+      </form>
+      <p id="audioResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- PDF / DOCX extraction -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">📄 Extract Text (PDF / DOCX)</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <form id="pdfForm" enctype="multipart/form-data">
+          <p class="font-semibold mb-2">Extract from PDF</p>
+          <input type="file" name="file" accept="application/pdf" class="block mb-3" required>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Extract PDF Text</button>
+        </form>
+        <form id="docxForm" enctype="multipart/form-data">
+          <p class="font-semibold mb-2">Extract from DOCX</p>
+          <input type="file" name="file" accept=".docx" class="block mb-3" required>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Extract DOCX Text</button>
+        </form>
+      </div>
+      <p id="extractResult" class="mt-2 text-green-600"></p>
+    </div>
+
+    <!-- Image Conversion -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-2">🖼️ Image Conversion</h2>
+      <form id="imageForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" class="block mb-3" required>
+        <select name="format" class="border p-2 mb-3 rounded w-full" required>
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+          <option value="webp">WEBP</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Convert Image</button>
+      </form>
+      <p id="imageResult" class="mt-2 text-green-600"></p>
+    </div>
+
+  </section>
+
+  <footer class="text-center py-6 bg-gray-800 text-gray-300">
+    <p>&copy; 2025 T24K.COM - All rights reserved.</p>
+  </footer>
+
+  <script>
+    // --- IMPORTANT: set this to your Render service URL ---
+    // Example: const API_BASE = "https://file-mgmt.onrender.com";
+    const API_BASE = "https://file-mgmt.onrender.com"; // <-- REPLACE if different
+
+    // Helper: extract filename from Content-Disposition
+    function getFilenameFromResponse(res, fallback) {
+      const cd = res.headers.get("content-disposition");
+      if (cd) {
+        const match = cd.match(/filename\*=UTF-8'([^;]+)|filename="?([^";]+)"?/);
+        if (match) {
+          return decodeURIComponent(match[1] || match[2]);
+        }
+      }
+      return fallback || "downloaded.file";
+    }
+
+    // Helper: download blob with name
+    async function downloadResponse(res, fallbackName) {
+      if (!res.ok) {
+        const text = await res.text().catch(()=>"");
+        throw new Error(text || `Server returned ${res.status}`);
+      }
+      const blob = await res.blob();
+      const filename = getFilenameFromResponse(res, fallbackName);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      return filename;
+    }
+
+    // Small UI helpers
+    function show(id, msg) {
+      document.getElementById(id).innerText = msg;
+    }
+    function clearAllResults() {
+      ["compressResult","decompressResult","encryptResult","audioResult","extractResult","imageResult"].forEach(i => show(i,""));
+    }
+
+    // Generic submit handler factory
+    function bindForm(formId, endpoint, fallbackNameFunc) {
+      const form = document.getElementById(formId);
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearAllResults();
+        const btn = form.querySelector("button[type='submit']");
+        const originalText = btn.innerText;
+        try {
+          btn.disabled = true;
+          btn.innerText = "Processing...";
+          const formData = new FormData(form);
+          const res = await fetch(`${API_BASE}${endpoint}`, { method: "POST", body: formData });
+          const fallback = fallbackNameFunc ? fallbackNameFunc(formData) : "download";
+          const filename = await downloadResponse(res, fallback);
+          // Show success where appropriate
+          if (formId === "compressForm") show("compressResult", `✅ Downloaded ${filename}`);
+          else if (formId === "decompressForm") show("decompressResult", `✅ Downloaded ${filename}`);
+          else if (formId === "encryptForm") show("encryptResult", `✅ Downloaded ${filename}`);
+          else if (formId === "audioForm") show("audioResult", `✅ Downloaded ${filename}`);
+          else if (formId === "pdfForm" || formId === "docxForm") show("extractResult", `✅ Downloaded ${filename}`);
+          else if (formId === "imageForm") show("imageResult", `✅ Downloaded ${filename}`);
+        } catch (err) {
+          // display error
+          const target = (formId === "compressForm") ? "compressResult" :
+                         (formId === "decompressForm") ? "decompressResult" :
+                         (formId === "encryptForm") ? "encryptResult" :
+                         (formId === "audioForm") ? "audioResult" :
+                         (formId === "pdfForm" || formId === "docxForm") ? "extractResult" :
+                         (formId === "imageForm") ? "imageResult" : "compressResult";
+          show(target, "❌ Error: " + (err.message || err));
+        } finally {
+          btn.disabled = false;
+          btn.innerText = originalText;
+        }
+      });
+    }
+
+    // Bind forms to endpoints and fallback naming
+    bindForm("compressForm", "/compress", fd => {
+      const f = fd.get("file");
+      return (f && f.name) ? `${f.name}.zip` : "compressed.zip";
+    });
+
+    // Note: backend's /decompress returns the first file from the zip (or whatever your backend sends)
+    bindForm("decompressForm", "/decompress", fd => {
+      const f = fd.get("file");
+      return (f && f.name) ? `${f.name.replace(/\.zip$/i,"")}` : "decompressed_file";
+    });
+
+    // encryption/decryption endpoints: server expects file only
+    // We use endpoint /encrypt or /decrypt depending on selection
+    document.getElementById("encryptForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAllResults();
+      const form = e.target;
+      const action = form.querySelector("select[name='action']").value;
+      const endpoint = (action === "decrypt") ? "/decrypt" : "/encrypt";
+      const btn = form.querySelector("button[type='submit']");
+      const originalText = btn.innerText;
+      try {
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+        const formData = new FormData(form);
+        const res = await fetch(`${API_BASE}${endpoint}`, { method: "POST", body: formData });
+        const fallback = (action === "decrypt") ? "decrypted.file" : "encrypted.enc";
+        const filename = await downloadResponse(res, fallback);
+        show("encryptResult", `✅ Downloaded ${filename}`);
+      } catch (err) {
+        show("encryptResult", "❌ Error: " + (err.message || err));
+      } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    });
+
+    // Audio convert
+    bindForm("audioForm", "/convert-audio", fd => {
+      const f = fd.get("file");
+      const fmt = fd.get("format");
+      return (f && f.name) ? `${f.name.replace(/\.[^/.]+$/,"")}.${fmt}` : `audio.${fmt}`;
+    });
+
+    // PDF extract
+    bindForm("pdfForm", "/extract-pdf", fd => "extracted_pdf.txt");
+    // DOCX extract
+    bindForm("docxForm", "/extract-docx", fd => "extracted_docx.txt");
+
+    // Image convert
+    bindForm("imageForm", "/convert-image", fd => {
+      const f = fd.get("file");
+      const fmt = fd.get("format");
+      return (f && f.name) ? `${f.name.replace(/\.[^/.]+$/,"")}.${fmt}` : `image.${fmt}`;
+    });
+
+  </script>
+</body>
+</html>
