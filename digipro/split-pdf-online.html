@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Split PDF Online Free - Extract Pages Easily | T24K</title>
+  <link rel="canonical" href="https://t24k.com/digipro/split-pdf-online.html">
+  <meta name="description" content="Split PDF online for free. Extract pages, divide large PDFs into smaller files, and organize your documents securely. No registration needed.">
+  <meta name="keywords" content="split PDF online, extract PDF pages, free PDF splitter, divide PDF file, separate PDF pages, PDF organizer tool" />
+  <meta name="author" content="T24K.COM" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+  <!-- Hero Section -->
+  <section class="text-center py-16 bg-gradient-to-r from-green-600 to-emerald-700 text-white">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Split PDF Online for Free</h1>
+    <p class="text-lg md:text-xl mb-6">Extract pages, divide PDFs into smaller files, and manage your documents with ease.</p>
+    <a href="#tool" class="bg-white text-green-700 font-semibold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition">Start Splitting</a>
+  </section>
+
+  <!-- Tool Section -->
+  <section id="tool" class="max-w-3xl mx-auto py-16 px-6 bg-white rounded-2xl shadow">
+    <h2 class="text-2xl font-bold mb-4">📄 Split Your PDF Instantly</h2>
+    <form id="splitForm" enctype="multipart/form-data" class="space-y-4">
+      <input type="file" name="file" accept="application/pdf" class="block w-full border p-2 rounded" required>
+      <label class="block text-sm font-medium">Page Range (e.g. 1-3, 5, 8-10)</label>
+      <input type="text" name="range" placeholder="Enter page numbers" class="w-full border p-2 rounded" required>
+      <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Split PDF</button>
+    </form>
+    <p id="splitResult" class="mt-3 text-green-600"></p>
+  </section>
+
+  <!-- SEO Content (1500+ words target, shortened here for sample) -->
+  <section class="max-w-4xl mx-auto py-16 px-6 space-y-6">
+    <h2 class="text-2xl font-bold">Why Use Our Free PDF Splitter?</h2>
+    <p>
+      Splitting PDFs is essential when you need to extract only specific chapters, isolate contracts,
+      or share parts of a report. With our tool, you can split PDFs online instantly, without installing
+      any software. It works directly in your browser, ensuring speed and security.
+    </p>
+
+    <h3 class="text-xl font-semibold">Key Benefits</h3>
+    <ul class="list-disc list-inside space-y-2">
+      <li>✔️ Extract selected pages from large PDFs</li>
+      <li>✔️ Split by page ranges (e.g., 1-3, 5, 8-10)</li>
+      <li>✔️ 100% free, no signup required</li>
+      <li>✔️ Works on desktop, tablet, and mobile</li>
+      <li>✔️ Secure process – your files are not stored</li>
+    </ul>
+
+    <h3 class="text-xl font-semibold">Common Use Cases</h3>
+    <p>
+      - Students extracting chapters from eBooks.  
+      - Businesses sharing only required sections of reports.  
+      - Lawyers splitting contracts into client-specific files.  
+      - Educators distributing only selected lessons.  
+    </p>
+
+    <h3 class="text-xl font-semibold">How to Split a PDF Online?</h3>
+    <ol class="list-decimal list-inside space-y-2">
+      <li>Upload your PDF file.</li>
+      <li>Enter the page range you want to extract.</li>
+      <li>Click "Split PDF".</li>
+      <li>Download your new file instantly.</li>
+    </ol>
+
+    <h3 class="text-xl font-semibold">FAQ - Split PDF Online</h3>
+    <p><strong>Is this tool free?</strong> – Yes, 100% free without hidden charges.</p>
+    <p><strong>Do I need to register?</strong> – No signup required.</p>
+    <p><strong>Is my data secure?</strong> – Yes, files are processed in real-time and not stored.</p>
+    <p><strong>Can I split multiple files?</strong> – Yes, one after another without limits.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 bg-gray-800 text-gray-300">
+    <p>&copy; 2025 T24K.COM - All rights reserved.</p>
+  </footer>
+
+  <script>
+    const API_BASE = "https://file-mgmt.onrender.com";
+
+    document.getElementById("splitForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const result = document.getElementById("splitResult");
+      result.innerText = "";
+      const btn = form.querySelector("button");
+      btn.disabled = true;
+      btn.innerText = "Processing...";
+      try {
+        const formData = new FormData(form);
+        const res = await fetch(`${API_BASE}/split-pdf`, { method: "POST", body: formData });
+        if (!res.ok) throw new Error(await res.text());
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "split.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        result.innerText = "✅ PDF split successfully!";
+      } catch (err) {
+        result.innerText = "❌ Error: " + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Split PDF";
+      }
+    });
+  </script>
+</body>
+</html>
