@@ -2,42 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Noise Reduction Tool</title>
-  <link rel="canonical" href="https://t24k.com/digipro/noise-reducer" />
-
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .container { max-width: 600px; margin: auto; text-align: center; }
-    .btn { padding: 10px 20px; margin: 10px; cursor: pointer; }
-    .output { margin-top: 20px; }
-  </style>
+  <title>Noise Reduction Tool | T24K</title>
+  <link rel="canonical" href="https://t24k.com/digipro/noise-reducer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
-<body>
-  <div class="container">
-    <h2>Noise Reduction Tool</h2>
-    <form id="uploadForm">
-      <label>Select Input Type:</label><br>
-      <select id="fileType" name="fileType">
-        <option value="audio">Audio</option>
-        <option value="video">Video</option>
-      </select>
-      <br><br>
-      <input type="file" id="fileInput" name="file" required>
-      <br><br>
-      <button type="submit" class="btn">Upload & Process</button>
-    </form>
+<body class="bg-gray-50 text-gray-900 font-sans">
+  <div class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white rounded-2xl shadow-lg p-10 max-w-md w-full">
+      <h1 class="text-3xl font-bold mb-6 text-center">Noise Reduction Tool</h1>
 
-    <div class="output" id="output"></div>
+      <form id="uploadForm" class="space-y-5">
+        <div>
+          <label for="fileType" class="block text-lg font-medium">Input Type</label>
+          <select id="fileType" name="fileType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="audio">Audio</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="fileInput" class="block text-lg font-medium">Select File</label>
+          <input type="file" id="fileInput" name="file" class="mt-1 block w-full text-sm text-gray-600
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-md file:border-0
+            file:text-sm file:font-semibold
+            file:bg-indigo-50 file:text-indigo-700
+            hover:file:bg-indigo-100
+          ">
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition">Upload & Reduce Noise</button>
+      </form>
+
+      <div id="output" class="mt-6 text-center"></div>
+    </div>
   </div>
 
   <script>
     document.getElementById("uploadForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const fileType = document.getElementById("fileType").value;
-      const file = document.getElementById("fileInput").files[0];
+      const fileInput = document.getElementById("fileInput");
+      const file = fileInput.files[0];
 
       if (!file) {
-        alert("Please select a file!");
+        alert("Please select a file to upload.");
         return;
       }
 
@@ -45,7 +55,8 @@
       formData.append("fileType", fileType);
       formData.append("file", file);
 
-      document.getElementById("output").innerHTML = "Processing... Please wait.";
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = `<p class="text-gray-600">Processing... This may take some moments.</p>`;
 
       try {
         const res = await fetch("https://your-render-backend-url.onrender.com/process", {
@@ -53,19 +64,19 @@
           body: formData
         });
 
-        if (!res.ok) throw new Error("Processing failed!");
+        if (!res.ok) throw new Error(`Server returned ${res.status} ${res.statusText}`);
 
         const blob = await res.blob();
         const downloadUrl = URL.createObjectURL(blob);
+        const ext = fileType === "audio" ? "wav" : "mp4";
 
-        let ext = fileType === "audio" ? "wav" : "mp4";
-
-        document.getElementById("output").innerHTML = `
-          <p>✅ Processing Done!</p>
-          <a href="${downloadUrl}" download="output.${ext}" class="btn">Download Processed File</a>
+        outputDiv.innerHTML = `
+          <p class="text-green-600 font-medium mb-4">✅ Noise reduction complete!</p>
+          <a href="${downloadUrl}" download="output.${ext}" class="inline-block bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition">Download File</a>
         `;
+
       } catch (err) {
-        document.getElementById("output").innerHTML = "❌ Error: " + err.message;
+        outputDiv.innerHTML = `<p class="text-red-500 font-medium">❌ Error: ${err.message}</p>`;
       }
     });
   </script>
