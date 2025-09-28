@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Noise Reduction Tool</title>
+  <link rel="canonical" href="https://t24k.com/digipro/noise-reducer" />
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 600px; margin: auto; text-align: center; }
+    .btn { padding: 10px 20px; margin: 10px; cursor: pointer; }
+    .output { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Noise Reduction Tool</h2>
+    <form id="uploadForm">
+      <label>Select Input Type:</label><br>
+      <select id="fileType" name="fileType">
+        <option value="audio">Audio</option>
+        <option value="video">Video</option>
+      </select>
+      <br><br>
+      <input type="file" id="fileInput" name="file" required>
+      <br><br>
+      <button type="submit" class="btn">Upload & Process</button>
+    </form>
+
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const fileType = document.getElementById("fileType").value;
+      const file = document.getElementById("fileInput").files[0];
+
+      if (!file) {
+        alert("Please select a file!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("fileType", fileType);
+      formData.append("file", file);
+
+      document.getElementById("output").innerHTML = "Processing... Please wait.";
+
+      try {
+        const res = await fetch("https://your-render-backend-url.onrender.com/process", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) throw new Error("Processing failed!");
+
+        const blob = await res.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+
+        let ext = fileType === "audio" ? "wav" : "mp4";
+
+        document.getElementById("output").innerHTML = `
+          <p>✅ Processing Done!</p>
+          <a href="${downloadUrl}" download="output.${ext}" class="btn">Download Processed File</a>
+        `;
+      } catch (err) {
+        document.getElementById("output").innerHTML = "❌ Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
