@@ -58,9 +58,9 @@
 
       const outputDiv = document.getElementById("output");
       outputDiv.innerHTML = `<p class="text-gray-600">Processing... This may take some moments.</p>`;
-
+      const API_BASE = "https://noise-reducer.onrender.com";
       try {
-        const res = await fetch("https://your-render-backend-url.onrender.com/process", {
+        const res = await fetch("${API_BASE}/process", {
           method: "POST",
           body: formData
         });
