@@ -5,8 +5,10 @@ from flask import Flask, request, send_file, jsonify
 import librosa
 import noisereduce as nr
 import soundfile as sf
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def home():
