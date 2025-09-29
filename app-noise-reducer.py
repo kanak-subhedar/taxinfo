@@ -39,20 +39,14 @@ def process_file():
 
     # Output file path
     output_path = os.path.join(tempfile.gettempdir(), "output")
-
+    
     if file_type == "audio":
-        try:
-            # Load audio
-            y, sr = librosa.load(input_path, sr=None)
-            # Noise reduction
-            reduced = nr.reduce_noise(y=y, sr=sr)
-            # Save output wav
-            out_file = output_path + ".wav"
-            sf.write(out_file, reduced, sr)
-            return send_file(out_file, as_attachment=True)
-
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+    try:
+        out_file = output_path + "_cleaned.wav"
+        reduce_noise_ffmpeg(input_path, out_file)
+        return send_file(out_file, as_attachment=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     elif file_type == "video":
         try:
