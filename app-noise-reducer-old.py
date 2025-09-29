@@ -10,6 +10,16 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+def reduce_noise_ffmpeg(input_path, output_path):
+    # ffmpeg built-in noise reduction (adaptive filter)
+    cmd = [
+        "ffmpeg", "-y",
+        "-i", input_path,
+        "-af", "anlmdn=s=12",  # apply noise reduction
+        output_path
+    ]
+    subprocess.run(cmd, check=True)
+
 @app.route("/")
 def home():
     return jsonify({"status": "Noise Reduction API running"})
