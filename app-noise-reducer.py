@@ -49,31 +49,35 @@ def process_file():
         return jsonify({"error": str(e)}), 500
 
     elif file_type == "video":
-        try:
-            # Extract audio
-            audio_path = output_path + "_audio.wav"
-            subprocess.run(
-                ["ffmpeg", "-i", input_path, "-q:a", "0", "-map", "a", audio_path, "-y"],
-                check=True
-            )
+    try:
+        audio_path = output_path + "_audio.wav"
+        # Extract audio
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", input_path, "-q:a", "0", "-map", "a", audio_path],
+            check=True
+        )
 
-            # Reduce noise
-            y, sr = librosa.load(audio_path, sr=None)
-            reduced = nr.reduce_noise(y=y, sr=sr)
-            cleaned_audio = output_path + "_cleaned.wav"
-            sf.write(cleaned_audio, reduced, sr)
+        # Clean extracted audio
+        cleaned_audio = output_path + "_cleaned.wav"
+        reduce_noise_ffmpeg(audio_path, cleaned_audio)
 
-            # Merge back into video
-            out_file = output_path + ".mp4"
-            subprocess.run(
-                ["ffmpeg", "-i", input_path, "-i", cleaned_audio, "-c:v", "copy", "-map", "0:v:0", "-map", "1:a:0", out_file, "-y"],
-                check=True
-            )
+        # Merge cleaned audio with original video
+        out_file = output_path + "_cleaned.mp4"
+        subprocess.run(
+            [
+                "ffmpeg", "-y",
+                "-i", input_path, "-i", cleaned_audio,
+                "-c:v", "copy", "-map", "0:v:0", "-map", "1:a:0",
+                out_file
+            ],
+            check=True
+        )
 
-            return send_file(out_file, as_attachment=True)
+        return send_file(out_file, as_attachment=True)
 
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
     else:
         return jsonify({"error": "Invalid fileType"}), 400
