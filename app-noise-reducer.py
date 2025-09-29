@@ -1,4 +1,5 @@
 import os
+import re
 import tempfile
 import subprocess
 from flask import Flask, request, send_file, jsonify
@@ -7,19 +8,31 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+
+def sanitize_filename(filename: str) -> str:
+    """
+    Replace unsafe characters with underscores for safe handling.
+    """
+    return re.sub(r'[^a-zA-Z0-9._-]', '_', filename)
+
+
 def reduce_noise_ffmpeg(input_path, output_path):
-    # ffmpeg built-in noise reduction (adaptive filter)
+    """
+    Use ffmpeg with anlmdn filter for basic noise reduction.
+    """
     cmd = [
-        "ffmpeg", "-y",
+        "ffmpeg", "-y",  # overwrite output
         "-i", input_path,
-        "-af", "anlmdn=s=12",  # apply noise reduction
+        "-af", "anlmdn=s=12",  # noise reduction filter
         output_path
     ]
     subprocess.run(cmd, check=True)
 
+
 @app.route("/")
 def home():
     return jsonify({"status": "Noise Reduction API running"})
+
 
 @app.route("/process", methods=["POST"])
 def process_file():
@@ -29,17 +42,16 @@ def process_file():
     file = request.files["file"]
     file_type = request.form.get("fileType", "audio")
 
-    # Save temp input
-    input_path = os.path.join(tempfile.gettempdir(), file.filename)
+    # Sanitize filename before saving
+    safe_name = sanitize_filename(file.filename)
+    input_path = os.path.join(tempfile.gettempdir(), safe_name)
     file.save(input_path)
 
-    # Prepare output base
-    base, _ = os.path.splitext(file.filename)
-    output_base = os.path.join(tempfile.gettempdir(), base)
+    output_path = os.path.join(tempfile.gettempdir(), "output")
 
     if file_type == "audio":
         try:
-            out_file = output_base + "_cleaned.wav"
+            out_file = output_path + "_cleaned.wav"
             reduce_noise_ffmpeg(input_path, out_file)
             return send_file(out_file, as_attachment=True)
         except Exception as e:
@@ -47,19 +59,19 @@ def process_file():
 
     elif file_type == "video":
         try:
-            audio_path = output_base + "_audio.wav"
             # Extract audio
+            audio_path = output_path + "_audio.wav"
             subprocess.run(
                 ["ffmpeg", "-y", "-i", input_path, "-q:a", "0", "-map", "a", audio_path],
                 check=True
             )
 
             # Clean extracted audio
-            cleaned_audio = output_base + "_cleaned.wav"
+            cleaned_audio = output_path + "_cleaned.wav"
             reduce_noise_ffmpeg(audio_path, cleaned_audio)
 
-            # Merge cleaned audio with original video
-            out_file = output_base + "_cleaned.mp4"
+            # Merge cleaned audio back into video
+            out_file = output_path + "_cleaned.mp4"
             subprocess.run(
                 [
                     "ffmpeg", "-y",
@@ -77,6 +89,7 @@ def process_file():
 
     else:
         return jsonify({"error": "Invalid fileType"}), 400
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
