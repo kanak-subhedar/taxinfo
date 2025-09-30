@@ -1,0 +1,31 @@
+<!-- Load AdSense script only once -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
+        crossorigin="anonymous"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+    function insertAdAfterHeading(index) {
+      if (headings.length > index) {
+        const adWrapper = document.createElement("div");
+        adWrapper.className = "ads";
+
+        adWrapper.innerHTML = `
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-6272193760158994"
+               data-ad-slot="2015302205"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        `;
+
+        headings[index].insertAdjacentElement("afterend", adWrapper);
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    }
+
+    // 👇 Adjust indexes here (0-based: 3 = 4th heading, 6 = 7th heading)
+    [3, 6].forEach(insertAdAfterHeading);
+  });
+</script>
