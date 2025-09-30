@@ -1,0 +1,39 @@
+<!-- Load AdSense script only once 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994"
+        crossorigin="anonymous"></script>
+-->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+    function insertAdAfterHeading(index) {
+      if (headings.length > index) {
+        // Create ad wrapper
+        const adWrapper = document.createElement("div");
+        adWrapper.className = "ads";
+
+        // Create ins element
+        const ad = document.createElement("ins");
+        ad.className = "adsbygoogle";
+        ad.style = "display:block";
+        ad.setAttribute("data-ad-client", "ca-pub-6272193760158994");
+        ad.setAttribute("data-ad-slot", "2015302205");
+        ad.setAttribute("data-ad-format", "auto");
+        ad.setAttribute("data-full-width-responsive", "true");
+
+        // Append ins into wrapper
+        adWrapper.appendChild(ad);
+
+        // Insert after the heading
+        headings[index].insertAdjacentElement("afterend", adWrapper);
+
+        // Push ad
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    }
+
+    // Insert after 4th and 7th headings
+    insertAdAfterHeading(3);
+    insertAdAfterHeading(6);
+  });
+</script>
