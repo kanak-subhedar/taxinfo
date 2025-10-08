@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>T24K Affiliate Signup Helper</title>
+<style>
+  body{font-family:Inter,Segoe UI,Arial; background:#f7f7f7; color:#222; margin:0; padding:20px;}
+  .wrap{max-width:900px;margin:20px auto;background:white;padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+  h1{margin:0 0 10px;color:#b47a2f}
+  label{display:block;margin-top:12px;font-weight:600}
+  input[type=text], input[type=email], input[type=url], textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px}
+  .btn{background:#b47a2f;color:white;padding:10px 12px;border-radius:8px;text-decoration:none;display:inline-block;border:none;cursor:pointer}
+  .btn.secondary{background:#444}
+  .panel{background:#fff8f0;border:1px solid #f0e3d0;padding:12px;border-radius:8px;margin-top:12px}
+  pre{background:#111; color:#fff; padding:10px; border-radius:6px; overflow:auto}
+  .link-list a{display:block;margin:6px 0;color:#1a73e8}
+  .small{font-size:0.9rem;color:#555}
+  .download{margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>T24K — Affiliate Signup Helper</h1>
+  <p class="small">This local tool helps prepare and accelerate affiliate signups. It <strong>does not</strong> create accounts for you — it opens sign-up pages and pre-fills data you can copy/paste.</p>
+
+  <label for="fullname">Your full name</label>
+  <input id="fullname" type="text" placeholder="Girish Kanak">
+
+  <label for="email">Email (for affiliate accounts / payouts)</label>
+  <input id="email" type="email" placeholder="support@t24k.com">
+
+  <label for="website">Website</label>
+  <input id="website" type="url" placeholder="https://t24k.com/jewels">
+
+  <label for="business">Business or Store name (optional)</label>
+  <input id="business" type="text" placeholder="T24K Jewels">
+
+  <label for="payout">Payout/method (PayPal / Bank / UPI)</label>
+  <input id="payout" type="text" placeholder="Bank (IFSC/Acc no) or PayPal email">
+
+  <div style="margin-top:16px">
+    <button class="btn" id="saveBtn">Save details & Prepare</button>
+    <button class="btn secondary" id="clearBtn">Clear</button>
+  </div>
+
+  <div id="actions" style="display:none">
+    <div class="panel">
+      <h3>Affiliate Signup Links</h3>
+      <div class="link-list">
+        <!-- Buttons open signup pages in a new tab -->
+        <a id="amazonLink" href="#" target="_blank">Amazon Associates — Sign up</a>
+        <a id="earnkaroLink" href="#" target="_blank">EarnKaro — Signup/Login</a>
+        <a id="melorraLink" href="#" target="_blank">Melorra — Affiliate</a>
+        <a id="awinLink" href="#" target="_blank">Awin (publisher signup)</a>
+        <a id="blueStoneContact" href="#" target="_blank">BlueStone — Contact (brand may require email)</a>
+      </div>
+      <p class="small">Each button opens the provider's signup page in a new tab. Copy/paste the prepared data below into their forms.</p>
+    </div>
+
+    <div class="panel" id="prefillPanel">
+      <h3>Copy/Paste-ready Registration Details (one click)</h3>
+      <p class="small">Click the copy button to copy all details to clipboard, then paste into signup forms.</p>
+      <pre id="prefillText" style="white-space:pre-wrap"></pre>
+      <div style="margin-top:8px">
+        <button class="btn" id="copyBtn">Copy details to clipboard</button>
+        <button class="btn secondary" id="downloadCsv">Download CSV</button>
+      </div>
+    </div>
+
+    <div class="panel" id="emailPanel">
+      <h3>Ready Email Templates</h3>
+      <p class="small">Use these to contact brands that require manual onboarding (example: BlueStone contact).</p>
+      <label>Contact subject</label>
+      <input id="emailSubject" type="text" value="Affiliate Partnership Request — T24K Jewels">
+      <label>Email body (editable)</label>
+      <textarea id="emailBody" rows="7"></textarea>
+      <div style="margin-top:8px">
+        <button class="btn" id="copyEmail">Copy Email Text</button>
+        <a id="mailtoLink" class="btn secondary" href="#" target="_blank">Open Email Client</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Sample Affiliate Link Templates</h3>
+      <p class="small">These are templates — once you get the actual product URL from the merchant, replace the product code and your tag.</p>
+      <pre id="linkTemplates">
+Amazon (example):
+https://www.amazon.in/dp/B0EXAMPLE123/?tag=YOURTAG-21
+
+EarnKaro (example shortened):
+https://earnkaro.com/promo/?u=YOUR_TRACKING_CODE
+
+Melorra (example):
+https://www.melorra.com/product/PRODUCT-SLUG?aff=YOUR_AFF_ID
+
+Awin (example):
+https://www.awin1.com/cread.php?awinmid=BRAND_ID&awinaffid=YOUR_AWIN_PUB_ID
+      </pre>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const defaultEmails = {
+    blueStone: "marketing@bluestone.com",
+  };
+
+  const selectors = {
+    fullname: document.getElementById('fullname'),
+    email: document.getElementById('email'),
+    website: document.getElementById('website'),
+    business: document.getElementById('business'),
+    payout: document.getElementById('payout'),
+    saveBtn: document.getElementById('saveBtn'),
+    clearBtn: document.getElementById('clearBtn'),
+    actions: document.getElementById('actions'),
+    prefillText: document.getElementById('prefillText'),
+    copyBtn: document.getElementById('copyBtn'),
+    downloadCsv: document.getElementById('downloadCsv'),
+    amazonLink: document.getElementById('amazonLink'),
+    earnkaroLink: document.getElementById('earnkaroLink'),
+    melorraLink: document.getElementById('melorraLink'),
+    awinLink: document.getElementById('awinLink'),
+    blueStoneContact: document.getElementById('blueStoneContact'),
+    emailBody: document.getElementById('emailBody'),
+    emailSubject: document.getElementById('emailSubject'),
+    copyEmail: document.getElementById('copyEmail'),
+    mailtoLink: document.getElementById('mailtoLink'),
+  };
+
+  // Pre-fill sample email body
+  function buildEmailBody(values){
+    return `Hello,\n\nMy name is ${values.fullname} from ${values.business || values.fullname}. I run a jewellery portal at ${values.website} and am interested in partnering with ${values.brandName || 'your brand'} as an affiliate/publisher. I have a targeted audience for premium jewellery and would like to discuss affiliate terms, tracking, and onboarding steps.\n\nWebsite: ${values.website}\nContact email: ${values.email}\nPayout method: ${values.payout}\n\nPlease let me know the next steps and required documentation. I look forward to your reply.\n\nBest regards,\n${values.fullname}\n${values.business || ''}`;
+  }
+
+  // Create the copy/paste registration text
+  function buildPrefill(values){
+    return [
+      `Full name: ${values.fullname}`,
+      `Email: ${values.email}`,
+      `Website: ${values.website}`,
+      `Business/Store name: ${values.business}`,
+      `Payout: ${values.payout}`,
+      `Short description (use for "How will you promote"):`,
+      `T24K Jewels — curated jewellery guides and product recommendations. Target audience: India & global buyers, focus on gold rings, necklaces, and premium gift segments. Social channels: LinkedIn, Pinterest, YouTube.`,
+      `Example sample link format (replace product code / tag):`,
+      `Amazon example: https://www.amazon.in/dp/B0EXAMPLE123/?tag=YOURTAG-21`
+    ].join('\\n\\n');
+  }
+
+  selectors.saveBtn.addEventListener('click', function(){
+    const values = {
+      fullname: selectors.fullname.value.trim(),
+      email: selectors.email.value.trim(),
+      website: selectors.website.value.trim(),
+      business: selectors.business.value.trim(),
+      payout: selectors.payout.value.trim()
+    };
+    if(!values.fullname || !values.email || !values.website){
+      alert('Please enter at least name, email and website.');
+      return;
+    }
+    // store in localStorage for convenience
+    localStorage.setItem('t24k_aff_name', values.fullname);
+    localStorage.setItem('t24k_aff_email', values.email);
+    localStorage.setItem('t24k_aff_website', values.website);
+    localStorage.setItem('t24k_aff_business', values.business);
+    localStorage.setItem('t24k_aff_payout', values.payout);
+
+    // show action panel
+    selectors.actions.style.display = 'block';
+
+    // set copy/paste text
+    selectors.prefillText.textContent = buildPrefill(values);
+
+    // set email body template
+    selectors.emailBody.value = buildEmailBody(values);
+
+    // update mailto
+    const mailto = `mailto:${defaultEmails.blueStone}?subject=${encodeURIComponent(selectors.emailSubject.value || 'Affiliate Partnership Request')}&body=${encodeURIComponent(selectors.emailBody.value)}`;
+    selectors.mailtoLink.href = mailto;
+
+    // set affiliate signup links (open in new tab)
+    selectors.amazonLink.href = 'https://affiliate-program.amazon.in/';
+    selectors.earnkaroLink.href = 'https://earnkaro.com/';
+    selectors.melorraLink.href = 'https://www.melorra.com/affiliate';
+    selectors.awinLink.href = 'https://www.awin.com/'; // publisher signup available
+    selectors.blueStoneContact.href = 'mailto:marketing@bluestone.com';
+  });
+
+  selectors.clearBtn.addEventListener('click', function(){
+    localStorage.removeItem('t24k_aff_name');
+    localStorage.removeItem('t24k_aff_email');
+    localStorage.removeItem('t24k_aff_website');
+    localStorage.removeItem('t24k_aff_business');
+    localStorage.removeItem('t24k_aff_payout');
+    selectors.fullname.value=''; selectors.email.value=''; selectors.website.value=''; selectors.business.value=''; selectors.payout.value='';
+    selectors.actions.style.display='none';
+    selectors.prefillText.textContent='';
+    selectors.emailBody.value='';
+  });
+
+  // initialize if saved values exist
+  function initFromStorage(){
+    const n = localStorage.getItem('t24k_aff_name');
+    if(n){
+      selectors.fullname.value = n;
+      selectors.email.value = localStorage.getItem('t24k_aff_email')||'';
+      selectors.website.value = localStorage.getItem('t24k_aff_website')||'';
+      selectors.business.value = localStorage.getItem('t24k_aff_business')||'';
+      selectors.payout.value = localStorage.getItem('t24k_aff_payout')||'';
+      // simulate save click to populate panels
+      selectors.saveBtn.click();
+    }
+  }
+  initFromStorage();
+
+  // copy prefill text
+  selectors.copyBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(selectors.prefillText.textContent).then(function(){ alert('Details copied to clipboard. Paste into signup form.'); });
+  });
+
+  // download CSV
+  selectors.downloadCsv.addEventListener('click', function(){
+    const rows = [
+      ['field','value'],
+      ['full_name', selectors.fullname.value.trim()],
+      ['email', selectors.email.value.trim()],
+      ['website', selectors.website.value.trim()],
+      ['business', selectors.business.value.trim()],
+      ['payout', selectors.payout.value.trim()]
+    ];
+    const csv = rows.map(r=>r.map(c=>`"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 't24k_affiliate_details.csv'; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 5000);
+  });
+
+  // email copy
+  selectors.copyEmail.addEventListener('click', function(){
+    navigator.clipboard.writeText(selectors.emailBody.value).then(()=>alert('Email body copied. Paste into your email client.'));
+  });
+
+  // update mailto on subject/body edits
+  selectors.emailSubject.addEventListener('input', function(){
+    selectors.mailtoLink.href = `mailto:${defaultEmails.blueStone}?subject=${encodeURIComponent(selectors.emailSubject.value)}&body=${encodeURIComponent(selectors.emailBody.value)}`;
+  });
+  selectors.emailBody.addEventListener('input', function(){
+    selectors.mailtoLink.href = `mailto:${defaultEmails.blueStone}?subject=${encodeURIComponent(selectors.emailSubject.value)}&body=${encodeURIComponent(selectors.emailBody.value)}`;
+  });
+
+})();
+</script>
+</body>
+</html>
