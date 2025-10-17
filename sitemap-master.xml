@@ -3,6 +3,9 @@
   <sitemap>
     <loc>https://t24k.com/sitemaps/sitemap.xml</loc>
   </sitemap>  
+    <sitemap>
+    <loc>https://t24k.com/sitemaps/sitemap-file-mgmt-software.xml</loc>
+  </sitemap> 
   <sitemap>
     <loc>https://t24k.com/sitemaps/sitemap-jewels.xml</loc>
   </sitemap>
