@@ -8,12 +8,7 @@
     <changefreq>daily</changefreq>
     <priority>0.95</priority>   
   </url>
-  <url>
-    <loc>https://t24k.com/digipro/client-magnet</loc>
-    <lastmod>2025-09-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>   
-  </url>
+
   <url>
     <loc>https://t24k.com/digipro/compress-files-online</loc>
     <lastmod>2025-09-22</lastmod>
