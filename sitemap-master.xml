@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Root & Index -->
+  <url>
+    <loc>https://t24k.com/</loc>
+  </url>
+  <url>
+    <loc>https://t24k.com/site-list.html</loc>
+  </url>
+
+  <!-- Jewellery -->
+  <url>
+    <loc>https://t24k.com/jewels/index.html</loc>
+  </url>
+
+  <!-- T-Shirts -->
+  <url>
+    <loc>https://t24k.com/tshirts/index.html</loc>
+  </url>
+
+  <!-- Digital Products -->
+  <url>
+    <loc>https://t24k.com/digipro/client-magnet.html</loc>
+  </url>
+  <url>
+    <loc>https://t24k.com/digipro/best-file-management-software.html</loc>
+  </url>
+
+  <!-- Motor Bikes -->
+  <url>
+    <loc>https://t24k.com/motor-bike/index.html</loc>
+  </url>
+  <url>
+    <loc>https://t24k.com/motor-bike/buying-guide.html</loc>
+  </url>
+
+  <!-- Domain Availability -->
+  <url>
+    <loc>https://t24k.com/domain-availability/index.html</loc>
+  </url>
+
+  <!-- WHOIS -->
+  <url>
+    <loc>https://t24k.com/whois/index.html</loc>
+  </url>
+
+</urlset>
