@@ -2,8 +2,20 @@
 
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
+ <url>
     <loc>https://t24k.com/motor-bike</loc>
+    <lastmod>2025-07-09</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/motor-bike/buying-guide</loc>
+    <lastmod>2025-07-09</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>  
+  <url>
+    <loc>https://t24k.com/motor-bike/additionally</loc>
     <lastmod>2025-07-09</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
