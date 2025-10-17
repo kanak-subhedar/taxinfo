@@ -20,6 +20,11 @@
     <loc>https://t24k.com/tshirts/index.html</loc>
   </url>
 
+  <!-- Mobile-world -->
+  <url>
+    <loc>https://t24k.com/mobile-world/index.html</loc>
+  </url>
+  
   <!-- Digital Products -->
   <url>
     <loc>https://t24k.com/digipro/client-magnet.html</loc>
