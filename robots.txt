@@ -1,1 +1,4 @@
+User-agent: *
+Allow: /
+
 Sitemap: https://t24k.com/sitemap-master.xml
