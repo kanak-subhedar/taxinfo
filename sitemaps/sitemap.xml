@@ -135,12 +135,6 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://t24k.com/...</loc>
-    <lastmod>2025-07-09</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
     <loc>https://t24k.com/donation</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
@@ -153,13 +147,31 @@
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>https://t24k.com/elss-mutual-funds-tax-saving</loc>
+    <lastmod>2025-07-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://t24k.com/employee-gratuity-fund</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>https://t24k.com/example-for-tax-statement-26as</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://t24k.com/fd-rd</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/filing-income-tax-return</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
@@ -191,6 +203,25 @@
 
   <url>
     <loc>https://t24k.com/house-rent-allowance</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  
+  <url>
+    <loc>https://t24k.com/how-to-file-income-tax-return-india-2025</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/hra-exemption-calculation-india-2025</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/income-tax-basics-india</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
