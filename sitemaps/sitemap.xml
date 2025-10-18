@@ -287,7 +287,25 @@
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>https://t24k.com/loan-board</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/loan_details</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://t24k.com/national-pension-scheme</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/new-details</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
@@ -295,6 +313,12 @@
   <url>
     <loc>https://t24k.com/no-cost-emi</loc>
     <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/nps-tier-ii-guide</loc>
+    <lastmod>2025-06-04</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
@@ -307,6 +331,18 @@
 
  <url>
     <loc>https://t24k.com/nps-vs-tier-ii-june-2025</loc>
+    <lastmod>2025-06-04</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/offline-messaging-tool</loc>
+    <lastmod>2025-06-04</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/old-vs-new-tax-regime-2025</loc>
     <lastmod>2025-06-04</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
@@ -336,6 +372,12 @@
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
+  <url>
+    <loc>https://t24k.com/section-80c-deductions</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
 
   <url>
     <loc>https://t24k.com/self-education</loc>
@@ -344,7 +386,31 @@
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>https://t24k.com/shipping-and-delivery</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/site-list</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/site-tax</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://t24k.com/spouse-home-loan</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/standard-deduction-income-tax-2025</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
@@ -357,6 +423,18 @@
   </url>
   <url>
     <loc>https://t24k.com/tax-details</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/tax-guide</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/tax-on-fd-interest-2025</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
@@ -376,6 +454,24 @@
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>https://t24k.com/tax-on-mutual-funds</loc>
+    <lastmod>2025-06-04</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/tax-on-salary-income</loc>
+    <lastmod>2025-06-04</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/tax-saving-fixed-deposits</loc>
+    <lastmod>2025-06-04</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://t24k.com/tax-saving-guide-india</loc>
     <lastmod>2025-06-04</lastmod>
     <changefreq>always</changefreq>
@@ -383,6 +479,12 @@
   </url>
   <url>
     <loc>https://t24k.com/taxes-on-fixed-deposit-and-recurring-deposit-interest</loc>
+    <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/terms-and-condtions</loc>
     <lastmod>2025-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
