@@ -143,8 +143,9 @@ layout: default
                   (Math.pow(1 + monthlyRate, tenure) - 1);
 
       // Max loan eligibility (40% of monthly income rule)
-      const maxEligibleLoan = (income * 0.004 * tenure * (1 - Math.pow(1 + monthlyRate, -tenure))) / monthlyRate;
-
+      const oldmaxEligibleLoan = (income * 0.004 * tenure * (1 - Math.pow(1 + monthlyRate, -tenure))) / monthlyRate;
+      const maxEligibleLoan = (income * 80);
+		
       // Loan comparison
       const lenders = [
         { lender: "Lender A (9%)", rate: 9 },
