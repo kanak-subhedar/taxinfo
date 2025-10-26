@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAGR & XIRR Calculator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #f7f9fb;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  label {
+    font-weight: bold;
+  }
+  select, input, textarea, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  button {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+  #result {
+    font-size: 1.1em;
+    background: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+    text-align: center;
+  }
+  textarea {
+    height: 100px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Investment Return Calculator</h2>
+
+<label>Select Calculation Type:</label>
+<select id="calcType" onchange="toggleInput()">
+  <option value="CAGR">CAGR (Single Investment)</option>
+  <option value="XIRR">XIRR (Multiple Cash Flows)</option>
+</select>
+
+<div id="cagrInputs">
+  <label>Initial Investment (₹):</label>
+  <input type="number" id="initialValue" value="1000000">
+
+  <label>Final Value (₹):</label>
+  <input type="number" id="finalValue" value="1300000">
+
+  <label>Period (Years):</label>
+  <input type="number" id="period" value="1" step="0.1">
+</div>
+
+<div id="xirrInputs" style="display:none;">
+  <label>Enter Cash Flows (date, amount):</label>
+  <textarea id="cashFlows" placeholder="Example:
+2018-01-01, -100000
+2018-02-01, -100000
+2018-03-01, -100000
+2025-10-01, 1300000"></textarea>
+</div>
+
+<button onclick="calculate()">Calculate</button>
+
+<div id="result"></div>
+
+<script>
+// Toggle inputs
+function toggleInput() {
+  const type = document.getElementById("calcType").value;
+  document.getElementById("cagrInputs").style.display = type === "CAGR" ? "block" : "none";
+  document.getElementById("xirrInputs").style.display = type === "XIRR" ? "block" : "none";
+  document.getElementById("result").innerHTML = "";
+}
+
+// CAGR Calculation
+function calculateCAGR(P, F, years) {
+  return Math.pow(F / P, 1 / years) - 1;
+}
+
+// XIRR Calculation (Iterative Newton’s method)
+function calculateXIRR(cashFlows, guess = 0.1) {
+  const maxIter = 1000;
+  const tol = 1e-6;
+
+  function npv(rate) {
+    return cashFlows.reduce((acc, cf) => {
+      const days = (cf.date - cashFlows[0].date) / (1000 * 60 * 60 * 24);
+      return acc + cf.amount / Math.pow(1 + rate, days / 365);
+    }, 0);
+  }
+
+  function dnpv(rate) {
+    return cashFlows.reduce((acc, cf) => {
+      const days = (cf.date - cashFlows[0].date) / (1000 * 60 * 60 * 24);
+      return acc - (days / 365) * cf.amount / Math.pow(1 + rate, (days / 365 + 1));
+    }, 0);
+  }
+
+  let rate = guess;
+  for (let i = 0; i < maxIter; i++) {
+    const newRate = rate - npv(rate) / dnpv(rate);
+    if (Math.abs(newRate - rate) < tol) return rate;
+    rate = newRate;
+  }
+  return rate;
+}
+
+function calculate() {
+  const type = document.getElementById("calcType").value;
+  let resultText = "";
+
+  if (type === "CAGR") {
+    const P = parseFloat(document.getElementById("initialValue").value);
+    const F = parseFloat(document.getElementById("finalValue").value);
+    const years = parseFloat(document.getElementById("period").value);
+    if (P > 0 && F > 0 && years > 0) {
+      const cagr = calculateCAGR(P, F, years) * 100;
+      resultText = `CAGR = <strong>${cagr.toFixed(2)}%</strong> per year`;
+    } else resultText = "Please enter valid values.";
+  } else {
+    const lines = document.getElementById("cashFlows").value.trim().split("\n");
+    const cashFlows = lines.map(line => {
+      const [date, amount] = line.split(",").map(s => s.trim());
+      return { date: new Date(date), amount: parseFloat(amount) };
+    });
+
+    if (cashFlows.length < 2) {
+      resultText = "Please enter at least 2 cash flows.";
+    } else {
+      const xirr = calculateXIRR(cashFlows) * 100;
+      resultText = `XIRR = <strong>${xirr.toFixed(2)}%</strong> per year`;
+    }
+  }
+
+  document.getElementById("result").innerHTML = resultText;
+}
+</script>
+
+</body>
+</html>
