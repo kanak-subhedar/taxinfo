@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expense Ratio Impact Calculator - T24K</title>
+<title>Expense Ratio Impact Calculator With Graph - T24K</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   body {
     font-family: "Segoe UI", sans-serif;
@@ -16,7 +18,7 @@
     color: #0f172a;
   }
   .calc-container {
-    max-width: 500px;
+    max-width: 600px;
     margin: auto;
     background: #ffffff;
     padding: 25px;
@@ -37,6 +39,7 @@
     padding: 10px 20px;
     border-radius: 8px;
     cursor: pointer;
+    margin: 6px;
   }
   button:hover {
     background: #0284c7;
@@ -53,11 +56,14 @@
   th {
     background: #f1f5f9;
   }
+  #chartContainer {
+    margin-top: 30px;
+  }
 </style>
 </head>
 <body>
 
-<h1>Expense Ratio Impact Calculator</h1>
+<h1>Expense Ratio Impact Calculator With Graph</h1>
 <div class="calc-container">
   <label>Initial Investment (₹):</label>
   <input type="number" id="investment" value="1000000">
@@ -68,18 +74,24 @@
   <label>Duration (years):</label>
   <input type="number" id="years" value="10">
 
-  <label>Option 1 - Expense Ratio (%):</label>
+  <label>Option 1(MF) - Expense Ratio (%):</label>
   <input type="number" id="er1" value="2">
 
-  <label>Option 2 - Expense Ratio (%):</label>
+  <label>Option 2(ETF) - Expense Ratio (%):</label>
   <input type="number" id="er2" value="0.2">
 
   <button onclick="calculate()">Compare</button>
+  <button onclick="downloadPDF()">Download PDF</button>
 
   <div id="result"></div>
+  <div id="chartContainer">
+    <canvas id="chart"></canvas>
+  </div>
 </div>
 
 <script>
+let chartInstance = null;
+
 function calculate() {
   const inv = parseFloat(document.getElementById('investment').value);
   const marketReturn = parseFloat(document.getElementById('marketReturn').value) / 100;
@@ -90,11 +102,19 @@ function calculate() {
   const gross = inv * Math.pow(1 + marketReturn, years);
   const net1 = inv * Math.pow(1 + (marketReturn - er1), years);
   const net2 = inv * Math.pow(1 + (marketReturn - er2), years);
-
   const diff1 = gross - net1;
   const diff2 = gross - net2;
 
   const fmt = x => x.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+
+  // Yearly values for graph
+  let labels = [], grossArr = [], opt1Arr = [], opt2Arr = [];
+  for (let y = 0; y <= years; y++) {
+    labels.push(y);
+    grossArr.push(inv * Math.pow(1 + marketReturn, y));
+    opt1Arr.push(inv * Math.pow(1 + (marketReturn - er1), y));
+    opt2Arr.push(inv * Math.pow(1 + (marketReturn - er2), y));
+  }
 
   document.getElementById('result').innerHTML = `
     <table>
@@ -103,8 +123,61 @@ function calculate() {
       <tr><td>Option 2 (e.g. ETF)</td><td>${(er2*100).toFixed(2)}%</td><td>${fmt(net2)}</td><td>${fmt(diff2)}</td></tr>
       <tr><td><b>Gross Market (no expense)</b></td><td>0%</td><td><b>${fmt(gross)}</b></td><td>-</td></tr>
     </table>
-    <p><b>Note:</b> Even a small expense ratio compounds over time and eats a big part of your growth!</p>
+    <p><b>Note:</b> Even a small expense ratio compounds over time and silently reduces your returns.<br><br>
+
+    When invested in Mutual Fund for 10 Years(or more) and Annual return 12%(or more) Your Expense Ratio(2%) will eat up more 
+than 50% of original Capital<br><br>
+
+Exit load for Mutual Fund is kept so that fund should not be withdrawn in the early stage<br><br>
+
+    ETF means Exchange Traded Fund</p>
   `;
+
+  // Chart update
+  const ctx = document.getElementById('chart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Gross (No Expense)', data: grossArr, borderColor: '#16a34a', fill: false },
+        { label: 'Option 1 (2% Expense)', data: opt1Arr, borderColor: '#ef4444', fill: false },
+        { label: 'Option 2 (0.2% Expense)', data: opt2Arr, borderColor: '#3b82f6', fill: false }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { 
+        y: { 
+          beginAtZero: false,
+          ticks: { callback: v => '₹' + (v/100000).toFixed(1) + 'L' }
+        } 
+      }
+    }
+  });
+}
+
+async function downloadPDF() {
+  if (!chartInstance) return alert("Please calculate first.");
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+  pdf.text("Expense Ratio Impact Report", 14, 20);
+  const resultDiv = document.getElementById('result');
+  pdf.html(resultDiv, {
+    x: 14,
+    y: 30,
+    html2canvas: { scale: 0.5 },
+    callback: function (pdf) {
+      pdf.addPage();
+      pdf.text("Growth Chart", 14, 20);
+      const chartCanvas = document.getElementById('chart');
+      const chartImg = chartCanvas.toDataURL('image/png', 1.0);
+      pdf.addImage(chartImg, 'PNG', 10, 30, 180, 100);
+      pdf.save("Expense_Ratio_Report_T24K.pdf");
+    }
+  });
 }
 </script>
 
