@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Ratio Impact Calculator - T24K</title>
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    text-align: center;
+    padding: 40px;
+  }
+  h1 {
+    color: #0f172a;
+  }
+  .calc-container {
+    max-width: 500px;
+    margin: auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  input {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+  }
+  button {
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #0284c7;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  th, td {
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  th {
+    background: #f1f5f9;
+  }
+</style>
+</head>
+<body>
+
+<h1>Expense Ratio Impact Calculator</h1>
+<div class="calc-container">
+  <label>Initial Investment (₹):</label>
+  <input type="number" id="investment" value="1000000">
+
+  <label>Expected Market Return (% per year):</label>
+  <input type="number" id="marketReturn" value="12">
+
+  <label>Duration (years):</label>
+  <input type="number" id="years" value="10">
+
+  <label>Option 1 - Expense Ratio (%):</label>
+  <input type="number" id="er1" value="2">
+
+  <label>Option 2 - Expense Ratio (%):</label>
+  <input type="number" id="er2" value="0.2">
+
+  <button onclick="calculate()">Compare</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+function calculate() {
+  const inv = parseFloat(document.getElementById('investment').value);
+  const marketReturn = parseFloat(document.getElementById('marketReturn').value) / 100;
+  const years = parseFloat(document.getElementById('years').value);
+  const er1 = parseFloat(document.getElementById('er1').value) / 100;
+  const er2 = parseFloat(document.getElementById('er2').value) / 100;
+
+  const gross = inv * Math.pow(1 + marketReturn, years);
+  const net1 = inv * Math.pow(1 + (marketReturn - er1), years);
+  const net2 = inv * Math.pow(1 + (marketReturn - er2), years);
+
+  const diff1 = gross - net1;
+  const diff2 = gross - net2;
+
+  const fmt = x => x.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+
+  document.getElementById('result').innerHTML = `
+    <table>
+      <tr><th>Option</th><th>Expense Ratio</th><th>Net Value (₹)</th><th>Lost Growth (₹)</th></tr>
+      <tr><td>Option 1 (e.g. Mutual Fund)</td><td>${(er1*100).toFixed(2)}%</td><td>${fmt(net1)}</td><td>${fmt(diff1)}</td></tr>
+      <tr><td>Option 2 (e.g. ETF)</td><td>${(er2*100).toFixed(2)}%</td><td>${fmt(net2)}</td><td>${fmt(diff2)}</td></tr>
+      <tr><td><b>Gross Market (no expense)</b></td><td>0%</td><td><b>${fmt(gross)}</b></td><td>-</td></tr>
+    </table>
+    <p><b>Note:</b> Even a small expense ratio compounds over time and eats a big part of your growth!</p>
+  `;
+}
+</script>
+
+</body>
+</html>
