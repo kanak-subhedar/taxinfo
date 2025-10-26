@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FIRE Lifestyle Asset Plan Calculator — T24K</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root{
+    --bg:#f6f9fb; --card:#ffffff; --muted:#6b7280; --accent:#0ea5e9; --accent-2:#f59e0b;
+    --glass: rgba(255,255,255,0.6);
+  }
+  body{font-family:"Inter",system-ui,Segoe UI,Roboto,Arial; background:var(--bg); margin:20px; color:#0f172a;}
+  .wrap{max-width:1100px;margin:12px auto;padding:18px;}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  header h1{font-size:20px;margin:0;}
+  .grid{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px;}
+  .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.06);}
+  label{display:block;font-size:13px;color:var(--muted);margin-top:10px;}
+  input[type="number"], select {width:100%; padding:8px 10px;border-radius:8px;border:1px solid #e6eef6;font-size:14px;margin-top:6px;}
+  .row{display:flex;gap:10px;}
+  .small{width:48%;}
+  .actions{display:flex;gap:8px;margin-top:12px;}
+  button{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600;}
+  button.secondary{background:#e6f5fb;color:#0f172a;}
+  .results{margin-top:12px;}
+  .big{font-size:18px;font-weight:700;color:#0f172a;}
+  .muted{color:var(--muted);font-size:13px;}
+  canvas{background:#fff;border-radius:10px;padding:8px;}
+  .note{font-size:13px;color:var(--muted);margin-top:12px}
+  @media(max-width:980px){.grid{grid-template-columns:1fr;}.small{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FIRE Lifestyle Asset Plan Calculator</h1>
+    <div class="muted">Visualize how buying a house/car affects your time-to-FIRE</div>
+  </header>
+
+  <div class="grid">
+    <!-- Left: Inputs -->
+    <div class="card">
+      <h3>Assumptions & Income</h3>
+      <label>Annual Gross Income (₹)</label>
+      <input type="number" id="income" value="1200000" min="0">
+
+      <div class="row">
+        <div class="small">
+          <label>Annual Living Expenses (₹)</label>
+          <input type="number" id="expenses" value="480000" min="0">
+        </div>
+        <div class="small">
+          <label>Current Investment Corpus (₹)</label>
+          <input type="number" id="corpus" value="500000" min="0">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small">
+          <label>Expected Annual Return (%)</label>
+          <input type="number" id="returnRate" value="10" step="0.1">
+        </div>
+        <div class="small">
+          <label>Safe Withdrawal Rate (%)</label>
+          <input type="number" id="withdrawRate" value="4" step="0.1">
+        </div>
+      </div>
+
+      <hr style="margin:14px 0;border:none;border-top:1px solid #eef6fb">
+
+      <h4>Asset 1 — House (optional)</h4>
+      <div class="row">
+        <div class="small">
+          <label>House Cost (₹)</label>
+          <input type="number" id="houseCost" value="2000000">
+        </div>
+        <div class="small">
+          <label>Downpayment (₹)</label>
+          <input type="number" id="houseDown" value="400000">
+        </div>
+      </div>
+      <div class="row">
+        <div class="small">
+          <label>Loan Tenor (years)</label>
+          <input type="number" id="houseTenor" value="10" min="0">
+        </div>
+        <div class="small">
+          <label>Home Loan Rate (%) annual</label>
+          <input type="number" id="houseRate" value="8" step="0.1">
+        </div>
+      </div>
+
+      <h4 style="margin-top:12px">Asset 2 — Vehicle (bike/car) (optional)</h4>
+      <div class="row">
+        <div class="small">
+          <label>Vehicle Cost (₹)</label>
+          <input type="number" id="vehicleCost" value="150000">
+        </div>
+        <div class="small">
+          <label>Downpayment (₹)</label>
+          <input type="number" id="vehicleDown" value="30000">
+        </div>
+      </div>
+      <div class="row">
+        <div class="small">
+          <label>Loan Tenor (years)</label>
+          <input type="number" id="vehicleTenor" value="3" min="0">
+        </div>
+        <div class="small">
+          <label>Loan Rate (%) annual</label>
+          <input type="number" id="vehicleRate" value="10" step="0.1">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button onclick="runScenario()">Run Comparison</button>
+        <button class="secondary" onclick="resetSample()">Load Sample</button>
+      </div>
+
+      <div class="note">
+        <strong>How it models:</strong> yearly compounding; EMIs reduce annual savings; downpayment reduces corpus immediately. This is a planning tool — adjust numbers to your reality.
+      </div>
+    </div>
+
+    <!-- Right: Results & Chart -->
+    <div class="card">
+      <h3>Results</h3>
+      <div id="summary" class="results">
+        <div class="muted">Please click <strong>Run Comparison</strong> to generate results</div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <canvas id="fireChart" width="400" height="300"></canvas>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div class="muted">Export / share</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button onclick="downloadPNG()">Download Chart PNG</button>
+          <button class="secondary" onclick="copySummary()">Copy Summary</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+ FIRE Lifestyle Asset Plan Calculator
+ - Simulates yearly corpus growth for baseline vs purchase scenario
+ - House/car modeled as: downpayment (lump) + EMI (annual payment)
+ - EMI formula used for loan payment; EMIs reduce savings each year
+ - Returns: time (years) to reach FIRE target = expenses / withdrawalRate
+*/
+
+// utility: format rupees
+function fmt(x){ return '₹' + Number(x).toLocaleString('en-IN', {maximumFractionDigits:0}); }
+
+// EMI calculation annual payment:
+function annualEMI(principal, ratePercent, years) {
+  if (years<=0) return 0;
+  const r = ratePercent/100;
+  const monthlyR = r/12;
+  const n = years*12;
+  const emi = principal * monthlyR / (1 - Math.pow(1+monthlyR, -n));
+  return emi * 12; // annualized
+}
+
+// simulate scenario: returns {yearsToFire, series: [yearly corpus], finalYear}
+function simulate(params) {
+  const {
+    income, expenses, corpusStart, annualReturn, withdrawRate,
+    houseDown, houseLoanAnnual, vehicleDown, vehicleLoanAnnual
+  } = params;
+
+  // FIRE target = annual expenses / withdrawal rate
+  const target = expenses / (withdrawRate/100);
+
+  let year = 0;
+  let corpus = corpusStart;
+  const series = [{year:0, corpus:corpus}];
+
+  // we assume salaries and expenses remain constant for simplicity
+  // annual gross savings = income - expenses - annual EMIs
+  const maxYears = 100; // cap
+  while (year < maxYears && corpus < target) {
+    year++;
+    const annualEmis = houseLoanAnnual + vehicleLoanAnnual;
+    const savings = Math.max(0, income - expenses - annualEmis); // amount added each year to invest
+    // corpus grows by annual return then add savings at year-end (conservative)
+    corpus = corpus * (1 + annualReturn/100) + savings;
+    series.push({year, corpus});
+    // break if stagnation
+    if (Number.isFinite(corpus)===false) break;
+  }
+
+  return {yearsToFire: year, series, target, finalCorpus: corpus};
+}
+
+let chart=null;
+
+function runScenario() {
+  // read inputs
+  const income = parseFloat(document.getElementById('income').value) || 0;
+  const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+  let corpus = parseFloat(document.getElementById('corpus').value) || 0;
+  const annualReturn = parseFloat(document.getElementById('returnRate').value) || 0;
+  const withdrawRate = parseFloat(document.getElementById('withdrawRate').value) || 4;
+
+  // house
+  const houseCost = parseFloat(document.getElementById('houseCost').value) || 0;
+  const houseDown = parseFloat(document.getElementById('houseDown').value) || 0;
+  const houseLoanTenor = parseFloat(document.getElementById('houseTenor').value) || 0;
+  const houseRate = parseFloat(document.getElementById('houseRate').value) || 0;
+
+  // vehicle
+  const vehicleCost = parseFloat(document.getElementById('vehicleCost').value) || 0;
+  const vehicleDown = parseFloat(document.getElementById('vehicleDown').value) || 0;
+  const vehicleLoanTenor = parseFloat(document.getElementById('vehicleTenor').value) || 0;
+  const vehicleRate = parseFloat(document.getElementById('vehicleRate').value) || 0;
+
+  // BASELINE: no asset purchase
+  const baselineParams = {
+    income, expenses, corpusStart: corpus, annualReturn, withdrawRate,
+    houseDown:0, houseLoanAnnual:0, vehicleDown:0, vehicleLoanAnnual:0
+  };
+  const baseSim = simulate(baselineParams);
+
+  // PURCHASE scenario: apply downpayments immediately (reduce corpus) and add annual EMI payments
+  const corpusAfterDown = corpus - houseDown - vehicleDown;
+  // loan principals:
+  const houseLoan = Math.max(0, houseCost - houseDown);
+  const vehicleLoan = Math.max(0, vehicleCost - vehicleDown);
+  const houseLoanAnnual = annualEMI(houseLoan, houseRate, houseLoanTenor);
+  const vehicleLoanAnnual = annualEMI(vehicleLoan, vehicleRate, vehicleLoanTenor);
+
+  const purchaseParams = {
+    income, expenses, corpusStart: corpusAfterDown, annualReturn, withdrawRate,
+    houseDown, houseLoanAnnual, vehicleDown, vehicleLoanAnnual
+  };
+  const buySim = simulate(purchaseParams);
+
+  // build summary
+  const summaryEl = document.getElementById('summary');
+  const baselineYears = baseSim.yearsToFire;
+  const buyYears = buySim.yearsToFire;
+  const delay = buyYears - baselineYears;
+  const target = baseSim.target;
+
+  summaryEl.innerHTML = `
+    <div class="muted">FIRE target (annual expenses ÷ withdrawal rate):</div>
+    <div class="big">${fmt(target)} (target corpus to fund ₹${Number(expenses).toLocaleString()} annual spending at ${withdrawRate}%)</div>
+
+    <div style="margin-top:12px">
+      <div class="muted">Baseline (no purchase):</div>
+      <div><strong>${baselineYears} years</strong> to reach FIRE — final projected corpus ${fmt(baseSim.finalCorpus)}</div>
+    </div>
+
+    <div style="margin-top:10px">
+      <div class="muted">After purchases (downpayment reduces corpus; EMIs reduce savings):</div>
+      <div><strong>${buyYears} years</strong> to reach FIRE — final projected corpus ${fmt(buySim.finalCorpus)}</div>
+    </div>
+
+    <div style="margin-top:12px" class="muted">
+      <strong>Net impact:</strong> Buying these assets will ${delay>0? 'delay': (delay<0? 'advance':'not change')} your FIRE by <strong>${Math.abs(delay)}</strong> year(s).
+    </div>
+
+    <div style="margin-top:10px" class="muted">
+      <strong>Details:</strong> House loan annual EMI: ${fmt(houseLoanAnnual)} |
+      Vehicle loan annual EMI: ${fmt(vehicleLoanAnnual)} | Downpayment total: ${fmt(houseDown+vehicleDown)}
+    </div>
+  `;
+
+  // Prepare chart data: align series lengths
+  const maxLen = Math.max(baseSim.series.length, buySim.series.length);
+  const labels = [];
+  const baseData = [];
+  const buyData = [];
+  for (let i=0;i<maxLen;i++){
+    labels.push(i);
+    baseData.push(baseSim.series[i]? baseSim.series[i].corpus : null);
+    buyData.push(buySim.series[i]? buySim.series[i].corpus : null);
+  }
+
+  // draw/update chart
+  const ctx = document.getElementById('fireChart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: labels,
+      datasets:[
+        { label:'Baseline (no purchase)', data: baseData, borderColor:'#16a34a', tension:0.15, pointRadius:2, fill:false},
+        { label:'With Purchases', data: buyData, borderColor:'#ef4444', tension:0.15, pointRadius:2, fill:false}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{position:'bottom'}},
+      scales:{
+        x:{ title:{display:true,text:'Years from Today'} },
+        y:{ title:{display:true,text:'Corpus (₹)'}, ticks:{ callback: v => '₹' + (v/100000).toFixed(1) + 'L' } }
+      },
+      interaction: {mode:'index', intersect:false}
+    }
+  });
+}
+
+// convenience: fill sample inputs
+function resetSample(){
+  document.getElementById('income').value = 1200000;
+  document.getElementById('expenses').value = 480000;
+  document.getElementById('corpus').value = 500000;
+  document.getElementById('returnRate').value = 10;
+  document.getElementById('withdrawRate').value = 4;
+  document.getElementById('houseCost').value = 2000000;
+  document.getElementById('houseDown').value = 400000;
+  document.getElementById('houseTenor').value = 10;
+  document.getElementById('houseRate').value = 8;
+  document.getElementById('vehicleCost').value = 150000;
+  document.getElementById('vehicleDown').value = 30000;
+  document.getElementById('vehicleTenor').value = 3;
+  document.getElementById('vehicleRate').value = 10;
+  document.getElementById('summary').innerHTML = '<div class="muted">Sample loaded. Click <strong>Run Comparison</strong>.</div>';
+}
+
+// download chart as PNG
+function downloadPNG(){
+  if(!chart){ alert('Run comparison first'); return; }
+  const a = document.createElement('a');
+  a.href = chart.toBase64Image();
+  a.download = 'fire-plan-chart.png';
+  a.click();
+}
+
+// copy summary text
+function copySummary(){
+  const summary = document.getElementById('summary').innerText;
+  navigator.clipboard.writeText(summary).then(()=> alert('Summary copied to clipboard'));
+}
+
+// init
+resetSample();
+</script>
+</body>
+</html>
