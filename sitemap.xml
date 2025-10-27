@@ -127,6 +127,12 @@
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>https://t24k.com/fire-lifestyle-plan</loc>
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://t24k.com/health</loc>
     <lastmod>2025-06-05</lastmod>
     <changefreq>always</changefreq>
@@ -263,6 +269,12 @@
   <url>
     <loc>https://t24k.com/start-up</loc>
     <lastmod>2025-04-11</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://t24k.com/taxfree-units-calculator</loc>
+    <lastmod>2025-10-27</lastmod>
     <changefreq>always</changefreq>
     <priority>0.95</priority>
   </url>
