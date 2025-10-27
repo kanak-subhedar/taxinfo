@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tax-free LTCG Units Calculator — t24k.com</title>
+  <meta name="description" content="Calculate how many ETF units you can sell tax-free (LTCG up to ₹1.25 L) given purchase & current prices. Simple, fast, offline tool." />
+  <style>
+    body{font-family:Inter,Arial,Helvetica,sans-serif;background:#f4f7fb;color:#0f172a;margin:0;padding:28px;}
+    .wrap{max-width:760px;margin:0 auto;background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 8px 30px rgba(8,20,40,0.06);}
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{margin:0 0 18px;color:#475569}
+    label{display:block;font-size:13px;color:#475569;margin-top:12px}
+    input[type=number], input[type=text], select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef6;font-size:15px;margin-top:6px}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .actions{display:flex;gap:10px;margin-top:14px}
+    button{background:#0ea5e9;border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    button.secondary{background:#eef2ff;color:#0f172a}
+    .result{margin-top:18px;padding:14px;border-radius:8px;background:#f8fafc;border-left:6px solid #0ea5e9}
+    .muted{color:#64748b;font-size:13px;margin-top:8px}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    td, th{padding:8px;border-bottom:1px solid #eef2f7;text-align:left}
+    .big{font-weight:700;font-size:18px}
+    .warn{color:#b45309;font-weight:700}
+    footer{margin-top:18px;color:#64748b;font-size:13px}
+    @media(max-width:640px){.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Tax-free LTCG Units Calculator</h1>
+    <p class="lead">Enter your <strong>purchase price</strong> and <strong>current price</strong>. The tool calculates how many units you can sell so that <strong>Long Term Capital Gain ≤ ₹1,25,000</strong> (tax-exempt in India).</p>
+
+    <label>Purchase price per unit (₹)</label>
+    <input type="number" id="purchasePrice" value="0" min="0" step="0.01">
+
+    <label>Current price per unit (₹)</label>
+    <input type="number" id="currentPrice" value="0" min="0" step="0.01">
+
+    <div class="row">
+      <div class="col">
+        <label>Total units you hold (optional)</label>
+        <input type="number" id="unitsHeld" value="" min="0" step="1" placeholder="e.g., 300">
+      </div>
+      <div class="col">
+        <label>Tax-free LTCG limit (₹) — default ₹1,25,000</label>
+        <input type="number" id="ltcgLimit" value="125000" min="0" step="1">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button onclick="compute()">Calculate</button>
+      <button class="secondary" onclick="fillExample()">Load Example</button>
+      <button class="secondary" onclick="resetForm()">Reset</button>
+    </div>
+
+    <div id="result" class="result" style="display:none"></div>
+
+    <div class="muted">Notes: (1) This assumes long-term holding eligibility already met. (2) If gain per unit ≤ 0, no tax arises from sale — tool will show accordingly. (3) This is a calculator for planning; confirm tax treatment with your advisor.</div>
+
+    <footer>
+      &copy; 2025 t24k.com — Built for simple tax planning
+    </footer>
+  </div>
+
+<script>
+function fmtRupee(x){
+  if (!isFinite(x)) return '-';
+  return '₹' + Number(x).toLocaleString('en-IN', {maximumFractionDigits:2});
+}
+
+function compute(){
+  const P = parseFloat(document.getElementById('purchasePrice').value);
+  const C = parseFloat(document.getElementById('currentPrice').value);
+  const unitsHeldRaw = document.getElementById('unitsHeld').value;
+  const unitsHeld = unitsHeldRaw === '' ? null : parseFloat(unitsHeldRaw);
+  const limit = parseFloat(document.getElementById('ltcgLimit').value) || 125000;
+
+  const out = document.getElementById('result');
+  out.style.display = 'block';
+
+  if (isNaN(P) || isNaN(C) || P < 0 || C < 0) {
+    out.innerHTML = '<div class="warn">Please enter valid non-negative purchase and current prices.</div>';
+    return;
+  }
+
+  const gainPerUnit = C - P;
+
+  if (gainPerUnit <= 0) {
+    // no taxable gain per unit
+    let html = `<div class="big">No taxable gain per unit (current ≤ purchase).</div>`;
+    if (unitsHeld !== null) {
+      html += `<div style="margin-top:10px">You can sell all your <strong>${unitsHeld}</strong> units without incurring LTCG tax (since there is no gain per unit).</div>`;
+    } else {
+      html += `<div style="margin-top:10px">If your purchase price ≥ current price, selling won't create LTCG (no LTCG tax).</div>`;
+    }
+    out.innerHTML = html;
+    return;
+  }
+
+  // maximum units allowed to sell tax-free
+  const maxUnitsTaxFree = Math.floor(limit / gainPerUnit);
+
+  // sale value if you sell these units
+  const saleValue = maxUnitsTaxFree * C;
+  const gainRealized = maxUnitsTaxFree * gainPerUnit;
+
+  // if user holds fewer units than this, then they can sell all holdings tax-free
+  const canSellAllTaxFree = (unitsHeld !== null) && (unitsHeld <= maxUnitsTaxFree);
+
+  // Build result HTML
+  let html = `<table>
+    <tr><th>Metric</th><th>Value</th></tr>
+    <tr><td>Purchase price per unit</td><td>${fmtRupee(P)}</td></tr>
+    <tr><td>Current price per unit</td><td>${fmtRupee(C)}</td></tr>
+    <tr><td>Gain per unit (C − P)</td><td>${fmtRupee(gainPerUnit)}</td></tr>
+    <tr><td>Tax-free LTCG limit</td><td>${fmtRupee(limit)}</td></tr>
+    <tr><td>Max units you can sell tax-free</td><td class="big">${maxUnitsTaxFree.toLocaleString('en-IN')}</td></tr>
+    <tr><td>Proceeds from selling these units (approx)</td><td>${fmtRupee(saleValue)}</td></tr>
+    <tr><td>Realized gain on this sale</td><td>${fmtRupee(gainRealized)}</td></tr>
+  </table>`;
+
+  if (unitsHeld !== null) {
+    html += `<div style="margin-top:12px">You entered that you hold <strong>${unitsHeld.toLocaleString('en-IN')}</strong> units.</div>`;
+
+    if (canSellAllTaxFree) {
+      html += `<div style="margin-top:8px;color:#16a34a"><strong>Good news:</strong> You can sell all your ${unitsHeld.toLocaleString('en-IN')} units and stay within the tax-free limit.</div>`;
+    } else {
+      const remainingIfSell = unitsHeld - maxUnitsTaxFree;
+      const valueOfRemaining = remainingIfSell * C;
+      html += `<div style="margin-top:8px;color:#b45309"><strong>Note:</strong> Selling all ${unitsHeld.toLocaleString('en-IN')} units will exceed the ₹${limit.toLocaleString('en-IN')} LTCG exemption. If you want zero LTCG tax this year, sell up to <strong>${maxUnitsTaxFree.toLocaleString('en-IN')}</strong> units now and consider selling the remainder in future years.</div>`;
+      html += `<div style="margin-top:8px">Remaining units after tax-free sale: <strong>${remainingIfSell.toLocaleString('en-IN')}</strong> (approx value ${fmtRupee(valueOfRemaining)})</div>`;
+    }
+  } else {
+    html += `<div style="margin-top:10px;color:#64748b">Tip: enter how many units you hold to see whether this covers your holding.</div>`;
+  }
+
+  html += `<div class="muted" style="margin-top:12px">Important: this calculator uses simple arithmetic for planning. Actual tax calculation may consider indexation (if applicable), transaction costs, or other provisions. Consult your tax advisor if needed.</div>`;
+
+  out.innerHTML = html;
+}
+
+// convenience: fill example values
+function fillExample(){
+  document.getElementById('purchasePrice').value = 4500; // sample
+  document.getElementById('currentPrice').value = 7500;
+  document.getElementById('unitsHeld').value = 300;
+  document.getElementById('ltcgLimit').value = 125000;
+  compute();
+}
+
+function resetForm(){
+  document.getElementById('purchasePrice').value = 0;
+  document.getElementById('currentPrice').value = 0;
+  document.getElementById('unitsHeld').value = '';
+  document.getElementById('ltcgLimit').value = 125000;
+  document.getElementById('result').style.display = 'none';
+}
+</script>
+</body>
+</html>
