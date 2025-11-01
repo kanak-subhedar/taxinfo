@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="kn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ರಾಜ್ಯೋತ್ಸವದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು — t24k.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1: #f8f3ef;
+      --bg2: #fff7ea;
+      --card: #ffffff;
+      --accent: #d1a84b;
+      --text: #102a43;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Noto Sans Kannada',system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .card{width:100%;max-width:920px;background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(16,42,67,0.08);padding:36px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center}
+    @media (max-width:880px){.card{grid-template-columns:1fr;max-width:720px;padding:24px}}
+    .left{padding:12px}
+    .headline{font-size:32px;font-weight:700;line-height:1.05;margin:0 0 12px}
+    .lead{font-size:18px;color:#274156;margin-bottom:18px}
+    .cta{display:inline-flex;gap:12px;align-items:center}
+    .btn{background:var(--accent);border:none;padding:12px 18px;border-radius:10px;color:white;font-weight:700;cursor:pointer;text-decoration:none}
+    .sub{color:#4b6b7a;font-size:14px}
+    .right{display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .image-wrap{width:100%;max-width:340px;height:340px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(209,168,75,0.08),rgba(209,168,75,0.02));border:2px dashed rgba(16,42,67,0.06)}
+    .image-wrap img{max-width:92%;max-height:92%;border-radius:8px;object-fit:contain}
+    .hint{margin-top:14px;font-size:13px;color:#6b8796}
+    footer{margin-top:18px;font-size:13px;color:#578;}
+    .logo{display:inline-block;font-weight:800;color:var(--accent);margin-left:6px}
+  </style>
+</head>
+<body>
+  <div class="card" role="region" aria-label="t24k kannada poster">
+    <div class="left">
+      <h1 class="headline">ರಾಜ್ಯೋತ್ಸವದ ಖುಷಿ ಇರಲಿ, ಕಂದಾಯದ ಹೊರೆ ಕುಶಿಯಲಿ.</h1>
+      <p class="lead">ಈ ವಿಶೇಷ ಟಿ‑ಶರ್ಟ್ ಉಡುಗೆ ಮೂಲಕ ನಿಮ್ಮ ಸ್ನೇಹಿತರು ಮತ್ತು ಗ್ರಾಹಕರಿಗೆ ತಾವು ಬೆಳೆದ ಹಣವನ್ನು ಸಂರಕ್ಷಿಸುವ ಪ್ರಾಮುಖ್ಯತೆಯನ್ನು ತಿಳಿಯಬಹುದು. T24K ನಿಮ್ಮಲ್ಲಿದೆ — ಉಚಿತ ಸಲಹೆಗಳು ಹಾಗೂ ರಿಯಾಯিতಿಗಳು.</p>
+
+      <div class="cta">
+        <a class="btn" href="#" role="button">Visit t24k.com</a>
+        <span class="sub">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗೆ ಸ್ಥಳೀಯವಾಗಿ ಸಂದೇಶ ಮಾಡಿ</span>
+      </div>
+
+      <footer>Designed with ❤ for t24k.com <span class="logo">t24k</span></footer>
+    </div>
+
+    <div class="right">
+      <div class="image-wrap" id="imageWrap">
+        <!-- Replace the src below with your real image file name or URL -->
+        <img id="heroImage" src="placeholder-image.jpg" alt="Replace this image with your photo" />
+      </div>
+      <p class="hint">(ಚಿತ್ರವನ್ನು ಬದಲಿಸಲು, img#heroImage ಯ `src` ат್ರಿಬ್ಯೂಟ್ ಅನ್ನು ನಿಮ್ಮ ನಿಜವಾದ ಫೈಲ್‌ನೊಂದಿಗೆ ಬದಲಿಸಿ)</p>
+    </div>
+  </div>
+
+  <script>
+    // Small helper: click the image to choose replacement (only works in environments that allow file selection)
+    const image = document.getElementById('heroImage');
+    image.addEventListener('click', ()=>{
+      // show a quick hint — actual file selection needs server-side or local edit
+      alert('To replace the image, edit the HTML and change the src of #heroImage to your image file or URL.');
+    });
+  </script>
+</body>
+</html>
