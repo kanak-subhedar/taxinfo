@@ -20,6 +20,23 @@ client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 def get_key():
     return jsonify({"key": RAZORPAY_KEY_ID})
 
+@app.route('/whois')
+def whois_lookup():
+    domain = request.args.get('domain', '').strip()
+    if not domain:
+        return "❌ No domain provided.", 400
+
+    try:
+        data = whois.whois(domain)
+        if not data:
+            return "⚠️ WHOIS data not found.", 404
+
+        response_lines = [f"{key}: {value}" for key, value in data.items()]
+        return "\n".join(response_lines)
+
+    except Exception as e:
+        return f"❌ Error: {str(e)}", 500
+
 @app.route("/verify-and-download", methods=["POST"])
 def verify_payment():
     try:
