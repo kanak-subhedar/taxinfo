@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify, send_file
 import razorpay
 from flask_cors import CORS
+import whois
 
 app = Flask(__name__)
 CORS(app)
