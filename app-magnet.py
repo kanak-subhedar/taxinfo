@@ -58,6 +58,17 @@ def verify_payment():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route("/check-availability")
+def check_availability():
+    domain = request.args.get("domain", "").strip()
+    if not domain:
+        return jsonify({"error": "No domain provided"}), 400
+
+    try:
+        socket.gethostbyname(domain)
+        return jsonify({"available": False})  # Registered
+    except socket.gaierror:
+        return jsonify({"available": True})   # Available
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
