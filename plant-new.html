@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Plant Monitoring & Control — T24K</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- MQTT.js (browser build) -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<style>
+  :root{
+    --brand:#2b7cff; --muted:#6b7280; --card:#fff;
+    --bg:#f4f6f9;
+  }
+  body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;color:#111}
+  header{background:var(--brand);color:#fff;padding:14px 18px;font-size:20px;font-weight:600;text-align:center}
+  .wrap{max-width:1100px;margin:20px auto;padding:16px}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .card{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,0.06)}
+  .wide{grid-column:span 8}
+  .side{grid-column:span 4}
+  .full{grid-column:1/-1}
+  h3{margin:6px 0 12px 0;color:#1f2937}
+  .gauge {display:flex;align-items:center;gap:12px}
+  .gauge svg{width:110px;height:70px}
+  .metric{font-size:18px;font-weight:600}
+  .small{font-size:12px;color:var(--muted)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  button{background:var(--brand);color:#fff;padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+  button.alt{background:#333}
+  .toggle{display:inline-flex;align-items:center;gap:8px}
+  .status{padding:6px 8px;border-radius:8px;font-weight:600}
+  .ok{background:#e6f6ed;color:#0b923f}
+  .warn{background:#fff4e6;color:#b45309}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+  .small-muted{font-size:13px;color:var(--muted)}
+  .chart-container{height:320px}
+  .summary{display:flex;gap:10px;flex-wrap:wrap}
+  .stat{background:#fafafa;padding:10px;border-radius:8px;min-width:130px;text-align:center}
+  .alert-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+  footer{margin:22px 0;text-align:center;color:var(--muted);font-size:13px}
+  @media (max-width:900px){.wide{grid-column:1/-1}.side{grid-column:1/-1}}
+</style>
+</head>
+<body>
+
+<header>🌱 T24K — Plant Monitoring & Control</header>
+
+<div class="wrap">
+
+  <!-- Top row: Gauges -->
+  <div class="grid" style="margin-bottom:14px">
+    <div class="card wide">
+      <h3>Live Gauges</h3>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <div class="gauge">
+          <!-- Temperature gauge (SVG) -->
+          <svg id="gtemp" viewBox="0 0 120 70"></svg>
+          <div>
+            <div class="metric" id="tempVal">-- °C</div>
+            <div class="small-muted">Temperature</div>
+          </div>
+        </div>
+
+        <div class="gauge">
+          <svg id="ghum" viewBox="0 0 120 70"></svg>
+          <div>
+            <div class="metric" id="humVal">-- %</div>
+            <div class="small-muted">Humidity</div>
+          </div>
+        </div>
+
+        <div class="gauge">
+          <svg id="gmoist" viewBox="0 0 120 70"></svg>
+          <div>
+            <div class="metric" id="moistVal">--</div>
+            <div class="small-muted">Soil Moisture</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card side">
+      <h3>Controls & Alerts</h3>
+
+      <div class="alert-row" style="margin-bottom:8px">
+        <div>
+          <div class="small-muted">Connection</div>
+          <div id="connStatus" class="status warn">Disconnected</div>
+        </div>
+        <div>
+          <div class="small-muted">Last update</div>
+          <div id="lastUpdate" class="small-muted">--</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px" class="controls">
+        <div>
+          <div class="small-muted">Pump Control</div>
+          <div style="margin-top:6px;display:flex;gap:8px">
+            <button id="btnPumpOn">Turn ON</button>
+            <button id="btnPumpOff" class="alt">Turn OFF</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="small-muted">Auto Watering</div>
+          <label class="toggle">
+            <input type="checkbox" id="autoWater" />
+            <span class="small-muted">Enable auto watering (threshold)</span>
+          </label>
+        </div>
+
+        <div>
+          <div class="small-muted">Auto threshold</div>
+          <input id="autoThresh" type="number" value="300" style="width:100px;padding:6px;border-radius:6px;border:1px solid #ddd" />
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="small-muted">SMS Alert</div>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button id="btnSendSms">Send SMS Now</button>
+          <button id="btnTestSms" class="alt">Test SMS (no-op)</button>
+        </div>
+        <div style="margin-top:10px" class="small-muted">Low moisture alerts will call your SMS API when enabled.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Middle row: Chart and summary -->
+  <div class="grid">
+    <div class="card wide full">
+      <h3>📈 Last 24 Hours — Soil Moisture (live)</h3>
+      <div class="chart-container">
+        <canvas id="chartMoist"></canvas>
+      </div>
+    </div>
+
+    <div class="card side">
+      <h3>24-Hour Summary</h3>
+      <div class="summary" id="summaryBox">
+        <div class="stat">
+          <div class="small-muted">Min Moisture</div>
+          <div id="minMoist">--</div>
+        </div>
+        <div class="stat">
+          <div class="small-muted">Max Moisture</div>
+          <div id="maxMoist">--</div>
+        </div>
+        <div class="stat">
+          <div class="small-muted">Avg Moisture</div>
+          <div id="avgMoist">--</div>
+        </div>
+      </div>
+      <div style="margin-top:12px" class="small-muted">Rows shown: <span id="rowsCount">0</span></div>
+    </div>
+  </div>
+
+  <!-- Raw recent table -->
+  <div class="card full" style="margin-top:12px">
+    <h3>Recent sensor rows (latest first)</h3>
+    <table>
+      <thead><tr><th>Timestamp</th><th>Temp</th><th>Humidity</th><th>Moisture</th></tr></thead>
+      <tbody id="tableRows"></tbody>
+    </table>
+  </div>
+
+  <footer>Made for T24K — data source: Google Sheets CSV. Update CSV_URL and endpoints in JS.</footer>
+
+</div>
+
+<script>
+/* =========================
+   CONFIG — <--- update these
+   ========================= */
+const CSV_URL = "REPLACE_WITH_YOUR_PUBLISHED_CSV_URL"; 
+// Example: https://docs.google.com/spreadsheets/d/XXXX/pub?output=csv
+
+// MQTT WebSocket (optional) - set if you want real-time publish control
+const MQTT_WS_URL = "wss://YOUR_HIVEMQ_ENDPOINT:8884/mqtt"; // or null
+const MQTT_USER = "YOUR_MQTT_USER";
+const MQTT_PASS = "YOUR_MQTT_PASS";
+const MQTT_PUMP_TOPIC = "t24k/pump/control"; // topic to publish pump commands
+const MQTT_CLIENT_ID = "t24k_web_" + Math.floor(Math.random()*10000);
+
+// API endpoints (fallback or for SMS)
+const API_COMMAND_URL = "REPLACE_WITH_YOUR_API_ENDPOINT_FOR_COMMAND"; 
+// expects POST { cmd: "ON" | "OFF" }
+const API_SMS_URL = "REPLACE_WITH_YOUR_SMS_API_ENDPOINT"; 
+// expects POST { phone: "...", message: "..." }
+
+/* =========================
+   Local variables & UI refs
+   ========================= */
+let mqttClient = null;
+let connectedToMQTT = false;
+const connStatusEl = document.getElementById("connStatus");
+const lastUpdateEl = document.getElementById("lastUpdate");
+const tempVal = document.getElementById("tempVal");
+const humVal = document.getElementById("humVal");
+const moistVal = document.getElementById("moistVal");
+const tableRows = document.getElementById("tableRows");
+const rowsCount = document.getElementById("rowsCount");
+const minMoist = document.getElementById("minMoist");
+const maxMoist = document.getElementById("maxMoist");
+const avgMoist = document.getElementById("avgMoist");
+const btnPumpOn = document.getElementById("btnPumpOn");
+const btnPumpOff = document.getElementById("btnPumpOff");
+const btnSendSms = document.getElementById("btnSendSms");
+const btnTestSms = document.getElementById("btnTestSms");
+const autoWater = document.getElementById("autoWater");
+const autoThresh = document.getElementById("autoThresh");
+
+/* =========================
+   Utility: simple gauge draw (SVG arc)
+   ========================= */
+function drawGauge(svgId, value, min, max, label) {
+  const pct = Math.max(0, Math.min(1, (value - min) / (max - min)));
+  const angle = -90 + pct * 180; // -90..+90
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = "";
+  const ns = "http://www.w3.org/2000/svg";
+  const w = 120, h=70;
+  const g = document.createElementNS(ns, "g");
+  // background arc
+  const arcBg = document.createElementNS(ns, "path");
+  arcBg.setAttribute("d", describeArc(60,60,42,-90,90));
+  arcBg.setAttribute("stroke","#eee");
+  arcBg.setAttribute("stroke-width","10");
+  arcBg.setAttribute("fill","none");
+  svg.appendChild(arcBg);
+  // foreground arc
+  const arcFg = document.createElementNS(ns, "path");
+  const endAngle = -90 + pct*180;
+  arcFg.setAttribute("d", describeArc(60,60,42,-90,endAngle));
+  arcFg.setAttribute("stroke", value < min + (max-min)*0.25 ? "#e11d48" : (value < min + (max-min)*0.5 ? "#f59e0b" : "#10b981"));
+  arcFg.setAttribute("stroke-width","10");
+  arcFg.setAttribute("fill","none");
+  svg.appendChild(arcFg);
+  // center text
+  const txt = document.createElementNS(ns,"text");
+  txt.setAttribute("x",60); txt.setAttribute("y",62); txt.setAttribute("text-anchor","middle");
+  txt.setAttribute("font-size","12"); txt.setAttribute("fill","#111");
+  txt.textContent = label;
+  svg.appendChild(txt);
+}
+
+// function to create arc path (SVG)
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+  var angleInRadians = (angleInDegrees) * Math.PI / 180.0;
+  return {
+    x: centerX + (radius * Math.cos(angleInRadians)),
+    y: centerY + (radius * Math.sin(angleInRadians))
+  };
+}
+function describeArc(x, y, radius, startAngle, endAngle){
+  var start = polarToCartesian(x, y, radius, endAngle);
+  var end = polarToCartesian(x, y, radius, startAngle);
+  var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  var d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(" ");
+  return d;
+}
+
+/* =========================
+   Chart.js setup
+   ========================= */
+const ctx = document.getElementById("chartMoist").getContext("2d");
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      label: 'Soil Moisture',
+      data: [],
+      tension: 0.2,
+      borderWidth: 2,
+      pointRadius: 2,
+      fill: true,
+      backgroundColor: 'rgba(59,130,246,0.08)',
+      borderColor: '#3b82f6'
+    }]
+  },
+  options: {
+    animation:false,
+    scales: {
+      x: { type: 'time', time: { tooltipFormat: 'dd MMM HH:mm', unit: 'hour' } },
+      y: { beginAtZero:false }
+    },
+    plugins: {
+      legend: { display: false }
+    }
+  }
+});
+
+/* =========================
+   Fetch CSV, parse, update UI
+   Expected CSV columns: timestamp,temp,humidity,moisture
+   ========================= */
+async function fetchAndUpdate() {
+  try {
+    const res = await fetch(CSV_URL, {cache: "no-store"});
+    if(!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
+    const text = await res.text();
+
+    // parse CSV into rows (simple split — assumes no commas inside cells)
+    const rows = text.trim().split("\n").map(r => r.split(","));
+    if(rows.length <= 1) { console.warn("No rows"); return; }
+
+    // turn into objects
+    const header = rows[0].map(h => h.trim().toLowerCase());
+    const data = [];
+    for(let i=1;i<rows.length;i++){
+      const r = rows[i];
+      if(r.length < 4) continue;
+      const obj = {
+        timestamp: new Date(r[0]),
+        temp: parseFloat(r[1]),
+        hum: parseFloat(r[2]),
+        moist: parseFloat(r[3])
+      };
+      if(isNaN(obj.timestamp.getTime())) continue;
+      data.push(obj);
+    }
+
+    // sort by time ascending
+    data.sort((a,b)=>a.timestamp - b.timestamp);
+
+    // update last update
+    if(data.length){
+      const last = data[data.length-1];
+      lastUpdateEl.textContent = last.timestamp.toLocaleString();
+      tempVal.textContent = isFinite(last.temp)? (last.temp.toFixed(1)+" °C") : "--";
+      humVal.textContent = isFinite(last.hum)? (last.hum.toFixed(0)+" %") : "--";
+      moistVal.textContent = isFinite(last.moist)? last.moist : "--";
+      // draw gauges
+      drawGauge("gtemp", isFinite(last.temp)? last.temp : 0, -10, 50, "");
+      drawGauge("ghum", isFinite(last.hum)? last.hum : 0, 0, 100, "");
+      drawGauge("gmoist", isFinite(last.moist)? last.moist : 0, 0, 1023, "");
+    }
+
+    // last 24 hours slice
+    const now = Date.now();
+    const dayAgo = now - 24*3600*1000;
+    const last24 = data.filter(d=>d.timestamp.getTime() >= dayAgo);
+
+    // update chart (labels and data)
+    chart.data.labels = last24.map(d=>d.timestamp);
+    chart.data.datasets[0].data = last24.map(d=>({x:d.timestamp, y:d.moist}));
+    chart.update();
+
+    // table: show latest 20 rows (latest first)
+    tableRows.innerHTML = "";
+    const latest = data.slice(-50).reverse();
+    latest.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${r.timestamp.toLocaleString()}</td><td>${isFinite(r.temp)?r.temp:"--"}</td><td>${isFinite(r.hum)?r.hum:"--"}</td><td>${isFinite(r.moist)?r.moist:"--"}</td>`;
+      tableRows.appendChild(tr);
+    });
+    rowsCount.textContent = data.length;
+
+    // 24h summary
+    if(last24.length){
+      const vals = last24.map(x=>x.moist).filter(v=>!isNaN(v));
+      const mn = Math.min(...vals), mx = Math.max(...vals);
+      const avg = (vals.reduce((a,b)=>a+b,0)/vals.length) || 0;
+      minMoist.textContent = Math.round(mn);
+      maxMoist.textContent = Math.round(mx);
+      avgMoist.textContent = Math.round(avg);
+    } else {
+      minMoist.textContent = maxMoist.textContent = avgMoist.textContent = "--";
+    }
+
+    // auto-watering decision
+    if(autoWater.checked && data.length){
+      const last = data[data.length-1];
+      const threshold = parseFloat(autoThresh.value) || 300;
+      if(last.moist < threshold){
+        // call pump ON (via MQTT or API)
+        console.log("Auto-watering triggered. Moisture:", last.moist, "threshold:", threshold);
+        sendPumpCommand("ON", "auto");
+        // optionally send SMS alert (if desired)
+        sendSmsIfConfigured(`Auto-watering: moisture ${last.moist} below ${threshold}`);
+      }
+    }
+
+    // low moisture alert (if below global threshold)
+    const globalLow = parseFloat(autoThresh.value) || 300;
+    if(data.length && data[data.length-1].moist < globalLow){
+      // highlight
+      connStatusEl.className = "status warn";
+      connStatusEl.textContent = "Low moisture!";
+    } else {
+      connStatusEl.className = "status ok";
+      connStatusEl.textContent = connectedToMQTT? "MQTT connected" : "Connected (no MQTT)";
+    }
+
+  } catch(err){
+    console.error(err);
+    connStatusEl.className = "status warn";
+    connStatusEl.textContent = "Failed to load data";
+  }
+}
+
+/* =========================
+   Pump / command functions
+   - prefer MQTT if configured
+   - fallback to API_COMMAND_URL
+   ========================= */
+function sendPumpCommand(cmd, reason="manual"){
+  // cmd = "ON" or "OFF"
+  if(MQTT_WS_URL && MQTT_WS_URL !== "wss://YOUR_HIVEMQ_ENDPOINT:8884/mqtt"){
+    try{
+      if(!mqttClient || !connectedToMQTT) { initMQTT(); }
+      const payload = JSON.stringify({cmd, reason, ts: new Date().toISOString()});
+      mqttClient.publish(MQTT_PUMP_TOPIC, payload);
+      console.log("Published MQTT:", payload);
+      return;
+    } catch(e){
+      console.warn("MQTT publish failed, will use API fallback", e);
+    }
+  }
+
+  // fallback: HTTP API
+  if(API_COMMAND_URL && API_COMMAND_URL !== "REPLACE_WITH_YOUR_API_ENDPOINT_FOR_COMMAND"){
+    fetch(API_COMMAND_URL, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({cmd, reason, ts:new Date().toISOString()})
+    }).then(r=>r.json()).then(j=>{
+      console.log("API response", j);
+    }).catch(err=>console.warn("API command error", err));
+  } else {
+    console.warn("No command route configured (MQTT or API).");
+  }
+}
+
+/* =========================
+   SMS sending (calls configured API)
+   ========================= */
+function sendSmsIfConfigured(message){
+  if(!API_SMS_URL || API_SMS_URL === "REPLACE_WITH_YOUR_SMS_API_ENDPOINT") {
+    console.log("SMS API not configured — skipping SMS:", message);
+    return;
+  }
+  // POST to your server which integrates Twilio or similar
+  fetch(API_SMS_URL, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({message, ts:new Date().toISOString()})
+  }).then(r=>r.json()).then(j=>{
+    console.log("SMS API response", j);
+  }).catch(err=>console.warn("SMS API error", err));
+}
+
+/* =========================
+   MQTT init (optional)
+   ========================= */
+function initMQTT(){
+  if(!MQTT_WS_URL || MQTT_WS_URL.startsWith("wss://YOUR_")) return;
+  console.log("Connecting MQTT", MQTT_WS_URL);
+  mqttClient = mqtt.connect(MQTT_WS_URL, {
+    clientId: MQTT_CLIENT_ID,
+    username: MQTT_USER,
+    password: MQTT_PASS,
+    keepalive: 30,
+    reconnectPeriod: 5000
+  });
+  mqttClient.on('connect', () => {
+    connectedToMQTT = true;
+    connStatusEl.className = "status ok";
+    connStatusEl.textContent = "MQTT connected";
+    console.log("MQTT connected");
+  });
+  mqttClient.on('error', err=>{
+    console.warn("MQTT error", err);
+    connectedToMQTT = false;
+    connStatusEl.className = "status warn";
+    connStatusEl.textContent = "MQTT error";
+  });
+  mqttClient.on('close', ()=>{
+    connectedToMQTT = false;
+    connStatusEl.className = "status warn";
+    connStatusEl.textContent = "MQTT disconnected";
+  });
+}
+
+/* =========================
+   UI event handlers
+   ========================= */
+btnPumpOn.addEventListener('click', ()=>sendPumpCommand("ON","user"));
+btnPumpOff.addEventListener('click', ()=>sendPumpCommand("OFF","user"));
+btnSendSms.addEventListener('click', ()=>{
+  const message = "Manual SMS from t24k: Moisture check at " + new Date().toLocaleString();
+  sendSmsIfConfigured(message);
+});
+btnTestSms.addEventListener('click', ()=>alert("Test SMS button pressed — implement server side to send a real SMS."));
+
+/* =========================
+   Initialization
+   ========================= */
+if(MQTT_WS_URL && !MQTT_WS_URL.startsWith("wss://YOUR_")) initMQTT();
+fetchAndUpdate();
+setInterval(fetchAndUpdate, 10000); // refresh every 10s
+
+</script>
+
+</body>
+</html>
