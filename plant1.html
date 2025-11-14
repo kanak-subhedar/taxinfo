@@ -62,6 +62,7 @@
     <div class="card">
         <h2>🔴 Live Sensor Data</h2>
         <p id="status">Loading latest data...</p>
+
         <table>
             <tr>
                 <th>Timestamp</th>
@@ -76,52 +77,63 @@
 </div>
 
 <script>
-// ---------------------------------------------------------
-// Your REAL Google Sheet → Publish to Web → CSV URL here:
-// ---------------------------------------------------------
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQE7QVTeq7I0U-CAbRKL4d7ZFldI3cV3X2_afqvmzY8Nq1h7DSgDuDI2F54vS-_ceFMAVtguwNKX5WH/pub?gid=0&single=true&output=csv";
+// Your Google Sheet → Publish to Web → CSV URL
+const BASE_CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQE7QVTeq7I0U-CAbRKL4d7ZFldI3cV3X2_afqvmzY8Nq1h7DSgDuDI2F54vS-_ceFMAVtguwNKX5WH/pub?gid=0&single=true&output=csv";
+
+// Store last stable row count
+let lastRowCount = 0;
 
 async function loadCSV() {
     document.getElementById("status").innerHTML = "⏳ Fetching data...";
 
     try {
-        const response = await fetch(CSV_URL);
+        // --- FIX 1: Cache-busting random value ---
+        const url = BASE_CSV_URL + "&rand=" + Math.random();
+
+        const response = await fetch(url, { cache: "no-store" });
         if (!response.ok) throw new Error("Network error");
 
         const csvText = await response.text();
         const rows = csvText.trim().split("\n").map(r => r.split(","));
 
+        // --- FIX 2: Stabilize rows (avoid backward updates) ---
+        if (rows.length < lastRowCount) {
+            console.log("Google returned older cached data → Ignoring...");
+            document.getElementById("status").innerHTML =
+                "⚠ Using latest stable data (Google cache delay)";
+            return;
+        }
+
+        lastRowCount = rows.length;
+
         const tbody = document.getElementById("data-body");
         tbody.innerHTML = "";
 
+        // Skip header row
         for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
             const tr = document.createElement("tr");
-
-            row.forEach(col => {
+            rows[i].forEach(cell => {
                 const td = document.createElement("td");
-                td.textContent = col;
+                td.textContent = cell;
                 tr.appendChild(td);
             });
-
             tbody.appendChild(tr);
         }
 
-        document.getElementById("status").innerHTML = "✔ Live data loaded.";
-        
-    } catch (error) {
-        console.log(error);
-        document.getElementById("status").innerHTML = "❌ Failed to fetch data! Check CSV URL.";
+        document.getElementById("status").innerHTML = "✔ Live data loaded";
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("status").innerHTML = "❌ Failed to fetch!";
     }
 }
 
-// Load now
+// Load first time
 loadCSV();
 
-// Refresh every 10 sec
+// Refresh every 10 seconds
 setInterval(loadCSV, 10000);
-
 </script>
-
 </body>
 </html>
