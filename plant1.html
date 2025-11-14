@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Monitoring | t24k.com</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #2b7cff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            margin-top: 30px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        table th {
+            background: #eef1f5;
+        }
+        #status {
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<header>🌱 Plant Monitoring Dashboard (t24k.com)</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>🔴 Live Sensor Data</h2>
+        <p id="status">Loading latest data...</p>
+        <table>
+            <tr>
+                <th>Timestamp</th>
+                <th>Temperature (°C)</th>
+                <th>Humidity (%)</th>
+                <th>Soil Moisture</th>
+            </tr>
+            <tbody id="data-body"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+// ---------------------------------------------------------
+// Your REAL Google Sheet → Publish to Web → CSV URL here:
+// ---------------------------------------------------------
+const CSV_URL = "https://docs.google.com/spreadsheets/d/1lk-kLNoHlKjQJUl4nC9Qek-19bdKz-SS2zGIVWI6l74/pub?output=csv";
+
+async function loadCSV() {
+    document.getElementById("status").innerHTML = "⏳ Fetching data...";
+
+    try {
+        const response = await fetch(CSV_URL);
+        if (!response.ok) throw new Error("Network error");
+
+        const csvText = await response.text();
+        const rows = csvText.trim().split("\n").map(r => r.split(","));
+
+        const tbody = document.getElementById("data-body");
+        tbody.innerHTML = "";
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const tr = document.createElement("tr");
+
+            row.forEach(col => {
+                const td = document.createElement("td");
+                td.textContent = col;
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        }
+
+        document.getElementById("status").innerHTML = "✔ Live data loaded.";
+        
+    } catch (error) {
+        console.log(error);
+        document.getElementById("status").innerHTML = "❌ Failed to fetch data! Check CSV URL.";
+    }
+}
+
+// Load now
+loadCSV();
+
+// Refresh every 10 sec
+setInterval(loadCSV, 10000);
+
+</script>
+
+</body>
+</html>
