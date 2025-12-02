@@ -1,0 +1,15 @@
+{
+  "status":"success",
+  "query":"Indian finance",
+  "domains_scanned":["domain1","domain2"],
+  "results":[
+    {
+      "target":"https://example.com/old-page",
+      "status":404,
+      "referring_domains":["taxguru.in","cleartax.in"],
+      "referring_pages":["https://taxguru.in/page1","https://cleartax.in/page2"],
+      "domain_count":2,
+      "page_count":2
+    }
+  ]
+}
