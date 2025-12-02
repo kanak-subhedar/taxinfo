@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>T24K Broken Link Discovery Engine — Niche Scanner</title>
+  <meta name="description" content="T24K Broken Link Discovery Engine — Enter a niche (e.g. Indian finance) to find broken links across top sites in that niche. Powered by T24K.com" />
+
+  <!-- Tailwind CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Small extra styles */
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; }
+    .wrap-cell { white-space: normal; word-break: break-word; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-semibold">T24K Broken Link Discovery Engine</h1>
+        <p class="text-sm text-slate-500">Find broken links across a niche and uncover backlink opportunities — Powered by T24K.com</p>
+      </div>
+      <div class="text-sm text-slate-600">
+        <a href="https://t24k.com" class="text-indigo-600 hover:underline">t24k.com</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="bg-white rounded-lg shadow-sm p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Enter niche / topic</label>
+          <!-- Using a real default value "Indian finance" as requested (no placeholders) -->
+          <input id="nicheInput" value="Indian finance" type="text" class="w-full border-gray-200 rounded-md shadow-sm p-2" />
+
+          <div class="flex items-center gap-3 mt-4">
+            <button id="scanBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Find Broken Links</button>
+            <button id="sampleBtn" class="bg-slate-100 text-slate-700 px-3 py-2 rounded-md hover:bg-slate-200">Test with "Indian finance"</button>
+            <button id="clearBtn" class="ml-auto bg-white border border-slate-200 px-3 py-2 rounded-md hover:bg-slate-50">Clear Results</button>
+          </div>
+
+          <div id="statusBox" class="mt-4 text-sm text-slate-600"></div>
+        </div>
+
+        <div class="md:col-span-1">
+          <div class="bg-slate-50 border border-slate-100 rounded-md p-4">
+            <h3 class="font-medium text-slate-800">Quick Help</h3>
+            <ul class="mt-2 text-sm text-slate-600 space-y-2">
+              <li>1. Enter broad niche (e.g. <span class="mono">Indian finance</span>).</li>
+              <li>2. Click <strong>Find Broken Links</strong>. The scanner uses top domains for the niche and returns results.</li>
+              <li>3. Download JSON / CSV or copy table.</li>
+              <li>Results show broken target URL, status code, referring domain count, and referring pages (clickable).</li>
+            </ul>
+            <p class="mt-3 text-xs text-slate-500">This UI calls the API at <span class="mono">https://t24k-bl-scanner.replit.app/scan-niche</span>. Ensure that API allows CORS from this page.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultsSection" class="mt-6 hidden">
+      <div class="flex items-start justify-between">
+        <h2 class="text-lg font-semibold">Results</h2>
+        <div class="flex items-center gap-2">
+          <button id="downloadJson" class="bg-white border px-3 py-2 rounded-md hover:bg-slate-50 text-sm">Download JSON</button>
+          <button id="downloadCsv" class="bg-white border px-3 py-2 rounded-md hover:bg-slate-50 text-sm">Download CSV</button>
+          <button id="copyTable" class="bg-white border px-3 py-2 rounded-md hover:bg-slate-50 text-sm">Copy Table</button>
+        </div>
+      </div>
+
+      <div class="mt-4 overflow-x-auto">
+        <table id="resultsTable" class="min-w-full bg-white rounded-md overflow-hidden divide-y divide-slate-100">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="text-left p-3 text-sm text-slate-600">#</th>
+              <th class="text-left p-3 text-sm text-slate-600">Broken Target URL</th>
+              <th class="text-left p-3 text-sm text-slate-600">HTTP</th>
+              <th class="text-left p-3 text-sm text-slate-600">Referring Domains</th>
+              <th class="text-left p-3 text-sm text-slate-600">Referring Pages</th>
+              <th class="text-left p-3 text-sm text-slate-600">Referring Pages (links)</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody" class="bg-white divide-y divide-slate-100 text-sm"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mt-6 text-xs text-slate-500">
+      <p><strong>Note:</strong> This frontend is a client for the backend API at <span class="mono">https://t24k-bl-scanner.replit.app/scan-niche</span>. The API must support CORS and accept POST requests with JSON payload <span class="mono">{ "niche": "value" }</span>. The backend should return JSON in the structure documented on the page.</p>
+    </section>
+  </main>
+
+  <footer class="bg-white border-t mt-12">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-sm text-slate-600">
+      <div class="flex items-center justify-between">
+        <div>Powered by <a href="https://t24k.com" class="text-indigo-600 hover:underline">T24K.com</a></div>
+        <div>© <span id="year"></span> T24K — Broken Link Discovery Engine</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').innerText = new Date().getFullYear();
+
+    const API_URL = 'https://t24k-bl-scanner.replit.app/scan-niche'; // exact API URL as requested
+
+    const statusBox = document.getElementById('statusBox');
+    const scanBtn = document.getElementById('scanBtn');
+    const sampleBtn = document.getElementById('sampleBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resultsSection = document.getElementById('resultsSection');
+    const resultsBody = document.getElementById('resultsBody');
+    const downloadJsonBtn = document.getElementById('downloadJson');
+    const downloadCsvBtn = document.getElementById('downloadCsv');
+    const copyTableBtn = document.getElementById('copyTable');
+
+    let lastResponse = null;
+
+    function setStatus(text, tone = 'info') {
+      statusBox.innerHTML = text;
+      if (tone === 'error') statusBox.className = 'mt-4 text-sm text-red-600';
+      else statusBox.className = 'mt-4 text-sm text-slate-600';
+    }
+
+    function formatDomains(domains) {
+      if (!domains || !domains.length) return '-';
+      return domains.map(d => `<div class="wrap-cell">${escapeHtml(d)}</div>`).join('');
+    }
+
+    function formatPages(pages) {
+      if (!pages || !pages.length) return '-';
+      return pages.map(p => `<div class="wrap-cell"><a target="_blank" rel="noopener noreferrer" href="${escapeAttr(p)}">${escapeHtml(p)}</a></div>`).join('');
+    }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    }
+    function escapeAttr(s) {
+      if (!s) return '';
+      return s.replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+    }
+
+    async function runScan(niche) {
+      resultsSection.classList.add('hidden');
+      resultsBody.innerHTML = '';
+      setStatus('Starting scan for niche: ' + niche + ' ... This may take 20-60 seconds depending on backend.', 'info');
+
+      const payload = { niche: niche };
+
+      try {
+        const resp = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          mode: 'cors'
+        });
+
+        if (!resp.ok) {
+          const t = await resp.text();
+          setStatus('API returned HTTP ' + resp.status + '. Response: ' + t, 'error');
+          return;
+        }
+
+        const data = await resp.json();
+        if (!data || data.status !== 'success' || !Array.isArray(data.results)) {
+          setStatus('API returned unexpected payload. See console for details.', 'error');
+          console.error('Unexpected API response:', data);
+          return;
+        }
+
+        lastResponse = data;
+        renderResults(data);
+        setStatus('Scan complete. ' + data.results.length + ' broken targets found (sorted highest links first).');
+      } catch (err) {
+        console.error(err);
+        setStatus('Network or server error: ' + (err.message || err), 'error');
+      }
+    }
+
+    function renderResults(data) {
+      resultsBody.innerHTML = '';
+      const rows = data.results || [];
+      // Sort again client-side by domain_count then page_count to ensure ordering
+      rows.sort((a,b) => {
+        if ((b.domain_count || 0) !== (a.domain_count || 0)) return (b.domain_count || 0) - (a.domain_count || 0);
+        return (b.page_count || 0) - (a.page_count || 0);
+      });
+
+      rows.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3 align-top">${idx+1}</td>
+          <td class="p-3 align-top wrap-cell"><a target="_blank" rel="noopener noreferrer" href="${escapeAttr(r.target)}">${escapeHtml(r.target)}</a></td>
+          <td class="p-3 align-top">${r.status || 'ERR'}</td>
+          <td class="p-3 align-top">${escapeHtml(String(r.domain_count || (r.referring_domains ? r.referring_domains.length : 0)))}</td>
+          <td class="p-3 align-top">${escapeHtml(String(r.page_count || (r.referring_pages ? r.referring_pages.length : 0)))}</td>
+          <td class="p-3 align-top">${formatPages(r.referring_pages)}</td>
+        `;
+        resultsBody.appendChild(tr);
+      });
+
+      resultsSection.classList.remove('hidden');
+    }
+
+    // CSV and JSON export
+    function downloadJSON(filename = 'broken_links.json') {
+      if (!lastResponse) return alert('No data to download');
+      const blob = new Blob([JSON.stringify(lastResponse, null, 2)], {type: 'application/json'});
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function jsonToCsv(json) {
+      const rows = json.results || [];
+      const header = ['target','status','domain_count','page_count','referring_domains','referring_pages'];
+      const lines = [header.join(',')];
+      rows.forEach(r => {
+        const rd = (r.referring_domains || []).join(';');
+        const rp = (r.referring_pages || []).join(';');
+        const cells = [
+          `"${(r.target || '').replace(/"/g,'""')}"`,
+          `"${(r.status||'')}"`,
+          `"${(r.domain_count|| (r.referring_domains? r.referring_domains.length:0))}"`,
+          `"${(r.page_count|| (r.referring_pages? r.referring_pages.length:0))}"`,
+          `"${rd.replace(/"/g,'""')}"`,
+          `"${rp.replace(/"/g,'""')}"`
+        ];
+        lines.push(cells.join(','));
+      });
+      return lines.join('\n');
+    }
+
+    function downloadCSV(filename = 'broken_links.csv') {
+      if (!lastResponse) return alert('No data to download');
+      const csv = jsonToCsv(lastResponse);
+      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function copyTableToClipboard() {
+      if (!lastResponse) return alert('No data to copy');
+      // Build a simple text table
+      const rows = lastResponse.results || [];
+      const header = ['#','target','status','domain_count','page_count','referring_pages'];
+      const lines = [header.join('\t')];
+      rows.forEach((r, idx) => {
+        const rp = (r.referring_pages || []).join('; ');
+        lines.push([idx+1, r.target, r.status || '', (r.domain_count || (r.referring_domains? r.referring_domains.length:0)), (r.page_count || (r.referring_pages? r.referring_pages.length:0)), rp].join('\t'));
+      });
+      navigator.clipboard.writeText(lines.join('\n')).then(()=> {
+        alert('Table copied to clipboard (TSV). Paste into a spreadsheet.');
+      }).catch(err => {
+        alert('Copy failed: ' + err);
+      });
+    }
+
+    // Event wiring
+    scanBtn.addEventListener('click', () => {
+      const niche = document.getElementById('nicheInput').value.trim();
+      if (!niche) return setStatus('Please enter a niche first.', 'error');
+      runScan(niche);
+    });
+
+    sampleBtn.addEventListener('click', () => {
+      document.getElementById('nicheInput').value = 'Indian finance';
+      runScan('Indian finance');
+    });
+
+    clearBtn.addEventListener('click', () => {
+      resultsSection.classList.add('hidden');
+      resultsBody.innerHTML = '';
+      lastResponse = null;
+      setStatus('Results cleared.');
+    });
+
+    downloadJsonBtn.addEventListener('click', () => downloadJSON());
+    downloadCsvBtn.addEventListener('click', () => downloadCSV());
+    copyTableBtn.addEventListener('click', () => copyTableToClipboard());
+
+  </script>
+</body>
+</html>
