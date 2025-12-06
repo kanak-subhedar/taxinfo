@@ -10,13 +10,16 @@ const PORT = process.env.PORT || 10000;
 
 // Domains to scan
 const domains = [
-  "https://cleartax.in",
-  "https://taxguru.in",
-  "https://groww.in",
-  "https://bankbazaar.com",
-  "https://policybazaar.com",
-  "https://paisabazaar.com",
-  "https://moneycontrol.com"
+  "https://www.incometaxindia.gov.in",
+  "https://www.cbic.gov.in",
+  "https://www.finmin.nic.in",
+  "https://www.rbi.org.in",
+  "https://www.nabard.org",
+  "https://www.pfrda.org.in",
+  "https://www.epfindia.gov.in",
+  "https://dor.gov.in",
+  "https://ctdtax.gov.in",
+  "https://igrmaharashtra.gov.in"  
 ];
 
 // Fetch link status with timeout
@@ -91,3 +94,11 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => console.log("Server running on port", PORT));
+// 
+//  "https://cleartax.in",
+//  "https://taxguru.in",
+//  "https://groww.in",
+//  "https://bankbazaar.com",
+//  "https://policybazaar.com",
+//  "https://paisabazaar.com",
+//  "https://moneycontrol.com"
