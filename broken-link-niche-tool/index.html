@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Broken Link Finder - Niche Tool</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    input {
+      width: 250px;
+      padding: 10px;
+    }
+    button {
+      padding: 10px 18px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .result {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .pagination {
+      margin-top: 20px;
+    }
+    .disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+  </style>
+
+</head>
+<body>
+
+  <h2>Broken Link Finder for Niche</h2>
+
+  <input type="text" id="niche" placeholder="Enter niche e.g. Indian finance" />
+  <button onclick="search(1)">Search</button>
+
+  <div id="summary"></div>
+  <div id="results"></div>
+
+  <div class="pagination">
+    <button id="prevBtn" onclick="prevPage()">Prev</button>
+    <span id="pageInfo"></span>
+    <button id="nextBtn" onclick="nextPage()">Next</button>
+  </div>
+
+<script>
+  let currentPage = 1;
+  let totalPages = 1;
+  let nicheValue = "";
+  const api = "YOUR_BACKEND_URL_HERE";
+
+  async function search(page=1) {
+    nicheValue = document.getElementById("niche").value;
+
+    document.getElementById("results").innerHTML = "Loading...";
+
+    const res = await fetch(`${api}/scan?niche=${encodeURIComponent(nicheValue)}&page=${page}`);
+    const data = await res.json();
+
+    render(data);
+  }
+
+  function render(data) {
+    currentPage = data.current_page;
+    totalPages = data.total_pages;
+
+    document.getElementById("summary").innerHTML =
+      `<b>Total Results:</b> ${data.total_results}`;
+
+    document.getElementById("pageInfo").innerHTML =
+      `Page ${currentPage} / ${totalPages}`;
+
+    renderButtons();
+
+    const html = data.results.map(i =>
+      `<div class="result">
+        <b>Page: </b> <a href="${i.page}" target="_blank">${i.page}</a><br/>
+        <b>Broken Link: </b> <a href="${i.link}" target="_blank">${i.link}</a>
+      </div>`
+    );
+
+    document.getElementById("results").innerHTML = html.join("");
+  }
+
+  function nextPage() {
+    if (currentPage < totalPages) search(currentPage + 1);
+  }
+
+  function prevPage() {
+    if (currentPage > 1) search(currentPage - 1);
+  }
+
+  function renderButtons() {
+    document.getElementById("prevBtn").classList.toggle("disabled", currentPage <= 1);
+    document.getElementById("nextBtn").classList.toggle("disabled", currentPage >= totalPages);
+  }
+</script>
+
+</body>
+</html>
