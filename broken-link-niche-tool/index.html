@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broken Link Finder for Niche</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+  }
+
+  h1 {
+    text-align: center;
+    color: #0c2d6b;
+    margin-bottom: 25px;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    padding: 12px 25px;
+    background: #0c2d6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .results {
+    margin-top: 25px;
+  }
+
+  .item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+  }
+
+  .empty {
+    margin-top: 20px;
+    background: #ffe7e7;
+    padding: 12px;
+    border-radius: 8px;
+    color: #7a0000;
+  }
+
+  .loading {
+    margin-top: 20px;
+    background: #fff3cd;
+    padding: 12px;
+    border-radius: 8px;
+    color: #7a5e00;
+  }
+
+  .pager {
+    margin-top: 25px;
+    text-align: center;
+  }
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <h1>Broken Link Finder</h1>
+
+  <input id="niche" placeholder="Enter niche (e.g., Indian finance)">
+
+  <button onclick="startSearch()">Search</button>
+
+  <div id="msg"></div>
+
+  <div class="results" id="results"></div>
+
+  <div class="pager">
+    <button id="prevBtn" onclick="prevPage()" disabled>Prev</button>
+    <button id="nextBtn" onclick="nextPage()" disabled>Next</button>
+  </div>
+
+</div>
+
+<script>
+  // BACKEND URL (use your Render domain)
+  const api = "https://brokenlinks-0qnx.onrender.com/scan";
+
+  let page = 1;
+  let currentNiche = "";
+
+  function startSearch() {
+    page = 1;
+    currentNiche = document.getElementById("niche").value.trim();
+    if (!currentNiche) {
+      alert("Please enter a niche");
+      return;
+    }
+    fetchData();
+  }
+
+  function nextPage() {
+    page++;
+    fetchData();
+  }
+
+  function prevPage() {
+    if (page > 1) {
+      page--;
+      fetchData();
+    }
+  }
+
+  async function fetchData() {
+    const msg = document.getElementById("msg");
+    const resultsBox = document.getElementById("results");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    msg.innerHTML = `<div class="loading">Loading page ${page}...</div>`;
+    resultsBox.innerHTML = "";
+
+    try {
+      const url = `${api}?niche=${encodeURIComponent(currentNiche)}&page=${page}`;
+      const res = await fetch(url, { method: "GET" });
+      const data = await res.json();
+
+      msg.innerHTML = ""; 
+
+      if (!data.results || data.results.length === 0) {
+        resultsBox.innerHTML = `<div class="empty">No results found on this page.</div>`;
+        nextBtn.disabled = true;
+
+        // enable previous only if >1
+        prevBtn.disabled = (page <= 1);
+        return;
+      }
+
+      // render results
+      let html = "";
+      data.results.forEach(item => {
+        html += `
+        <div class="item">
+          <strong>${item.domain}</strong><br>
+          <a href="${item.broken}" target="_blank">${item.broken}</a><br>
+          Status: ${item.status}
+        </div>
+        `;
+      });
+
+      resultsBox.innerHTML = html;
+
+      // update button states
+      prevBtn.disabled = (page <= 1);
+      nextBtn.disabled = false;
+
+    } catch (err) {
+      msg.innerHTML = `<div class="empty">Error: ${err.message}</div>`;
+      prevBtn.disabled = (page <= 1);
+      nextBtn.disabled = true;
+    }
+  }
+
+</script>
+
+</body>
+</html>
