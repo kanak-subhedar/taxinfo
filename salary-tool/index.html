@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Company Salary Take-Home Calculator — T24K</title>
+  <meta name="description" content="Instant company-wise take-home salary calculator for India. Compare old vs new tax regime, see PF/HRA breakdown, monthly in-hand and share results." />
+  <link rel="canonical" href="https://t24k.com/salary-tool/" />
+  <meta property="og:title" content="Company Salary Take-Home Calculator — T24K" />
+  <meta property="og:description" content="Instant company-wise take-home salary calculator for India. Compare old vs new tax regime, see PF/HRA breakdown, monthly in-hand and share results." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <style>
+    :root{--accent:#0c2d6b;--muted:#666;--card:#fff}
+    body{font-family:Inter, Arial, sans-serif;background:#f3f6fb;margin:0;color:#111}
+    .wrap{max-width:980px;margin:36px auto;padding:20px}
+    header{background:var(--card);padding:22px;border-radius:10px;border:1px solid #e6e9ef}
+    h1{margin:0;font-size:22px;color:var(--accent)}
+    p.lead{margin:8px 0 0;color:var(--muted)}
+    .card{background:var(--card);padding:18px;border-radius:10px;border:1px solid #e6e9ef;margin-top:18px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    label{display:block;font-size:13px;color:#333;margin-bottom:6px}
+    select,input{width:100%;padding:10px;border-radius:8px;border:1px solid #ccd4e0;font-size:15px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    .muted{color:var(--muted);font-size:13px}
+    .result{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+    .panel{flex:1;min-width:260px;background:#fcfdff;padding:14px;border-radius:10px;border:1px solid #eef3fb}
+    .big{font-size:20px;font-weight:700;color:#0b2b56}
+    .small{font-size:13px;color:var(--muted)}
+    .breakdown{margin-top:10px}
+    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eef3fb}
+    .hint{font-size:13px;color:#1b6fb4;background:#eef9ff;padding:8px;border-radius:8px;margin-top:10px}
+    footer{text-align:center;color:var(--muted);font-size:13px;margin-top:26px}
+    @media(max-width:720px){.grid{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}}
+    .sharebar{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .pill{background:#f0f6ff;padding:8px 12px;border-radius:999px;font-weight:600;color:var(--accent);border:1px solid #dce9ff}
+    .imgcard{display:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Company-wise Take-Home Salary Calculator</h1>
+      <p class="lead">Instant in-hand salary — choose a company or enter CTC, compare Old vs New tax regimes, HRA & PF breakdown. Share results as image.</p>
+    </header>
+
+    <div class="card" id="app">
+      <div class="grid">
+        <div>
+          <label for="company">Company (select or choose "Custom")</label>
+          <select id="company">
+            <option value="__custom__">🔧 Custom / Enter CTC</option>
+          </select>
+        </div>
+        <div>
+          <label for="ctc">CTC / Annual Salary (₹)</label>
+          <input id="ctc" type="number" placeholder="e.g. 800000" />
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:10px">
+        <div>
+          <label for="city">City</label>
+          <select id="city">
+            <option value="metro">Metro (Bengaluru/Delhi/Mumbai/Chennai/Hyderabad)</option>
+            <option value="nonmetro">Non-metro</option>
+          </select>
+        </div>
+        <div>
+          <label for="freq">Frequency</label>
+          <select id="freq">
+            <option value="annual">Annual CTC</option>
+            <option value="monthly">Monthly (×12)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="calcBtn">Calculate Now</button>
+        <button id="resetBtn" style="background:#eee;color:#333">Reset</button>
+        <div style="margin-left:auto" class="muted">T24K — Instant answer engine</div>
+      </div>
+
+      <div id="status" class="muted" style="margin-top:10px"></div>
+
+      <div class="result" id="results" aria-live="polite"></div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="muted">Quick share</div>
+        <div class="sharebar">
+          <button id="downloadBtn" style="background:#0b6f3b">Download Image</button>
+          <button id="copyBtn" style="background:#2d6bf7">Copy Result</button>
+          <div class="pill" id="shareHint">Share this result with friends</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="margin:0 0 8px 0">About this calculator (simple model)</h3>
+      <p class="muted">This tool estimates in-hand salary from CTC using a commonly used pay-structure (basic/HRA/allowances), standard PF (12%), and computes income tax using Old and New regime slabs (approximate). Use it as an instant guide; consult a tax professional for exact filings.</p>
+    </div>
+
+    <footer>© <span id="year"></span> T24K • Built for fast answers</footer>
+  </div>
+
+  <!-- Offscreen card used for generating share image -->
+  <div id="imgcard" class="imgcard" style="position:fixed;left:-9999px;top:-9999px;">
+    <div id="cardHtml" style="width:1200px;height:630px;padding:40px;background:#ffffff;border-radius:18px;border:2px solid #e9f1ff;font-family:Arial, sans-serif;">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div id="cardTitle" style="font-weight:800;font-size:36px;color:#0b2b56">Take-Home: ₹0</div>
+          <div id="cardSub" style="color:#2b486f;margin-top:6px;font-size:18px">Company • City • 8 LPA</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;color:#0b2b56">T24K</div>
+          <div style="font-size:12px;color:#7b8fb0">t24k.com</div>
+        </div>
+      </div>
+      <div style="margin-top:26px;display:flex;gap:18px">
+        <div style="flex:1">
+          <div style="font-size:14px;color:#7b8fb0">Old Regime Tax</div>
+          <div id="cardOld" style="font-size:28px;font-weight:700;color:#b03c3c">₹0</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:14px;color:#7b8fb0">New Regime Tax</div>
+          <div id="cardNew" style="font-size:28px;font-weight:700;color:#1f6f3b">₹0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ---- Utility & dataset loading ----
+  const companiesUrl = 'companies.json'; // relative path
+  let companies = {};
+  const companySelect = document.getElementById('company');
+  const ctcInput = document.getElementById('ctc');
+  const citySelect = document.getElementById('city');
+  const freqSelect = document.getElementById('freq');
+  const calcBtn = document.getElementById('calcBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const resultsBox = document.getElementById('results');
+  const statusBox = document.getElementById('status');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  fetch(companiesUrl).then(r => r.json()).then(data => {
+    companies = data;
+    populateCompanies();
+  }).catch(e=>{
+    statusBox.textContent = 'Failed to load company data.';
+  });
+
+  function populateCompanies(){
+    // Add companies to select
+    const keys = Object.keys(companies).sort();
+    keys.forEach(k=>{
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = `${k} — ${companies[k].tag || ''}`;
+      companySelect.appendChild(opt);
+    });
+  }
+
+  // ---- Pay-structure & tax logic ----
+  function breakdownFromCTC(ctc, structure){
+    // structure: { basicPerc, hraPerc, conveyancePerc, otherPerc, bonusPerc }
+    const basic = Math.round(ctc * (structure.basicPerc/100));
+    const hra = Math.round(ctc * (structure.hraPerc/100));
+    const conveyance = Math.round(ctc * (structure.conveyancePerc/100));
+    const other = Math.round(ctc * (structure.otherPerc/100));
+    const bonus = Math.round(ctc * (structure.bonusPerc/100));
+    const annual = basic + hra + conveyance + other + bonus;
+    // employer PF (simplified)
+    const empPF = Math.round(basic * 0.12);
+    const eePF = empPF; // employee contribution
+    const netSalary = Math.round(annual - eePF - empPF); // simplistic
+    return { basic, hra, conveyance, other, bonus, empPF, eePF, annual, netSalary };
+  }
+
+  // Tax slabs (FY 2024-25 example) - simplified
+  function computeTaxOld(income){
+    // basic slabs demonstration (use exact slabs as required)
+    // This is illustrative and approximate.
+    let tax = 0;
+    const slabs = [
+      { upto: 250000, rate:0 },
+      { upto: 500000, rate:0.05 },
+      { upto: 1000000, rate:0.20 },
+      { upto: Infinity, rate:0.30 }
+    ];
+    let remaining = income;
+    let prev = 0;
+    for (let s of slabs){
+      const cap = s.upto - prev;
+      const taxable = Math.max(0, Math.min(remaining, cap));
+      tax += taxable * (s.rate);
+      remaining -= taxable;
+      prev = s.upto;
+      if (remaining<=0) break;
+    }
+    // Rebate upto 5L for old regime
+    if (income<=500000) tax = Math.max(0, tax - 0);
+    // Health & Education cess 4%
+    tax = Math.round(tax * 1.04);
+    return Math.max(0, Math.round(tax));
+  }
+
+  function computeTaxNew(income){
+    // New regime (simplified)
+    let tax = 0;
+    const slabs = [
+      { upto: 300000, rate:0 },
+      { upto: 600000, rate:0.05 },
+      { upto: 900000, rate:0.10 },
+      { upto: 1200000, rate:0.15 },
+      { upto: 1500000, rate:0.20 },
+      { upto: Infinity, rate:0.30 }
+    ];
+    let remaining = income;
+    let prev = 0;
+    for (let s of slabs){
+      const cap = s.upto - prev;
+      const taxable = Math.max(0, Math.min(remaining, cap));
+      tax += taxable * (s.rate);
+      remaining -= taxable;
+      prev = s.upto;
+      if (remaining<=0) break;
+    }
+    tax = Math.round(tax * 1.04);
+    return Math.max(0, Math.round(tax));
+  }
+
+  // HRA exemption estimate (very simplified)
+  function hraExemption(hraAnnual, basicAnnual, rentPaidAnnual, city){
+    const metro = (city === 'metro');
+    const perc = metro ? 0.5 : 0.4;
+    const hraLimit = Math.min(hraAnnual, Math.round(basicAnnual * perc), rentPaidAnnual - Math.round(basicAnnual*0.10));
+    return Math.max(0, hraLimit);
+  }
+
+  // ---- UI & calculation ----
+  calcBtn.addEventListener('click', onCalculate);
+  resetBtn.addEventListener('click', ()=>{
+    companySelect.value = '__custom__';
+    ctcInput.value = '';
+    citySelect.value = 'metro';
+    freqSelect.value = 'annual';
+    resultsBox.innerHTML = '';
+    statusBox.textContent = '';
+  });
+
+  function onCalculate(){
+    statusBox.textContent = 'Calculating...';
+    resultsBox.innerHTML = '';
+    let companyKey = companySelect.value;
+    let ctcValue = parseFloat(ctcInput.value) || 0;
+    if (!ctcValue){
+      statusBox.textContent = 'Please enter a valid CTC.';
+      return;
+    }
+    if (freqSelect.value === 'monthly') ctcValue = ctcValue*12;
+
+    // use structure
+    let struct = { basicPerc:0.4, hraPerc:0.2, conveyancePerc:0.04, otherPerc:0.25, bonusPerc:0.11 };
+    if (companyKey !== '__custom__' && companies[companyKey]){
+      const s = companies[companyKey].structure || {};
+      struct = {
+        basicPerc: s.basicPerc || struct.basicPerc,
+        hraPerc: s.hraPerc || struct.hraPerc,
+        conveyancePerc: s.conveyancePerc || struct.conveyancePerc,
+        otherPerc: s.otherPerc || struct.otherPerc,
+        bonusPerc: s.bonusPerc || struct.bonusPerc
+      };
+    }
+
+    const city = citySelect.value;
+    const br = breakdownFromCTC(ctcValue, struct);
+
+    // approximate taxable income remove standard deductions
+    const standardDeduction = 50000;
+    const taxableIncome = Math.max(0, br.annual - br.eePF - standardDeduction);
+    const oldTax = computeTaxOld(taxableIncome);
+    const newTax = computeTaxNew(taxableIncome); // new regime ignores many deductions usually
+    const takeHomeAnnualOld = Math.round(br.annual - br.eePF - oldTax);
+    const takeHomeAnnualNew = Math.round(br.annual - br.eePF - newTax);
+    const monthlyOld = Math.round(takeHomeAnnualOld / 12);
+    const monthlyNew = Math.round(takeHomeAnnualNew / 12);
+
+    // HRA estimate
+    const assumedRent = Math.round((br.hra*1.5)); // simple assumption: rent paid
+    const hraEx = hraExemption(br.hra, br.basic, assumedRent, city);
+
+    // build result HTML
+    statusBox.textContent = '';
+    const html = document.createElement('div');
+    html.innerHTML = `
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="small">Company</div>
+            <div class="big">${companyKey === '__custom__' ? 'Custom Salary' : companyKey}</div>
+            <div class="small" style="margin-top:6px">City: ${city === 'metro' ? 'Metro' : 'Non-metro'}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">CTC</div>
+            <div class="big">₹${numberWithCommas(br.annual)}</div>
+            <div class="small">Monthly (est) ₹${numberWithCommas(Math.round(br.annual/12))}</div>
+          </div>
+        </div>
+
+        <div class="breakdown">
+          <div class="row"><div>Basic</div><div>₹${numberWithCommas(br.basic)}</div></div>
+          <div class="row"><div>HRA (est)</div><div>₹${numberWithCommas(br.hra)}</div></div>
+          <div class="row"><div>Conveyance / Allowances</div><div>₹${numberWithCommas(br.conveyance + br.other)}</div></div>
+          <div class="row"><div>Employee PF (12%)</div><div>₹${numberWithCommas(br.eePF)}</div></div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:10px">
+          <div style="flex:1;background:#fff;padding:10px;border-radius:8px;border:1px solid #eef3fb">
+            <div class="small">Old Regime (annual)</div>
+            <div class="big">₹${numberWithCommas(takeHomeAnnualOld)}</div>
+            <div class="small">Monthly in-hand: ₹${numberWithCommas(monthlyOld)}</div>
+            <div class="small" style="margin-top:8px;color:#7b8fb0">Estimated tax (incl cess): ₹${numberWithCommas(oldTax)}</div>
+          </div>
+          <div style="flex:1;background:#fff;padding:10px;border-radius:8px;border:1px solid #eef3fb">
+            <div class="small">New Regime (annual)</div>
+            <div class="big">₹${numberWithCommas(takeHomeAnnualNew)}</div>
+            <div class="small">Monthly in-hand: ₹${numberWithCommas(monthlyNew)}</div>
+            <div class="small" style="margin-top:8px;color:#7b8fb0">Estimated tax (incl cess): ₹${numberWithCommas(newTax)}</div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="small">HRA Exemption Estimate: ₹${numberWithCommas(hraEx)}</div>
+        </div>
+
+      </div>
+    `;
+
+    resultsBox.appendChild(html);
+
+    // store last result for sharing
+    window.lastResult = {
+      company: companyKey === '__custom__' ? 'Custom' : companyKey,
+      city, ctc: br.annual,
+      oldTax, newTax,
+      monthlyOld, monthlyNew,
+      takeHomeAnnualOld, takeHomeAnnualNew
+    };
+
+    statusBox.textContent = 'Done';
+  }
+
+  function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+  // ---- Share image generation (canvas) ----
+  downloadBtn.addEventListener('click', async ()=>{
+    if (!window.lastResult){ alert('Please calculate first'); return; }
+    // populate offscreen card
+    document.getElementById('cardTitle').textContent = `Take-Home: ₹${numberWithCommas(window.lastResult.monthlyOld)}/mo (Old)`;
+    document.getElementById('cardSub').textContent = `${window.lastResult.company} • ${window.lastResult.city} • ₹${numberWithCommas(window.lastResult.ctc)}`;
+    document.getElementById('cardOld').textContent = `₹${numberWithCommas(window.lastResult.oldTax)}`;
+    document.getElementById('cardNew').textContent = `₹${numberWithCommas(window.lastResult.newTax)}`;
+
+    // render DOM to canvas using HTMLCanvas + svg foreignObject trick (no external libs)
+    const card = document.getElementById('cardHtml');
+    const svg = `
+      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>
+        <foreignObject width='1200' height='630'>
+          ${new XMLSerializer().serializeToString(card)}
+        </foreignObject>
+      </svg>
+    `;
+    const img = new Image();
+    const svgBlob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(svgBlob);
+    img.onload = function(){
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200; canvas.height = 630;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img,0,0);
+      URL.revokeObjectURL(url);
+      const dataURL = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataURL;
+      a.download = `t24k-salary-${Date.now()}.png`;
+      a.click();
+    };
+    img.onerror = function(){ alert('Share image generation failed in your browser.'); }
+    img.src = url;
+  });
+
+  copyBtn.addEventListener('click', ()=>{
+    if (!window.lastResult){ alert('Please calculate first'); return; }
+    const text = `Company: ${window.lastResult.company}\nCTC: ₹${numberWithCommas(window.lastResult.ctc)}\nMonthly (Old Regime): ₹${numberWithCommas(window.lastResult.monthlyOld)}\nMonthly (New Regime): ₹${numberWithCommas(window.lastResult.monthlyNew)}\nCheck more: https://t24k.com/salary-tool/`;
+    navigator.clipboard.writeText(text).then(()=> alert('Result copied to clipboard') ).catch(()=> alert('Copy failed'));
+  });
+
+  </script>
+</body>
+</html>
