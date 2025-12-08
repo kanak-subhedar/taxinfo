@@ -1,0 +1,52 @@
+{
+  "Infosys": {
+    "tag": "IT - Sample structure",
+    "structure": {
+      "basicPerc": 40,
+      "hraPerc": 20,
+      "conveyancePerc": 4,
+      "otherPerc": 26,
+      "bonusPerc": 10
+    }
+  },
+  "TCS": {
+    "tag": "IT - Sample structure",
+    "structure": {
+      "basicPerc": 38,
+      "hraPerc": 22,
+      "conveyancePerc": 4,
+      "otherPerc": 26,
+      "bonusPerc": 10
+    }
+  },
+  "Wipro": {
+    "tag": "IT - Sample structure",
+    "structure": {
+      "basicPerc": 42,
+      "hraPerc": 18,
+      "conveyancePerc": 4,
+      "otherPerc": 26,
+      "bonusPerc": 10
+    }
+  },
+  "Deloitte": {
+    "tag": "Consulting",
+    "structure": {
+      "basicPerc": 36,
+      "hraPerc": 24,
+      "conveyancePerc": 4,
+      "otherPerc": 26,
+      "bonusPerc": 10
+    }
+  },
+  "CustomExample": {
+    "tag": "Example",
+    "structure": {
+      "basicPerc": 40,
+      "hraPerc": 20,
+      "conveyancePerc": 4,
+      "otherPerc": 26,
+      "bonusPerc": 10
+    }
+  }
+}
