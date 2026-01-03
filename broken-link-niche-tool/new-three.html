@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Data Analytics Dashboard 2026</title>
+    <script src="cdnjs.cloudflare.com"></script>
+    <script src="cdn.jsdelivr.net"></script>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px; }
+        #debug { background: #333; color: #0f0; padding: 10px; font-family: monospace; height: 100px; overflow-y: auto; margin-top: 10px; border-radius: 4px; }
+        canvas { max-height: 300px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>1. Upload CSV File</h2>
+        <input type="file" id="csvFile" accept=".csv">
+        <button onclick="processCSV()">Generate Reports</button>
+        <div id="debug">System ready. Waiting for file...</div>
+    </div>
+
+    <div id="dashboard" class="grid" style="display:none;">
+        <div class="card"><h3>Total Sales Trend</h3><canvas id="chart1"></canvas></div>
+        <div class="card"><h3>City-wise Performance</h3><canvas id="chart2"></canvas></div>
+        <div class="card"><h3>Top Products (Revenue)</h3><canvas id="chart3"></canvas></div>
+        <div class="card"><h3>Seller Contributions</h3><canvas id="chart4"></canvas></div>
+    </div>
+
+<script>
+    let charts = [];
+
+    function log(msg) {
+        const d = document.getElementById('debug');
+        d.innerHTML += `<br>> ${msg}`;
+        d.scrollTop = d.scrollHeight;
+    }
+
+    function processCSV() {
+        const file = document.getElementById('csvFile').files[0];
+        if (!file) return log("Error: No file selected!");
+
+        log(`Parsing: ${file.name}...`);
+        
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                log(`Success: Found ${results.data.length} rows.`);
+                if (results.data.length > 0) {
+                    analyzeAndRender(results.data);
+                } else {
+                    log("Error: File appears to be empty.");
+                }
+            },
+            error: function(err) { log("Parse Error: " + err.message); }
+        });
+    }
+
+    function findCol(row, keywords) {
+        const keys = Object.keys(row);
+        for (let k of keys) {
+            let normalized = k.toLowerCase().replace(/_/g, " ").trim();
+            if (keywords.some(kw => normalized.includes(kw))) return k;
+        }
+        return null;
+    }
+
+    function analyzeAndRender(data) {
+        // Destroy old charts
+        charts.forEach(c => c.destroy());
+        charts = [];
+        document.getElementById('dashboard').style.display = 'grid';
+
+        // Auto-detect columns
+        const firstRow = data[0];
+        const colSale = findCol(firstRow, ['sale amount', 'sales', 'revenue']);
+        const colCity = findCol(firstRow, ['city', 'location']);
+        const colDate = findCol(firstRow, ['date', 'time']);
+        const colProd = findCol(firstRow, ['product', 'item']);
+        const colSell = findCol(firstRow, ['seller', 'vendor']);
+
+        log(`Detected Columns: Sales(${colSale}), City(${colCity}), Product(${colProd})`);
+
+        if (!colSale || !colCity) {
+            log("Error: Could not find Sales or City columns. Check your CSV headings.");
+            return;
+        }
+
+        // Aggregate Data
+        const cityData = {};
+        const productData = {};
+        const sellerData = {};
+        const dateData = {};
+
+        data.forEach(row => {
+            const val = parseFloat(String(row[colSale]).replace(/[^0-9.-]+/g,"")) || 0;
+            const city = row[colCity] || 'Other';
+            const prod = row[colProd] || 'Other';
+            const seller = row[colSell] || 'Other';
+            const date = row[colDate] || 'N/A';
+
+            cityData[city] = (cityData[city] || 0) + val;
+            productData[prod] = (productData[prod] || 0) + val;
+            sellerData[seller] = (sellerData[seller] || 0) + val;
+            dateData[date] = (dateData[date] || 0) + val;
+        });
+
+        // Helper to draw
+        const draw = (id, type, labels, values, title) => {
+            charts.push(new Chart(document.getElementById(id), {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{ label: title, data: values, backgroundColor: ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            }));
+        };
+
+        draw('chart1', 'line', Object.keys(dateData), Object.values(dateData), 'Sales Trend');
+        draw('chart2', 'bar', Object.keys(cityData), Object.values(cityData), 'City Sales');
+        draw('chart3', 'pie', Object.keys(productData).slice(0,5), Object.values(productData).slice(0,5), 'Top 5 Products');
+        draw('chart4', 'doughnut', Object.keys(sellerData).slice(0,5), Object.values(sellerData).slice(0,5), 'Top 5 Sellers');
+        
+        log("Dashboard Rendered Successfully.");
+    }
+</script>
+</body>
+</html>
