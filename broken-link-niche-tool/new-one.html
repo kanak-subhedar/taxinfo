@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CSV Report Generator – Visual Financial Analysis</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Upload CSV data and instantly generate professional visual reports with charts and explanations. No login. No backend. Works fully in browser.">
+  <meta name="keywords" content="CSV report generator, data visualization, chart tool, finance report, excel to charts">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .box {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 25px;
+    }
+
+    .instructions {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    input[type="file"] {
+      margin-top: 10px;
+    }
+
+    button {
+      background: #2980b9;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      margin-top: 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #1f6391;
+    }
+
+    canvas {
+      max-width: 100%;
+      margin-top: 20px;
+    }
+
+    .chart-explain {
+      font-size: 14px;
+      color: #444;
+      margin-top: 8px;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <h1>CSV Report Generator</h1>
+
+  <div class="box instructions">
+    <h3>Expected CSV Format</h3>
+    <p>
+      Your CSV file must contain the following column headings
+      (order does NOT matter):
+    </p>
+    <ul>
+      <li><b>date</b> – Any valid date format</li>
+      <li><b>type</b> – Income or Expense</li>
+      <li><b>category</b> – Example: Food, Rent, Salary</li>
+      <li><b>amount</b> – Numeric value</li>
+    </ul>
+    <p>
+      The tool automatically reads all rows and generates visual reports.
+    </p>
+  </div>
+
+  <div class="box">
+    <input type="file" id="csvFile" accept=".csv" />
+    <br>
+    <button onclick="generateReport()">Generate Report</button>
+    <p id="error" class="error"></p>
+  </div>
+
+  <div class="box">
+    <canvas id="barChart"></canvas>
+    <p class="chart-explain">
+      This chart compares total income versus total expenses from the uploaded CSV.
+    </p>
+  </div>
+
+  <div class="box">
+    <canvas id="pieChart"></canvas>
+    <p class="chart-explain">
+      This chart shows how expenses are distributed across different categories.
+    </p>
+  </div>
+
+  <div class="box">
+    <canvas id="lineChart"></canvas>
+    <p class="chart-explain">
+      This chart displays the financial trend over time based on transaction dates.
+    </p>
+  </div>
+
+</div>
+
+<script>
+let barChart, pieChart, lineChart;
+
+function generateReport() {
+  const fileInput = document.getElementById("csvFile");
+  const errorEl = document.getElementById("error");
+  errorEl.textContent = "";
+
+  if (!fileInput.files.length) {
+    errorEl.textContent = "Please upload a CSV file.";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    processCSV(e.target.result);
+  };
+  reader.readAsText(fileInput.files[0]);
+}
+
+function processCSV(text) {
+  const lines = text.trim().split("\n").map(l => l.split(","));
+  const headers = lines[0].map(h => h.trim().toLowerCase());
+
+  const dateIdx = headers.indexOf("date");
+  const typeIdx = headers.indexOf("type");
+  const categoryIdx = headers.indexOf("category");
+  const amountIdx = headers.indexOf("amount");
+
+  if (dateIdx === -1 || typeIdx === -1 || categoryIdx === -1 || amountIdx === -1) {
+    document.getElementById("error").textContent =
+      "Missing one or more required columns: date, type, category, amount";
+    return;
+  }
+
+  let totalIncome = 0;
+  let totalExpense = 0;
+  const categoryMap = {};
+  const dateMap = {};
+
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i];
+    const date = row[dateIdx];
+    const type = row[typeIdx].toLowerCase();
+    const category = row[categoryIdx];
+    const amount = parseFloat(row[amountIdx]);
+
+    if (isNaN(amount)) continue;
+
+    if (type === "income") totalIncome += amount;
+    if (type === "expense") {
+      totalExpense += amount;
+      categoryMap[category] = (categoryMap[category] || 0) + amount;
+    }
+
+    dateMap[date] = (dateMap[date] || 0) + amount;
+  }
+
+  renderCharts(totalIncome, totalExpense, categoryMap, dateMap);
+}
+
+function renderCharts(income, expense, categories, dates) {
+  if (barChart) barChart.destroy();
+  if (pieChart) pieChart.destroy();
+  if (lineChart) lineChart.destroy();
+
+  barChart = new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: ["Income", "Expense"],
+      datasets: [{
+        label: "Amount (₹)",
+        data: [income, expense],
+        backgroundColor: ["#2ecc71", "#e74c3c"]
+      }]
+    },
+    options: {
+      plugins: {
+        title: { display: true, text: "Income vs Expense" }
+      },
+      scales: {
+        y: { title: { display: true, text: "Amount (₹)" } }
+      }
+    }
+  });
+
+  pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: Object.keys(categories),
+      datasets: [{
+        label: "Expenses",
+        data: Object.values(categories)
+      }]
+    },
+    options: {
+      plugins: {
+        title: { display: true, text: "Category-wise Expenses" }
+      }
+    }
+  });
+
+  lineChart = new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+      labels: Object.keys(dates),
+      datasets: [{
+        label: "Amount Over Time (₹)",
+        data: Object.values(dates),
+        borderColor: "#2980b9",
+        tension: 0.3,
+        fill: false
+      }]
+    },
+    options: {
+      plugins: {
+        title: { display: true, text: "Date-wise Trend" }
+      },
+      scales: {
+        x: { title: { display: true, text: "Date" } },
+        y: { title: { display: true, text: "Amount (₹)" } }
+      }
+    }
+  });
+}
+</script>
+
+</body>
+</html>
