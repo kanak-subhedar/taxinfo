@@ -75,7 +75,7 @@ canvas {
 <body>
 <div class="container">
 
-<h1>CSV Sales & Gain Analyzer</h1>
+<h1>CSV Sales & Performance Analyzer</h1>
 
 <div class="box">
 <h3>Required CSV Headers</h3>
@@ -121,6 +121,11 @@ Sales_Amount, Purchase_Amount, Seller_Name, Gain
 <div class="box">
 <canvas id="lineChart"></canvas>
 <p class="explain">Gain trend over time.</p>
+</div>
+
+<div class="box">
+<canvas id="sellerChart"></canvas>
+<p class="explain">Seller performance based on total sales, quantity & gain.</p>
 </div>
 
 </div>
@@ -173,8 +178,13 @@ function parseCSV(text) {
   const salesByProduct = {};
   const qtyByProduct = {};
   const salesByCity = {};
-  let totalSales = 0, totalPurchase = 0;
   const gainByDate = {};
+
+  const sellerSales = {};
+  const sellerQty = {};
+  const sellerGain = {};
+
+  let totalSales = 0, totalPurchase = 0;
 
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
@@ -184,27 +194,31 @@ function parseCSV(text) {
     const sales = +r[idx.sales_amount];
     const purchase = +r[idx.purchase_amount];
     const gain = +r[idx.gain];
+    const seller = r[idx.seller_name];
 
-    salesByProduct[product] =
-      (salesByProduct[product] || 0) + sales;
+    salesByProduct[product] = (salesByProduct[product] || 0) + sales;
+    qtyByProduct[product] = (qtyByProduct[product] || 0) + qty;
 
-    qtyByProduct[product] =
-      (qtyByProduct[product] || 0) + qty;
-
-    salesByCity[r[idx.city]] =
-      (salesByCity[r[idx.city]] || 0) + sales;
+    salesByCity[r[idx.city]] = (salesByCity[r[idx.city]] || 0) + sales;
 
     if (!isNaN(gain)) {
-      gainByDate[r[idx.date]] =
-        (gainByDate[r[idx.date]] || 0) + gain;
+      gainByDate[r[idx.date]] = (gainByDate[r[idx.date]] || 0) + gain;
     }
+
+    sellerSales[seller] = (sellerSales[seller] || 0) + sales;
+    sellerQty[seller] = (sellerQty[seller] || 0) + qty;
+    sellerGain[seller] = (sellerGain[seller] || 0) + gain;
 
     totalSales += sales || 0;
     totalPurchase += purchase || 0;
   }
 
   log("Data aggregation completed.");
-  renderCharts(salesByProduct, qtyByProduct, salesByCity, totalSales, totalPurchase, gainByDate);
+  renderCharts(
+    salesByProduct, qtyByProduct, salesByCity,
+    totalSales, totalPurchase, gainByDate,
+    sellerSales, sellerQty, sellerGain
+  );
 }
 
 function destroyAll() {
@@ -212,7 +226,11 @@ function destroyAll() {
   charts = [];
 }
 
-function renderCharts(prodSales, prodQty, city, totalSales, totalPurchase, gainByDate) {
+function renderCharts(
+  prodSales, prodQty, city,
+  totalSales, totalPurchase, gainByDate,
+  sellerSales, sellerQty, sellerGain
+) {
   destroyAll();
   log("Rendering charts...");
 
@@ -232,51 +250,27 @@ function renderCharts(prodSales, prodQty, city, totalSales, totalPurchase, gainB
         tooltip: {
           callbacks: {
             afterLabel: ctx => {
-              const product = ctx.label;
-              return "Quantity: " + prodQty[product];
+              const p = ctx.label;
+              return "Quantity: " + prodQty[p];
             }
           }
         }
-      },
-      scales: {
-        y: { title: { display: true, text: "Sales Amount" } }
       }
     }
   }));
-
-  const cityValues = Object.values(city);
-  const totalCitySales = cityValues.reduce((a,b)=>a+b,0);
 
   charts.push(new Chart(pieChart, {
     type: "pie",
     data: {
       labels: Object.keys(city),
       datasets: [{
-        data: cityValues,
+        data: Object.values(city),
         backgroundColor: ["#22c55e","#ef4444","#a855f7","#14b8a6","#f97316"]
       }]
     },
     options: {
       aspectRatio: 1,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            generateLabels(chart) {
-              const data = chart.data;
-              return data.labels.map((label, i) => {
-                const value = data.datasets[0].data[i];
-                const pct = ((value / totalCitySales) * 100).toFixed(2);
-                return {
-                  text: `${label} – ₹${value} (${pct}%)`,
-                  fillStyle: data.datasets[0].backgroundColor[i]
-                };
-              });
-            }
-          }
-        },
-        title: { display: true, text: "City-wise Sales Distribution" }
-      }
+      plugins: { title: { display: true, text: "City-wise Sales" } }
     }
   }));
 
@@ -291,9 +285,7 @@ function renderCharts(prodSales, prodQty, city, totalSales, totalPurchase, gainB
     },
     options: {
       aspectRatio: 1,
-      plugins: {
-        title: { display: true, text: "Sales vs Purchase" }
-      }
+      plugins: { title: { display: true, text: "Sales vs Purchase" } }
     }
   }));
 
@@ -308,12 +300,34 @@ function renderCharts(prodSales, prodQty, city, totalSales, totalPurchase, gainB
         borderColor: "#16a34a",
         tension: 0.3
       }]
+    }
+  }));
+
+  charts.push(new Chart(sellerChart, {
+    type: "bar",
+    data: {
+      labels: Object.keys(sellerSales),
+      datasets: [{
+        label: "Seller Sales",
+        data: Object.values(sellerSales),
+        backgroundColor: "#7c3aed"
+      }]
     },
     options: {
-      plugins: { title: { display: true, text: "Gain Over Time" } },
-      scales: {
-        x: { title: { display: true, text: "Date" } },
-        y: { title: { display: true, text: "Gain Amount" } }
+      indexAxis: "y",
+      plugins: {
+        title: { display: true, text: "Seller Performance" },
+        tooltip: {
+          callbacks: {
+            afterLabel: ctx => {
+              const s = ctx.label;
+              return [
+                "Quantity: " + sellerQty[s],
+                "Gain: ₹" + sellerGain[s]
+              ];
+            }
+          }
+        }
       }
     }
   }));
