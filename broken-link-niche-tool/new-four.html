@@ -1,0 +1,78 @@
+// ================= SUMMARY PAGE CHARTS =================
+
+charts.push(new Chart(summaryBar, {
+  type: "bar",
+  data: {
+    labels: Object.keys(prodSales),
+    datasets: [{
+      label: "Sales",
+      data: Object.values(prodSales),
+      backgroundColor: "#60a5fa"
+    }]
+  },
+  options: {
+    plugins: { title: { display: true, text: "Product Sales Summary" } }
+  }
+}));
+
+charts.push(new Chart(summaryPie, {
+  type: "pie",
+  data: {
+    labels: Object.keys(city),
+    datasets: [{
+      data: Object.values(city),
+      backgroundColor: ["#22c55e","#ef4444","#a855f7","#14b8a6","#f97316"]
+    }]
+  },
+  options: {
+    plugins: { title: { display: true, text: "City-wise Sales Summary" } },
+    aspectRatio: 1
+  }
+}));
+
+charts.push(new Chart(summaryDoughnut, {
+  type: "doughnut",
+  data: {
+    labels: ["Sales", "Purchase"],
+    datasets: [{
+      data: [totalSales, totalPurchase],
+      backgroundColor: ["#2563eb", "#dc2626"]
+    }]
+  },
+  options: {
+    plugins: { title: { display: true, text: "Sales vs Purchase Summary" } },
+    aspectRatio: 1
+  }
+}));
+
+charts.push(new Chart(summaryLine, {
+  type: "line",
+  data: {
+    labels: Object.keys(gainByDate).sort(),
+    datasets: [{
+      label: "Gain",
+      data: Object.keys(gainByDate).sort().map(d => gainByDate[d]),
+      borderColor: "#16a34a",
+      tension: 0.3
+    }]
+  },
+  options: {
+    plugins: { title: { display: true, text: "Gain Trend Summary" } }
+  }
+}));
+
+charts.push(new Chart(summarySeller, {
+  type: "bar",
+  data: {
+    labels: Object.keys(sellerSales),
+    datasets: [{
+      label: "Seller Sales",
+      data: Object.values(sellerSales),
+      backgroundColor: "#7c3aed"
+    }]
+  },
+  options: {
+    indexAxis: "y",
+    plugins: { title: { display: true, text: "Seller Performance Summary" } }
+  }
+}));
