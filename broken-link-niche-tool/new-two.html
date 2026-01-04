@@ -1,176 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Sales Analytics Pro</title>
-    <script src="cdnjs.cloudflare.com"></script>
-    <script src="cdn.jsdelivr.net"></script>
-    <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 40px; }
-        .upload-section { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); text-align: center; border: 2px dashed #cbd5e1; margin-bottom: 30px; }
-        button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 25px; display: none; }
-        .chart-card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
-        .chart-card h3 { margin-top: 0; color: #64748b; font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
-        canvas { width: 100% !important; height: 350px !important; }
-        .error { color: #dc2626; margin-top: 10px; display: none; }
-    </style>
+<meta charset="UTF-8" />
+<title>Advanced CSV Report Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  margin: 0;
+}
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+.box {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  border: 1px solid #ddd;
+}
+h1 { text-align: center; }
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover { background: #1e40af; }
+
+.error { color: red; font-weight: bold; }
+
+.log {
+  background: #020617;
+  color: #e5e7eb;
+  padding: 10px;
+  font-family: monospace;
+  height: 160px;
+  overflow-y: auto;
+}
+
+.chart-box {
+  display: flex;
+  justify-content: center;
+}
+
+.chart-fixed {
+  width: 420px;
+  height: 420px;
+}
+
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.explain {
+  font-size: 14px;
+  color: #444;
+  margin-top: 6px;
+  text-align: center;
+}
+</style>
 </head>
+
 <body>
-
 <div class="container">
-    <header>
-        <h1>Automated Business Intelligence</h1>
-        <p>Upload your sales CSV to generate comprehensive visual reports</p>
-    </header>
 
-    <div class="upload-section">
-        <input type="file" id="csvFile" accept=".csv" />
-        <button onclick="processData()">Generate Reports</button>
-        <div id="errorMsg" class="error"></div>
-    </div>
+<h1>CSV Sales & Gain Analyzer</h1>
 
-    <div id="dashboard" class="dashboard">
-        <div class="chart-card"><h3>Total Sales Trend (Timeline)</h3><canvas id="chart1"></canvas></div>
-        <div class="chart-card"><h3>Top 10 Products by Revenue</h3><canvas id="chart2"></canvas></div>
-        <div class="chart-card"><h3>Sales Distribution by City</h3><canvas id="chart3"></canvas></div>
-        <div class="chart-card"><h3>Profit Margin per Product (Top 10)</h3><canvas id="chart4"></canvas></div>
-        <div class="chart-card"><h3>Seller Performance (Total Sales)</h3><canvas id="chart5"></canvas></div>
-        <div class="chart-card"><h3>Purchase vs Sale Comparison</h3><canvas id="chart6"></canvas></div>
-        <div class="chart-card"><h3>Daily Transaction Volume</h3><canvas id="chart7"></canvas></div>
-    </div>
+<div class="box">
+<h3>Required CSV Headers</h3>
+<p>
+Product_Name, Quantity, Product_Price, City, Date,  
+Sales_Amount, Purchase_Amount, Seller_Name, Gain
+</p>
+
+<input type="file" id="csvFile" accept=".csv">
+<br><br>
+<button onclick="start()">Generate Report</button>
+<p id="error" class="error"></p>
+</div>
+
+<div class="box">
+<h3>Execution Log</h3>
+<div id="log" class="log"></div>
+</div>
+
+<div class="box">
+<canvas id="barChart"></canvas>
+<p class="explain">Total sales amount per product.</p>
+</div>
+
+<div class="box">
+<div class="chart-box">
+  <div class="chart-fixed">
+    <canvas id="pieChart"></canvas>
+  </div>
+</div>
+<p class="explain">City-wise sales distribution with percentage.</p>
+</div>
+
+<div class="box">
+<div class="chart-box">
+  <div class="chart-fixed">
+    <canvas id="doughnutChart"></canvas>
+  </div>
+</div>
+<p class="explain">Sales vs Purchase comparison.</p>
+</div>
+
+<div class="box">
+<canvas id="lineChart"></canvas>
+<p class="explain">Gain trend over time.</p>
+</div>
+
 </div>
 
 <script>
-    let activeCharts = [];
+let charts = [];
 
-    function processData() {
-        const fileInput = document.getElementById('csvFile');
-        const errorMsg = document.getElementById('errorMsg');
-        
-        if (!fileInput.files[0]) {
-            errorMsg.innerText = "Please select a CSV file first.";
-            errorMsg.style.display = "block";
-            return;
-        }
+function log(msg) {
+  const el = document.getElementById("log");
+  el.textContent += msg + "\n";
+  el.scrollTop = el.scrollHeight;
+}
 
-        Papa.parse(fileInput.files[0], {
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                renderDashboard(results.data);
+function start() {
+  document.getElementById("log").textContent = "";
+  document.getElementById("error").textContent = "";
+
+  const file = document.getElementById("csvFile").files[0];
+  if (!file) {
+    document.getElementById("error").textContent = "Upload a CSV file.";
+    return;
+  }
+
+  log("Reading CSV...");
+  const reader = new FileReader();
+  reader.onload = e => parseCSV(e.target.result);
+  reader.readAsText(file);
+}
+
+function parseCSV(text) {
+  log("Parsing CSV...");
+  const rows = text.trim().split("\n").map(r => r.split(","));
+  const headers = rows[0].map(h => h.trim().toLowerCase());
+
+  const required = [
+    "product_name","quantity","product_price","city","date",
+    "sales_amount","purchase_amount","seller_name","gain"
+  ];
+
+  const idx = {};
+  for (const col of required) {
+    idx[col] = headers.indexOf(col);
+    if (idx[col] === -1) {
+      document.getElementById("error").textContent =
+        "Missing column: " + col;
+      return;
+    }
+  }
+
+  const salesByProduct = {};
+  const salesByCity = {};
+  let totalSales = 0, totalPurchase = 0;
+  const gainByDate = {};
+
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const sales = +r[idx.sales_amount];
+    const purchase = +r[idx.purchase_amount];
+    const gain = +r[idx.gain];
+
+    salesByProduct[r[idx.product_name]] =
+      (salesByProduct[r[idx.product_name]] || 0) + sales;
+
+    salesByCity[r[idx.city]] =
+      (salesByCity[r[idx.city]] || 0) + sales;
+
+    if (!isNaN(gain)) {
+      gainByDate[r[idx.date]] =
+        (gainByDate[r[idx.date]] || 0) + gain;
+    }
+
+    totalSales += sales || 0;
+    totalPurchase += purchase || 0;
+  }
+
+  log("Data aggregated successfully.");
+  renderCharts(salesByProduct, salesByCity, totalSales, totalPurchase, gainByDate);
+}
+
+function destroyAll() {
+  charts.forEach(c => c.destroy());
+  charts = [];
+}
+
+function renderCharts(prod, city, totalSales, totalPurchase, gainByDate) {
+  destroyAll();
+  log("Rendering charts...");
+
+  charts.push(new Chart(barChart, {
+    type: "bar",
+    data: {
+      labels: Object.keys(prod),
+      datasets: [{
+        label: "Sales Amount",
+        data: Object.values(prod),
+        backgroundColor: "#3b82f6"
+      }]
+    },
+    options: {
+      plugins: { title: { display: true, text: "Sales by Product" } },
+      scales: { y: { title: { display: true, text: "Amount" } } }
+    }
+  }));
+
+  const cityValues = Object.values(city);
+  const totalCitySales = cityValues.reduce((a,b)=>a+b,0);
+
+  charts.push(new Chart(pieChart, {
+    type: "pie",
+    data: {
+      labels: Object.keys(city),
+      datasets: [{
+        data: cityValues,
+        backgroundColor: ["#22c55e","#ef4444","#a855f7","#14b8a6","#f97316"]
+      }]
+    },
+    options: {
+      aspectRatio: 1,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            generateLabels(chart) {
+              const data = chart.data;
+              return data.labels.map((label, i) => {
+                const value = data.datasets[0].data[i];
+                const pct = ((value / totalCitySales) * 100).toFixed(2);
+                return {
+                  text: `${label} – ₹${value} (${pct}%)`,
+                  fillStyle: data.datasets[0].backgroundColor[i]
+                };
+              });
             }
-        });
+          }
+        },
+        title: { display: true, text: "City-wise Sales Distribution" }
+      }
     }
+  }));
 
-    function renderDashboard(data) {
-        // Destroy old charts if they exist
-        activeCharts.forEach(chart => chart.destroy());
-        activeCharts = [];
-        
-        document.getElementById('dashboard').style.display = 'grid';
-        
-        // Helper to clean numeric values (handles strings like "$1,200")
-        const cleanNum = (val) => isNaN(val) ? Number(String(val).replace(/[^0-9.-]+/g,"")) : val;
-
-        // 1. Data Aggregation for Sales Trend (Date)
-        const dateMap = {};
-        const productMap = {};
-        const cityMap = {};
-        const sellerMap = {};
-        const marginMap = {};
-        const pVsS = { purchase: {}, sale: {} };
-
-        data.forEach(row => {
-            const date = row.Date || 'Unknown';
-            const prod = row.Product_Name || 'Unknown';
-            const city = row.City || 'Unknown';
-            const seller = row.Seller_Name || 'Unknown';
-            const sAmt = cleanNum(row.Sale_Amount || 0);
-            const pAmt = cleanNum(row.Purchase_Amount || 0);
-
-            dateMap[date] = (dateMap[date] || 0) + sAmt;
-            productMap[prod] = (productMap[prod] || 0) + sAmt;
-            cityMap[city] = (cityMap[city] || 0) + sAmt;
-            sellerMap[seller] = (sellerMap[seller] || 0) + sAmt;
-            marginMap[prod] = (marginMap[prod] || 0) + (sAmt - pAmt);
-            pVsS.sale[prod] = (pVsS.sale[prod] || 0) + sAmt;
-            pVsS.purchase[prod] = (pVsS.purchase[prod] || 0) + pAmt;
-        });
-
-        // Chart Utilities
-        const getTopN = (obj, n = 10) => Object.entries(obj).sort((a,b) => b[1] - a[1]).slice(0, n);
-
-        // Chart 1: Sales Trend
-        createChart('chart1', 'line', Object.keys(dateMap), Object.values(dateMap), 'Total Sales', '#2563eb');
-
-        // Chart 2: Top Products
-        const topProds = getTopN(productMap);
-        createChart('chart2', 'bar', topProds.map(x => x[0]), topProds.map(x => x[1]), 'Revenue', '#059669');
-
-        // Chart 3: City Distribution
-        createChart('chart3', 'pie', Object.keys(cityMap), Object.values(cityMap), 'Sales by City');
-
-        // Chart 4: Profit Margin
-        const topMargin = getTopN(marginMap);
-        createChart('chart4', 'bar', topMargin.map(x => x[0]), topMargin.map(x => x[1]), 'Profit Amount', '#7c3aed');
-
-        // Chart 5: Seller Performance
-        const topSellers = getTopN(sellerMap);
-        createChart('chart5', 'doughnut', topSellers.map(x => x[0]), topSellers.map(x => x[1]), 'Seller Sales');
-
-        // Chart 6: Purchase vs Sale
-        const pLabels = Object.keys(pVsS.sale).slice(0, 10);
-        activeCharts.push(new Chart(document.getElementById('chart6'), {
-            type: 'bar',
-            data: {
-                labels: pLabels,
-                datasets: [
-                    { label: 'Sales', data: pLabels.map(l => pVsS.sale[l]), backgroundColor: '#3b82f6' },
-                    { label: 'Purchase', data: pLabels.map(l => pVsS.purchase[l]), backgroundColor: '#f43f5e' }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        }));
-
-        // Chart 7: Frequency (Transactions per City)
-        const cityCount = {};
-        data.forEach(row => cityCount[row.City] = (cityCount[row.City] || 0) + 1);
-        createChart('chart7', 'polarArea', Object.keys(cityCount), Object.values(cityCount), 'Transactions Count');
+  charts.push(new Chart(doughnutChart, {
+    type: "doughnut",
+    data: {
+      labels: ["Sales", "Purchase"],
+      datasets: [{
+        data: [totalSales, totalPurchase],
+        backgroundColor: ["#2563eb", "#dc2626"]
+      }]
+    },
+    options: {
+      aspectRatio: 1,
+      plugins: {
+        title: { display: true, text: "Sales vs Purchase" }
+      }
     }
+  }));
 
-    function createChart(id, type, labels, data, label, color) {
-        const ctx = document.getElementById(id).getContext('2d');
-        const colors = ['#2563eb', '#059669', '#7c3aed', '#db2777', '#ea580c', '#16a34a', '#dc2626', '#4f46e5'];
-        
-        const config = {
-            type: type,
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: label,
-                    data: data,
-                    backgroundColor: type === 'line' ? 'transparent' : colors,
-                    borderColor: color || colors[0],
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: (type === 'pie' || type === 'doughnut') } }
-            }
-        };
-        activeCharts.push(new Chart(ctx, config));
+  const dates = Object.keys(gainByDate).sort();
+  charts.push(new Chart(lineChart, {
+    type: "line",
+    data: {
+      labels: dates,
+      datasets: [{
+        label: "Gain",
+        data: dates.map(d => gainByDate[d]),
+        borderColor: "#16a34a",
+        tension: 0.3
+      }]
+    },
+    options: {
+      plugins: { title: { display: true, text: "Gain Over Time" } },
+      scales: {
+        x: { title: { display: true, text: "Date" } },
+        y: { title: { display: true, text: "Gain Amount" } }
+      }
     }
+  }));
+
+  log("All charts rendered successfully.");
+}
 </script>
 </body>
 </html>
