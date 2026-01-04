@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced CSV Report Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  margin: 0;
+}
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+.box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+}
+h1, h2 { text-align: center; }
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover { background: #1e40af; }
+
+.log {
+  background: #020617;
+  color: #e5e7eb;
+  padding: 10px;
+  font-family: monospace;
+  height: 160px;
+  overflow-y: auto;
+}
+
+/* -------- NORMAL CHARTS -------- */
+
+.normal-chart {
+  height: 420px;
+}
+
+.normal-pie {
+  height: 360px;
+  max-width: 360px;
+  margin: auto;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* -------- SUMMARY -------- */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+  gap: 40px;
+}
+
+.summary-box {
+  background: #fafafa;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.summary-box canvas {
+  width: 100% !important;
+  height: 360px !important;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>CSV Sales & Performance Analyzer</h1>
+
+<div class="box">
+<h3>Required CSV Headers</h3>
+<p>
+Product_Name, Quantity, Product_Price, City, Date,  
+Sales_Amount, Purchase_Amount, Seller_Name, Gain
+</p>
+<input type="file" id="csvFile" accept=".csv">
+<br><br>
+<button onclick="start()">Generate Report</button>
+</div>
+
+<div class="box">
+<h3>Execution Log</h3>
+<div id="log" class="log"></div>
+</div>
+
+<div class="box normal-chart"><canvas id="barChart"></canvas></div>
+
+<div class="box normal-pie"><canvas id="pieChart"></canvas></div>
+
+<div class="box normal-pie"><canvas id="doughnutChart"></canvas></div>
+
+<div class="box normal-chart"><canvas id="lineChart"></canvas></div>
+
+<div class="box normal-chart"><canvas id="sellerChart"></canvas></div>
+
+<!-- ===== SUMMARY ===== -->
+
+<div class="box" style="page-break-before:always;">
+<h2>📊 All Reports – Summary View</h2>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-box"><canvas id="summaryBar"></canvas></div>
+  <div class="summary-box"><canvas id="summaryPie"></canvas></div>
+  <div class="summary-box"><canvas id="summaryDoughnut"></canvas></div>
+  <div class="summary-box"><canvas id="summaryLine"></canvas></div>
+  <div class="summary-box"><canvas id="summarySeller"></canvas></div>
+</div>
+
+</div>
+
+<script>
+let charts=[];
+
+function log(m){logEl.textContent+=m+"\n";}
+const logEl=document.getElementById("log");
+
+function start(){
+  logEl.textContent="";
+  const f=csvFile.files[0]; if(!f)return;
+  new FileReader().onload=e=>parseCSV(e.target.result);
+  new FileReader().readAsText(f);
+}
+
+function parseCSV(t){
+  const r=t.trim().split("\n").map(x=>x.split(","));
+  const h=r[0].map(x=>x.toLowerCase().trim());
+  const i=c=>h.indexOf(c);
+
+  const ps={},city={},gain={},ss={};
+  let ts=0,tp=0;
+
+  for(let x=1;x<r.length;x++){
+    const row=r[x];
+    ps[row[i("product_name")]]=(ps[row[i("product_name")]]||0)+(+row[i("sales_amount")]);
+    city[row[i("city")]]=(city[row[i("city")]]||0)+(+row[i("sales_amount")]);
+    gain[row[i("date")]]=(gain[row[i("date")]]||0)+(+row[i("gain")]);
+    ss[row[i("seller_name")]]=(ss[row[i("seller_name")]]||0)+(+row[i("sales_amount")]);
+    ts+=+row[i("sales_amount")]||0;
+    tp+=+row[i("purchase_amount")]||0;
+  }
+  render(ps,city,ts,tp,gain,ss);
+}
+
+function normalOpt(title){
+  return {responsive:true,maintainAspectRatio:false,plugins:{title:{display:true,text:title}}};
+}
+function summaryOpt(title){
+  return {responsive:true,maintainAspectRatio:false,plugins:{title:{display:true,text:title,font:{size:20}},legend:{labels:{font:{size:16}}}}};
+}
+
+function render(ps,city,ts,tp,gain,ss){
+  charts.forEach(c=>c.destroy()); charts=[];
+  const d=Object.keys(gain).sort();
+
+  charts.push(new Chart(barChart,{type:"bar",data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps)}]},options:normalOpt("Sales by Product")}));
+
+  charts.push(new Chart(pieChart,{type:"pie",data:{labels:Object.keys(city),datasets:[{data:Object.values(city)}]},options:{...normalOpt("City-wise Sales"),radius:"80%"}}));
+
+  charts.push(new Chart(doughnutChart,{type:"doughnut",data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},options:{...normalOpt("Sales vs Purchase"),radius:"80%"}}));
+
+  charts.push(new Chart(lineChart,{type:"line",data:{labels:d,datasets:[{data:d.map(x=>gain[x])}]},options:normalOpt("Gain Trend")}));
+
+  charts.push(new Chart(sellerChart,{type:"bar",data:{labels:Object.keys(ss),datasets:[{data:Object.values(ss)}]},options:{...normalOpt("Seller Performance"),indexAxis:"y"}}));
+
+  charts.push(new Chart(summaryBar,{type:"bar",data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps)}]},options:summaryOpt("Product Summary")}));
+  charts.push(new Chart(summaryPie,{type:"pie",data:{labels:Object.keys(city),datasets:[{data:Object.values(city)}]},options:{...summaryOpt("City Summary"),radius:"90%"}}));
+  charts.push(new Chart(summaryDoughnut,{type:"doughnut",data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},options:{...summaryOpt("Sales vs Purchase Summary"),radius:"90%"}}));
+  charts.push(new Chart(summaryLine,{type:"line",data:{labels:d,datasets:[{data:d.map(x=>gain[x])}]},options:summaryOpt("Gain Summary")}));
+  charts.push(new Chart(summarySeller,{type:"bar",data:{labels:Object.keys(ss),datasets:[{data:Object.values(ss)}]},options:{...summaryOpt("Seller Summary"),indexAxis:"y"}}));
+}
+</script>
+</body>
+</html>
