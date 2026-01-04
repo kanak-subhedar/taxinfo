@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Advanced CSV Report Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  margin: 0;
+}
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+.box {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  border: 1px solid #ddd;
+}
+h1 { text-align: center; }
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover { background: #1e40af; }
+
+.error { color: red; font-weight: bold; }
+
+.log {
+  background: #020617;
+  color: #e5e7eb;
+  padding: 10px;
+  font-family: monospace;
+  height: 160px;
+  overflow-y: auto;
+}
+
+.chart-box {
+  display: flex;
+  justify-content: center;
+}
+
+.chart-fixed {
+  width: 420px;
+  height: 420px;
+}
+
+canvas {
+  max-width: 100%;
+}
+
+.explain {
+  font-size: 14px;
+  color: #444;
+  margin-top: 6px;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>CSV Sales & Performance Analyzer</h1>
+
+<div class="box">
+<h3>Required CSV Headers</h3>
+<p>
+Product_Name, Quantity, Product_Price, City, Date,  
+Sales_Amount, Purchase_Amount, Seller_Name, Gain
+</p>
+
+<input type="file" id="csvFile" accept=".csv">
+<br><br>
+<button onclick="start()">Generate Report</button>
+<p id="error" class="error"></p>
+</div>
+
+<div class="box">
+<h3>Execution Log</h3>
+<div id="log" class="log"></div>
+</div>
+
+<div class="box">
+<canvas id="barChart"></canvas>
+<p class="explain">Sales by product (hover to see quantity).</p>
+</div>
+
+<div class="box chart-box">
+<div class="chart-fixed">
+<canvas id="pieChart"></canvas>
+</div>
+</div>
+<p class="explain">City-wise sales distribution.</p>
+
+<div class="box chart-box">
+<div class="chart-fixed">
+<canvas id="doughnutChart"></canvas>
+</div>
+</div>
+<p class="explain">Sales vs Purchase comparison.</p>
+
+<div class="box">
+<canvas id="lineChart"></canvas>
+<p class="explain">Gain trend over time.</p>
+</div>
+
+<div class="box">
+<canvas id="sellerChart"></canvas>
+<p class="explain">Seller performance.</p>
+</div>
+
+<div class="box">
+<canvas id="sellerProductChart"></canvas>
+<p class="explain">Who sold which product & quantity (stacked).</p>
+</div>
+
+</div>
+
+<script>
+let charts = [];
+
+function log(msg) {
+  const el = document.getElementById("log");
+  el.textContent += msg + "\n";
+  el.scrollTop = el.scrollHeight;
+}
+
+function start() {
+  document.getElementById("log").textContent = "";
+  document.getElementById("error").textContent = "";
+
+  const file = document.getElementById("csvFile").files[0];
+  if (!file) {
+    document.getElementById("error").textContent = "Upload a CSV file.";
+    return;
+  }
+
+  log("Reading CSV...");
+  const reader = new FileReader();
+  reader.onload = e => parseCSV(e.target.result);
+  reader.readAsText(file);
+}
+
+function parseCSV(text) {
+  log("Parsing CSV...");
+  const rows = text.trim().split("\n").map(r => r.split(","));
+  const headers = rows[0].map(h => h.trim().toLowerCase());
+
+  const required = [
+    "product_name","quantity","product_price","city","date",
+    "sales_amount","purchase_amount","seller_name","gain"
+  ];
+
+  const idx = {};
+  for (const col of required) {
+    idx[col] = headers.indexOf(col);
+    if (idx[col] === -1) {
+      document.getElementById("error").textContent =
+        "Missing column: " + col;
+      return;
+    }
+  }
+
+  const salesByProduct = {}, qtyByProduct = {}, salesByCity = {};
+  const gainByDate = {};
+  const sellerSales = {}, sellerQty = {}, sellerGain = {};
+  const sellerProductQty = {};
+
+  let totalSales = 0, totalPurchase = 0;
+
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+
+    const product = r[idx.product_name];
+    const qty = +r[idx.quantity];
+    const sales = +r[idx.sales_amount];
+    const purchase = +r[idx.purchase_amount];
+    const gain = +r[idx.gain];
+    const seller = r[idx.seller_name];
+
+    salesByProduct[product] = (salesByProduct[product] || 0) + sales;
+    qtyByProduct[product] = (qtyByProduct[product] || 0) + qty;
+    salesByCity[r[idx.city]] = (salesByCity[r[idx.city]] || 0) + sales;
+
+    gainByDate[r[idx.date]] = (gainByDate[r[idx.date]] || 0) + gain;
+
+    sellerSales[seller] = (sellerSales[seller] || 0) + sales;
+    sellerQty[seller] = (sellerQty[seller] || 0) + qty;
+    sellerGain[seller] = (sellerGain[seller] || 0) + gain;
+
+    if (!sellerProductQty[seller]) sellerProductQty[seller] = {};
+    sellerProductQty[seller][product] =
+      (sellerProductQty[seller][product] || 0) + qty;
+
+    totalSales += sales || 0;
+    totalPurchase += purchase || 0;
+  }
+
+  renderCharts(
+    salesByProduct, qtyByProduct, salesByCity,
+    totalSales, totalPurchase, gainByDate,
+    sellerSales, sellerQty, sellerGain,
+    sellerProductQty
+  );
+}
+
+function destroyAll() {
+  charts.forEach(c => c.destroy());
+  charts = [];
+}
+
+function renderCharts(
+  prodSales, prodQty, city,
+  totalSales, totalPurchase, gainByDate,
+  sellerSales, sellerQty, sellerGain,
+  sellerProductQty
+) {
+  destroyAll();
+
+  charts.push(new Chart(barChart, {
+    type: "bar",
+    data: {
+      labels: Object.keys(prodSales),
+      datasets: [{
+        label: "Sales Amount",
+        data: Object.values(prodSales),
+        backgroundColor: "#3b82f6"
+      }]
+    },
+    options: {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            afterLabel: ctx =>
+              "Quantity: " + prodQty[ctx.label]
+          }
+        }
+      }
+    }
+  }));
+
+  charts.push(new Chart(pieChart, {
+    type: "pie",
+    data: {
+      labels: Object.keys(city),
+      datasets: [{
+        data: Object.values(city),
+        backgroundColor: ["#22c55e","#ef4444","#a855f7","#14b8a6","#f97316"]
+      }]
+    },
+    options: { aspectRatio: 1 }
+  }));
+
+  charts.push(new Chart(doughnutChart, {
+    type: "doughnut",
+    data: {
+      labels: ["Sales", "Purchase"],
+      datasets: [{
+        data: [totalSales, totalPurchase],
+        backgroundColor: ["#2563eb", "#dc2626"]
+      }]
+    },
+    options: { aspectRatio: 1 }
+  }));
+
+  charts.push(new Chart(lineChart, {
+    type: "line",
+    data: {
+      labels: Object.keys(gainByDate).sort(),
+      datasets: [{
+        label: "Gain",
+        data: Object.values(gainByDate),
+        borderColor: "#16a34a",
+        tension: 0.3
+      }]
+    }
+  }));
+
+  charts.push(new Chart(sellerChart, {
+    type: "bar",
+    data: {
+      labels: Object.keys(sellerSales),
+      datasets: [{
+        label: "Seller Sales",
+        data: Object.values(sellerSales),
+        backgroundColor: "#7c3aed"
+      }]
+    },
+    options: { indexAxis: "y" }
+  }));
+
+  // ===== NEW STACKED CHART =====
+  const sellers = Object.keys(sellerProductQty);
+  const products = [...new Set(
+    sellers.flatMap(s => Object.keys(sellerProductQty[s]))
+  )];
+
+  charts.push(new Chart(sellerProductChart, {
+    type: "bar",
+    data: {
+      labels: sellers,
+      datasets: products.map((p, i) => ({
+        label: p,
+        data: sellers.map(s => sellerProductQty[s][p] || 0),
+        backgroundColor: `hsl(${i * 60},70%,60%)`
+      }))
+    },
+    options: {
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, title: { display: true, text: "Quantity" } }
+      }
+    }
+  }));
+}
+</script>
+</body>
+</html>
