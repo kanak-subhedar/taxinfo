@@ -1,93 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CSV Financial Report Generator</title>
+<meta charset="UTF-8" />
+<title>CSV Sales Report Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="description" content="Upload CSV data and instantly generate labeled, explained financial charts. 100% browser-based, no backend required.">
-<meta name="keywords" content="CSV chart generator, financial report, excel visualization, income expense chart">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<!-- Chart.js v4 (locked) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
 
 <style>
 body {
   font-family: Arial, sans-serif;
-  background:#f4f6f8;
-  margin:0;
+  background: #f4f6f8;
+  margin: 0;
 }
 .container {
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
 }
 .box {
-  background:#fff;
-  padding:20px;
-  margin-bottom:25px;
-  border-radius:8px;
-  border:1px solid #ddd;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 25px;
 }
-h1 { text-align:center; }
+h1 { text-align: center; }
 button {
-  padding:10px 16px;
-  background:#1f6feb;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-  border-radius:4px;
+  padding: 10px 16px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
-button:hover { background:#164fa1; }
-.error { color:red; font-weight:bold; }
-.explain { font-size:14px; color:#444; margin-top:8px; }
+button:hover { background: #1e40af; }
+.error { color: red; font-weight: bold; }
+.log {
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 13px;
+  height: 150px;
+  overflow-y: auto;
+}
 canvas {
-  margin-top: 20px;
   width: 100% !important;
   height: 380px !important;
 }
-
+.explain {
+  font-size: 14px;
+  color: #444;
+  margin-top: 6px;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<h1>CSV Report Generator</h1>
+<h1>CSV Sales Report Generator</h1>
 
 <div class="box">
-<h3>Required CSV Headers</h3>
+<h3>Required CSV Columns</h3>
 <ul>
-<li><b>date</b> – transaction date</li>
-<li><b>type</b> – income or expense</li>
-<li><b>category</b> – category name</li>
-<li><b>amount</b> – numeric value</li>
+<li>Product_Name</li>
+<li>Quantity</li>
+<li>Product_Price</li>
+<li>City</li>
+<li>Date</li>
+<li>Sales_Amount</li>
+<li>Purchase_Amount</li>
+<li>Seller_Name</li>
+<li>Gain</li>
 </ul>
-<input type="file" id="csvFile" accept=".csv">
+
+<input type="file" id="csvFile" accept=".csv" />
 <br><br>
-<button onclick="generateReport()">Generate Report</button>
+<button onclick="start()">Generate Report</button>
 <p id="error" class="error"></p>
 </div>
 
 <div class="box">
+<h3>Execution Log</h3>
+<div id="log" class="log"></div>
+</div>
+
+<div class="box">
 <canvas id="barChart"></canvas>
-<p class="explain">
-This bar chart compares <b>total income vs total expense</b>.  
-Higher expense than income indicates negative cash flow.
-</p>
+<p class="explain">Sales amount per product.</p>
 </div>
 
 <div class="box">
 <canvas id="pieChart"></canvas>
-<p class="explain">
-This pie chart shows <b>where money is being spent</b> across categories.
-</p>
+<p class="explain">City-wise total sales distribution.</p>
 </div>
 
 <div class="box">
 <canvas id="lineChart"></canvas>
-<p class="explain">
-This line chart shows the <b>overall financial trend over time</b>.
-</p>
+<p class="explain">Gain trend over time.</p>
 </div>
 
 </div>
@@ -95,145 +108,147 @@ This line chart shows the <b>overall financial trend over time</b>.
 <script>
 let barChart, pieChart, lineChart;
 
-function generateReport() {
-  const file = document.getElementById("csvFile").files[0];
-  const err = document.getElementById("error");
-  err.textContent = "";
+function log(msg) {
+  const el = document.getElementById("log");
+  el.textContent += msg + "\n";
+  el.scrollTop = el.scrollHeight;
+}
 
+function start() {
+  document.getElementById("log").textContent = "";
+  document.getElementById("error").textContent = "";
+
+  const file = document.getElementById("csvFile").files[0];
   if (!file) {
-    err.textContent = "Please upload a CSV file.";
+    document.getElementById("error").textContent = "Please upload a CSV file.";
     return;
   }
 
+  log("Reading CSV file...");
   const reader = new FileReader();
   reader.onload = e => parseCSV(e.target.result);
   reader.readAsText(file);
 }
 
-function parseCSV(data) {
-  const rows = data.trim().split("\n").map(r => r.split(","));
+function parseCSV(text) {
+  log("Parsing CSV...");
+  const rows = text.trim().split("\n").map(r => r.split(","));
   const headers = rows[0].map(h => h.trim().toLowerCase());
 
-  const d = headers.indexOf("date");
-  const t = headers.indexOf("type");
-  const c = headers.indexOf("category");
-  const a = headers.indexOf("amount");
+  const required = [
+    "product_name","quantity","product_price","city","date",
+    "sales_amount","purchase_amount","seller_name","gain"
+  ];
 
-  if ([d,t,c,a].includes(-1)) {
-    document.getElementById("error").textContent =
-      "Missing required headers: date, type, category, amount";
-    return;
-  }
-
-  let income = 0, expense = 0;
-  const catMap = {};
-  const dateMap = {};
-
-  for (let i=1;i<rows.length;i++) {
-    const amt = parseFloat(rows[i][a]);
-    if (isNaN(amt)) continue;
-
-    const type = rows[i][t].toLowerCase();
-    const cat = rows[i][c];
-    const date = rows[i][d];
-
-    if (type === "income") income += amt;
-    if (type === "expense") {
-      expense += amt;
-      catMap[cat] = (catMap[cat] || 0) + amt;
+  const idx = {};
+  for (const col of required) {
+    idx[col] = headers.indexOf(col);
+    if (idx[col] === -1) {
+      document.getElementById("error").textContent =
+        "Missing required column: " + col;
+      return;
     }
-    dateMap[date] = (dateMap[date] || 0) + amt;
   }
 
-  drawCharts(income, expense, catMap, dateMap);
+  log("Headers detected successfully.");
+  log("Processing rows...");
+
+  const salesByProduct = {};
+  const salesByCity = {};
+  const gainByDate = {};
+
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const product = r[idx.product_name];
+    const city = r[idx.city];
+    const date = r[idx.date];
+    const sales = parseFloat(r[idx.sales_amount]);
+    const gain = parseFloat(r[idx.gain]);
+
+    if (!isNaN(sales)) {
+      salesByProduct[product] = (salesByProduct[product] || 0) + sales;
+      salesByCity[city] = (salesByCity[city] || 0) + sales;
+    }
+    if (!isNaN(gain)) {
+      gainByDate[date] = (gainByDate[date] || 0) + gain;
+    }
+  }
+
+  log("Data aggregation completed.");
+  renderCharts(salesByProduct, salesByCity, gainByDate);
 }
 
-function drawCharts(income, expense, catMap, dateMap) {
+function renderCharts(prod, city, dateGain) {
+  log("Rendering charts...");
+
   if (barChart) barChart.destroy();
   if (pieChart) pieChart.destroy();
   if (lineChart) lineChart.destroy();
 
-  barChart = new Chart(barChartEl(), {
+  barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
-      labels: ["Income","Expense"],
+      labels: Object.keys(prod),
       datasets: [{
-        label: "Amount (₹)",
-        data: [income, expense],
-        backgroundColor: ["#2ecc71","#e74c3c"]
+        label: "Sales Amount",
+        data: Object.values(prod),
+        backgroundColor: "#3b82f6"
       }]
     },
     options: {
       plugins: {
         legend: { display: true },
-        title: { display:true, text:"Income vs Expense" },
-        tooltip: {
-          callbacks: {
-            label: ctx => `₹ ${ctx.parsed.y.toLocaleString()}`
-          }
-        }
+        title: { display: true, text: "Sales Amount by Product" }
       },
       scales: {
-        y: { title:{ display:true, text:"Amount (₹)" } }
+        y: { title: { display: true, text: "Amount" } }
       }
     }
   });
 
-  pieChart = new Chart(pieChartEl(), {
+  pieChart = new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: {
-      labels: Object.keys(catMap),
+      labels: Object.keys(city),
       datasets: [{
-        data: Object.values(catMap),
-        backgroundColor:[
-          "#3498db","#9b59b6","#f1c40f","#1abc9c","#e67e22"
-        ]
+        data: Object.values(city),
+        backgroundColor: ["#22c55e","#f97316","#a855f7","#ef4444","#14b8a6"]
       }]
     },
     options: {
       plugins: {
-        legend:{ display:true, position:"bottom" },
-        title:{ display:true, text:"Expense Distribution" },
-        tooltip:{
-          callbacks:{
-            label: ctx => `${ctx.label}: ₹ ${ctx.parsed}`
-          }
-        }
+        legend: { display: true, position: "bottom" },
+        title: { display: true, text: "City-wise Sales Distribution" }
       }
     }
   });
 
-  const sortedDates = Object.keys(dateMap).sort();
-
-  lineChart = new Chart(lineChartEl(), {
+  const sortedDates = Object.keys(dateGain).sort();
+  lineChart = new Chart(document.getElementById("lineChart"), {
     type: "line",
     data: {
       labels: sortedDates,
       datasets: [{
-        label: "Net Amount",
-        data: sortedDates.map(d => dateMap[d]),
-        borderColor:"#1f6feb",
-        fill:false,
-        tension:0.3
+        label: "Gain",
+        data: sortedDates.map(d => dateGain[d]),
+        borderColor: "#16a34a",
+        tension: 0.3
       }]
     },
     options: {
-      plugins:{
-        legend:{ display:true },
-        title:{ display:true, text:"Financial Trend Over Time" }
+      plugins: {
+        legend: { display: true },
+        title: { display: true, text: "Gain Trend Over Time" }
       },
-      scales:{
-        x:{ title:{ display:true, text:"Date" } },
-        y:{ title:{ display:true, text:"Amount (₹)" } }
+      scales: {
+        x: { title: { display: true, text: "Date" } },
+        y: { title: { display: true, text: "Gain Amount" } }
       }
     }
   });
+
+  log("Charts rendered successfully.");
 }
-
-function barChartEl(){ return document.getElementById("barChart"); }
-function pieChartEl(){ return document.getElementById("pieChart"); }
-function lineChartEl(){ return document.getElementById("lineChart"); }
 </script>
-
 </body>
 </html>
