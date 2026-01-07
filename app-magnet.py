@@ -16,10 +16,10 @@ def home():
     return jsonify({"message": "Client Magnet backend is running successfully!"})
 
 # Razorpay credentials (from Render environment variables)
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+RAZORPAY_KEY_ID = os.getenv("RZR_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RZR_KEY_SEC")
 
-client = razorpay.Client(auth=(RZR_KEY_ID, RZR_KEY_SEC))
+client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 @app.route("/get-key", methods=["GET"])
 def get_key():
