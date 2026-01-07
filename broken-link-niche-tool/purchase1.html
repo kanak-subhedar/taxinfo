@@ -127,22 +127,22 @@ document.getElementById("pay-download").onclick = function () {
               payment_id: response.razorpay_payment_id
             }),
           })
-          .then(res => {
-            if (!res.ok) {
-              throw new Error("Payment verification failed. If payment succeeded but you still see this, email care@t24k.com and we’ll get you the details");
-            }
-            return res.blob();
-          })
-          
-            
-            // ✅ Redirect after short delay
-            setTimeout(() => {
-              window.location.href = "/digipro/thank-you-for-payment.html";
-            }, 3000);
-          
-          .catch(err => {
-            alert("❌ " + err.message);
-          });
+.then(res => {
+  if (!res.ok) {
+    throw new Error("Payment verification failed...");
+  }
+  return res.blob();
+})
+
+    
+  // ✅ Redirect after short delay
+  setTimeout(() => {
+    window.location.href = "/digipro/thank-you-for-payment.html";
+  }, 3000);
+
+.catch(err => {
+  alert("❌ " + err.message);
+});
         }
       };
 
