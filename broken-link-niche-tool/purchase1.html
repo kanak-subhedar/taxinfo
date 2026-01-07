@@ -133,13 +133,13 @@ document.getElementById("pay-download").onclick = function () {
             }
             return res.blob();
           })
-          .then(blob => {
+          
             
             // ✅ Redirect after short delay
             setTimeout(() => {
               window.location.href = "/digipro/thank-you-for-payment.html";
-            }, 3);
-          })
+            }, 3000);
+          
           .catch(err => {
             alert("❌ " + err.message);
           });
