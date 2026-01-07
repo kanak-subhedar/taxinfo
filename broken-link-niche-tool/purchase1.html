@@ -107,42 +107,47 @@ button:hover {
 
 </div>
 </body>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
-document.getElementById("pay-download").onclick = function () {
+document.getElementById("pay-download").addEventListener("click", function () {
+
   fetch("https://client-magnet.onrender.com/get-key")
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch Razorpay key");
+      return res.json();
+    })
     .then(data => {
+
       const options = {
-        key: data.key,  // ✅ Securely fetched Razorpay Key ID
-        amount: 999,    // $9.99 (in USD)
+        key: data.key,            // Razorpay Key ID
+        amount: 999,              // $9.99
         currency: "USD",
         name: "T24K CSV Report Generator",
         description: "Generate Unlimited Reports for 1 month",
+
         handler: function (response) {
-          // ✅ Send payment ID to backend for verification
+
           fetch("https://client-magnet.onrender.com/verify-and-download", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               payment_id: response.razorpay_payment_id
-            }),
+            })
           })
-.then(res => {
-  if (!res.ok) {
-    throw new Error("Payment verification failed...");
-  }
-  return res.blob();
-})
-
-    
-  // ✅ Redirect after short delay
-  setTimeout(() => {
-    window.location.href = "/broken-link-niche-tool/thank-you-for-payment.html";
-  }, 3000);
-
-.catch(err => {
-  alert("❌ " + err.message);
-});
+          .then(res => {
+            if (!res.ok) {
+              throw new Error("Payment verification failed");
+            }
+          })
+          .then(() => {
+            // ✅ Redirect ONLY after successful verification
+            window.location.href =
+              "/broken-link-niche-tool/thank-you-for-payment.html";
+          })
+          .catch(err => {
+            alert("❌ " + err.message);
+          });
         }
       };
 
@@ -150,10 +155,12 @@ document.getElementById("pay-download").onclick = function () {
       rzp.open();
     })
     .catch(err => {
-      alert("❌ Failed to fetch Razorpay key. Please try again later.");
+      alert("❌ " + err.message);
     });
-};
+
+});
 </script>
+
 
 
 </html>
