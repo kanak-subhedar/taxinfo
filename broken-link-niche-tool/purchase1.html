@@ -92,7 +92,7 @@ button:hover {
   <h2>🌍 International – Pay in USD</h2>
   <div class="price">$9.99</div>
 
-  <button onclick="payUSD()">Pay Securely</button>
+  <button id="pay-download">Pay Securely</button>
 
   <p class="note">
     Credit / Debit Cards • International Payments
@@ -102,28 +102,51 @@ button:hover {
 </div>
 
 <script>
-function payUSD() {
-  var options = {
-    key: "RAZORPAY_KEY_ID",   // reuse your existing Razorpay key
-    amount: 999,             // $9.99
-    currency: "USD",
-    name: "T24K Tools",
-    description: "CSV Report Generator",
-    handler: function (response) {
-      alert(
-        "Payment successful!\n\nPayment ID:\n" +
-        response.razorpay_payment_id +
-        "\n\nPlease email this ID to support@t24k.com"
-      );
-    },
-    theme: {
-      color: "#2563eb"
-    }
-  };
+document.getElementById("pay-download").onclick = function () {
+  fetch("https://client-magnet.onrender.com/get-key")
+    .then(res => res.json())
+    .then(data => {
+      const options = {
+        key: data.key,  // ✅ Securely fetched Razorpay Key ID
+        amount: 999,    // $9.99 (in USD)
+        currency: "USD",
+        name: "T24K CSV Report Generator",
+        description: "Generate Unlimited Reports for 1 month",
+        handler: function (response) {
+          // ✅ Send payment ID to backend for verification
+          fetch("https://client-magnet.onrender.com/verify-and-download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              payment_id: response.razorpay_payment_id
+            }),
+          })
+          .then(res => {
+            if (!res.ok) {
+              throw new Error("Payment verification failed. If payment succeeded but you still see this, email care@t24k.com and we’ll get you the details");
+            }
+            return res.blob();
+          })
+          .then(blob => {
+            
+            // ✅ Redirect after short delay
+            setTimeout(() => {
+              window.location.href = "/digipro/thank-you-for-payment.html";
+            }, 3);
+          })
+          .catch(err => {
+            alert("❌ " + err.message);
+          });
+        }
+      };
 
-  var rzp = new Razorpay(options);
-  rzp.open();
-}
+      const rzp = new Razorpay(options);
+      rzp.open();
+    })
+    .catch(err => {
+      alert("❌ Failed to fetch Razorpay key. Please try again later.");
+    });
+};
 </script>
 
 </body>
