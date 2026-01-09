@@ -6,6 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+  
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- PPT -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+
 
 <style>
 body {
@@ -129,7 +137,14 @@ Sales_Amount, Purchase_Amount, Seller_Name, Gain
 </div>
 
 </div>
+<div class="box" style="text-align:center;">
+  <h3>⬇ Download Report</h3>
 
+  <button onclick="downloadPDF()">📄 Download PDF</button>
+  &nbsp;&nbsp;
+  <button onclick="downloadPPT()">📊 Download PPT</button>
+</div>
+  
 <script>
 let charts = [];
 
@@ -334,6 +349,77 @@ function renderCharts(
 
   log("All charts rendered successfully.");
 }
+
+async function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const reportSections = document.querySelectorAll(".box, .summary-box");
+
+  let y = 10;
+
+  for (let i = 0; i < reportSections.length; i++) {
+    const canvas = await html2canvas(reportSections[i], {
+      scale: 2,
+      useCORS: true
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const imgWidth = 190;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    if (y + imgHeight > 280) {
+      pdf.addPage();
+      y = 10;
+    }
+
+    pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
+    y += imgHeight + 10;
+  }
+
+  pdf.save("CSV_Report.pdf");
+}
+
+function downloadPPT() {
+  const pptx = new PptxGenJS();
+
+  const charts = [
+    { id: "barChart", title: "Sales by Product" },
+    { id: "pieChart", title: "City-wise Sales" },
+    { id: "doughnutChart", title: "Sales vs Purchase" },
+    { id: "lineChart", title: "Gain Trend" },
+    { id: "sellerChart", title: "Seller Performance" },
+
+    { id: "summaryBar", title: "Summary: Product Sales" },
+    { id: "summaryPie", title: "Summary: City Sales" },
+    { id: "summaryDoughnut", title: "Summary: Sales vs Purchase" },
+    { id: "summaryLine", title: "Summary: Gain Trend" },
+    { id: "summarySeller", title: "Summary: Seller Performance" }
+  ];
+
+  charts.forEach(item => {
+    const canvas = document.getElementById(item.id);
+    if (!canvas) return;
+
+    const slide = pptx.addSlide();
+    slide.addText(item.title, {
+      x: 0.5, y: 0.2,
+      fontSize: 18,
+      bold: true
+    });
+
+    slide.addImage({
+      data: canvas.toDataURL("image/png"),
+      x: 0.5,
+      y: 0.8,
+      w: 9
+    });
+  });
+
+  pptx.writeFile("CSV_Report.pptx");
+}
 </script>
+
+
 </body>
 </html>
