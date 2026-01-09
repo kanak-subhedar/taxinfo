@@ -63,7 +63,9 @@ button:hover { background:#1e40af; }
 Chart.register(ChartDataLabels);
 let charts=[];
 
-function log(m){const l=document.getElementById("log");l.textContent+=m+"\n";}
+const fmt = n => Number(n).toLocaleString("en-IN");
+
+function log(m){document.getElementById("log").textContent+=m+"\n";}
 
 function start(){
   const f=document.getElementById("csvFile").files[0];
@@ -76,13 +78,10 @@ function start(){
 function parseCSV(text){
   const rows=text.trim().split("\n").map(r=>r.split(","));
   const h=rows[0].map(x=>x.toLowerCase());
-
   const idx=k=>h.indexOf(k);
 
-  let prodSales={}, prodQty={}, citySales={}, gainDate={}, sellerSales={}, sellerQty={}, sellerGain={};
-  let prodCityQty={};
-
-  let totalSales=0, totalPurchase=0;
+  let ps={}, pq={}, cs={}, gd={}, ss={}, sq={}, sg={}, pcq={};
+  let ts=0,tp=0;
 
   for(let i=1;i<rows.length;i++){
     const r=rows[i];
@@ -95,42 +94,40 @@ function parseCSV(text){
     const sel=r[idx("seller_name")];
     const d=r[idx("date")];
 
-    prodSales[p]=(prodSales[p]||0)+s;
-    prodQty[p]=(prodQty[p]||0)+q;
-    citySales[c]=(citySales[c]||0)+s;
-    gainDate[d]=(gainDate[d]||0)+g;
+    ps[p]=(ps[p]||0)+s;
+    pq[p]=(pq[p]||0)+q;
+    cs[c]=(cs[c]||0)+s;
+    gd[d]=(gd[d]||0)+g;
+    ss[sel]=(ss[sel]||0)+s;
+    sq[sel]=(sq[sel]||0)+q;
+    sg[sel]=(sg[sel]||0)+g;
 
-    sellerSales[sel]=(sellerSales[sel]||0)+s;
-    sellerQty[sel]=(sellerQty[sel]||0)+q;
-    sellerGain[sel]=(sellerGain[sel]||0)+g;
+    pcq[c]??={};
+    pcq[c][p]=(pcq[c][p]||0)+q;
 
-    prodCityQty[c]??={};
-    prodCityQty[c][p]=(prodCityQty[c][p]||0)+q;
-
-    totalSales+=s; totalPurchase+=pur;
+    ts+=s; tp+=pur;
   }
-
-  renderCharts(prodSales,prodQty,citySales,totalSales,totalPurchase,gainDate,
-               sellerSales,sellerQty,sellerGain,prodCityQty);
+  render(ps,pq,cs,ts,tp,gd,ss,sq,sg,pcq);
 }
 
-function renderCharts(ps,pq,cs,ts,tp,gd,ss,sq,sg,pcq){
+function render(ps,pq,cs,ts,tp,gd,ss,sq,sg,pcq){
 charts.forEach(c=>c.destroy()); charts=[];
 
 charts.push(new Chart(barChart,{
  type:"bar",
  data:{labels:Object.keys(ps),
- datasets:[{label:"Sales",data:Object.values(ps),backgroundColor:"#3b82f6"}]}
+ datasets:[{label:"Sales",data:Object.values(ps),backgroundColor:"#3b82f6"}]},
+ options:{plugins:{tooltip:{callbacks:{label:c=>fmt(c.raw)}}}}
 }));
 
 charts.push(new Chart(pieChart,{
  type:"pie",
  data:{labels:Object.keys(cs),datasets:[{data:Object.values(cs)}]},
  options:{plugins:{datalabels:{
-   color:"#fff",backgroundColor:"#000",
+   color:"#fff",backgroundColor:"#000",borderRadius:4,
    formatter:(v,ctx)=>{
      const t=ctx.dataset.data.reduce((a,b)=>a+b,0);
-     return `${v} (${(v/t*100).toFixed(1)}%)`;
+     return `${fmt(v)} (${(v/t*100).toFixed(1)}%)`;
    }
  }}}
 }));
@@ -139,27 +136,40 @@ charts.push(new Chart(doughnutChart,{
  type:"doughnut",
  data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},
  options:{plugins:{datalabels:{
-   color:"#fff",backgroundColor:"#000",
+   color:"#fff",backgroundColor:"#000",borderRadius:4,
    formatter:(v,ctx)=>{
      const t=ctx.dataset.data.reduce((a,b)=>a+b,0);
-     return `${v} (${(v/t*100).toFixed(1)}%)`;
+     return `${fmt(v)} (${(v/t*100).toFixed(1)}%)`;
    }
  }}}
 }));
 
 charts.push(new Chart(lineChart,{
  type:"line",
- data:{labels:Object.keys(gd),datasets:[{data:Object.values(gd),borderColor:"#16a34a"}]}
+ data:{labels:Object.keys(gd),
+ datasets:[{data:Object.values(gd),borderColor:"#16a34a"}]}
 }));
 
 charts.push(new Chart(sellerChart,{
  type:"bar",
  data:{labels:Object.keys(ss),
  datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
- options:{indexAxis:"y"}
+ options:{
+  indexAxis:"y",
+  plugins:{
+    datalabels:{
+      color:"#fff",
+      backgroundColor:"#000",
+      borderRadius:4,
+      formatter:(v,ctx)=>{
+        const s=ctx.label;
+        return `₹${fmt(v)} | Qty ${fmt(sq[s])}`;
+      }
+    }
+  }
+ }
 }));
 
-// 🔥 NEW PRODUCT–CITY–QTY CHART
 const cities=Object.keys(pcq);
 const products=[...new Set(cities.flatMap(c=>Object.keys(pcq[c])))];
 
@@ -173,22 +183,20 @@ charts.push(new Chart(productCityQtyChart,{
   }))
  }
 }));
-
 }
 
 async function downloadPDF(){
  const {jsPDF}=window.jspdf;
  const pdf=new jsPDF();
- const boxes=document.querySelectorAll(".box");
  let y=10;
- for(const b of boxes){
+ for(const b of document.querySelectorAll(".box")){
   const c=await html2canvas(b,{scale:2});
   const h=(c.height*190)/c.width;
   if(y+h>280){pdf.addPage();y=10;}
   pdf.addImage(c.toDataURL(),"PNG",10,y,190,h);
   y+=h+10;
  }
- pdf.save("Report.pdf");
+ pdf.save("CSV_Report.pdf");
 }
 
 function downloadPPT(){
@@ -198,7 +206,7 @@ function downloadPPT(){
   const s=ppt.addSlide();
   s.addImage({data:document.getElementById(id).toDataURL(),x:0.5,y:0.5,w:9});
  });
- ppt.writeFile("Report.pptx");
+ ppt.writeFile("CSV_Report.pptx");
 }
 </script>
 </body>
