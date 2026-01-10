@@ -17,57 +17,15 @@
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f3f4f6;
-  margin: 0;
-}
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-}
-.box {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 25px;
-  border: 1px solid #ddd;
-}
-h1 { text-align:center; }
-
-button {
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  padding:10px 18px;
-  border-radius:4px;
-  cursor:pointer;
-}
-button:hover { background:#1e40af; }
-
-.log {
-  background:#020617;
-  color:#e5e7eb;
-  padding:10px;
-  font-family:monospace;
-  height:160px;
-  overflow-y:auto;
-}
-
-.chart-fixed {
-  width:420px;
-  height:420px;
-  margin:auto;
-}
-
-canvas { max-width:100%; max-height:100%; }
-
-.explain {
-  text-align:center;
-  color:#444;
-  font-size:14px;
-}
+body{font-family:Arial;background:#f3f4f6;margin:0}
+.container{max-width:1200px;margin:auto;padding:20px}
+.box{background:#fff;padding:20px;border-radius:8px;margin-bottom:25px;border:1px solid #ddd}
+h1{text-align:center}
+button{background:#2563eb;color:#fff;border:none;padding:10px 18px;border-radius:4px;cursor:pointer}
+button:hover{background:#1e40af}
+.log{background:#020617;color:#e5e7eb;padding:10px;font-family:monospace;height:160px;overflow-y:auto}
+.chart-fixed{width:420px;height:420px;margin:auto}
+canvas{max-width:100%;max-height:100%}
 </style>
 </head>
 
@@ -93,36 +51,30 @@ Sales_Amount, Purchase_Amount, Seller_Name, Gain
 </div>
 
 <div class="box"><canvas id="barChart"></canvas></div>
-
-<div class="box">
-  <div class="chart-fixed"><canvas id="pieChart"></canvas></div>
-</div>
-
-<div class="box">
-  <div class="chart-fixed"><canvas id="doughnutChart"></canvas></div>
-</div>
-
+<div class="box"><div class="chart-fixed"><canvas id="pieChart"></canvas></div></div>
+<div class="box"><div class="chart-fixed"><canvas id="doughnutChart"></canvas></div></div>
 <div class="box"><canvas id="lineChart"></canvas></div>
 <div class="box"><canvas id="sellerChart"></canvas></div>
 
+<!-- ✅ NEW CHART -->
+<div class="box">
+  <canvas id="cityProductQtyChart"></canvas>
+</div>
+
 <div class="box" style="text-align:center;">
-  <h3>⬇ Download Report</h3>
-  <button onclick="downloadPDF()">📄 PDF</button>
-  &nbsp;&nbsp;
-  <button onclick="downloadPPT()">📊 PPT</button>
+<h3>⬇ Download Report</h3>
+<button onclick="downloadPDF()">📄 PDF</button>
+&nbsp;&nbsp;
+<button onclick="downloadPPT()">📊 PPT</button>
 </div>
 
 </div>
 
 <script>
 Chart.register(ChartDataLabels);
-let charts = [];
+let charts=[];
 
-function log(msg){
-  const l=document.getElementById("log");
-  l.textContent+=msg+"\n";
-  l.scrollTop=l.scrollHeight;
-}
+function log(m){const l=document.getElementById("log");l.textContent+=m+"\n";l.scrollTop=l.scrollHeight}
 
 function start(){
   log("Reading CSV...");
@@ -139,91 +91,60 @@ function parseCSV(t){
   const h=rows[0].map(x=>x.trim().toLowerCase());
   const i=c=>h.indexOf(c);
 
-  const ps={}, pq={}, city={}, gain={}, ss={}, sq={}, sg={};
+  const ps={},pq={},city={},gain={},ss={},sq={},sg={},cityProdQty={};
   let ts=0,tp=0;
 
   for(let r=1;r<rows.length;r++){
     const row=rows[r];
     const p=row[i("product_name")];
-    const s=row[i("seller_name")];
+    const c=row[i("city")];
     const q=+row[i("quantity")];
     const sa=+row[i("sales_amount")];
     const pa=+row[i("purchase_amount")];
     const g=+row[i("gain")];
+    const s=row[i("seller_name")];
     const d=row[i("date")];
 
     ps[p]=(ps[p]||0)+sa;
     pq[p]=(pq[p]||0)+(isNaN(q)?0:q);
-    city[row[i("city")]]=(city[row[i("city")]]||0)+sa;
+    city[c]=(city[c]||0)+sa;
     gain[d]=(gain[d]||0)+g;
 
     ss[s]=(ss[s]||0)+sa;
     if(!isNaN(q)) sq[s]=(sq[s]||0)+q;
     sg[s]=(sg[s]||0)+g;
 
+    const key=`${c} – ${p}`;
+    cityProdQty[key]=(cityProdQty[key]||0)+(isNaN(q)?0:q);
+
     ts+=sa||0; tp+=pa||0;
   }
 
-  log("Rendering charts...");
-  render(ps,pq,city,ts,tp,gain,ss,sq,sg);
+  render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProdQty);
 }
 
-function destroy(){
-  charts.forEach(c=>c.destroy());
-  charts=[];
-}
+function destroy(){charts.forEach(c=>c.destroy());charts=[]}
 
-function render(ps,pq,city,ts,tp,gain,ss,sq,sg){
+function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProdQty){
   destroy();
   const dates=Object.keys(gain).sort();
 
   charts.push(new Chart(barChart,{
     type:"bar",
     data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:"#3b82f6"}]},
-    options:{
-      plugins:{
-        title:{display:true,text:"Sales by Product"},
-        datalabels:{
-          color:"#000",
-          anchor:"end",
-          align:"top",
-          formatter:v=>v.toLocaleString("en-IN")
-        }
-      }
-    }
+    options:{plugins:{title:{display:true,text:"Sales by Product"},datalabels:{color:"#000",anchor:"end",align:"top",formatter:v=>v.toLocaleString("en-IN")}}}
   }));
 
   charts.push(new Chart(pieChart,{
     type:"pie",
     data:{labels:Object.keys(city),datasets:[{data:Object.values(city)}]},
-    options:{
-      aspectRatio:1,
-      plugins:{
-        title:{display:true,text:"City-wise Sales"},
-        datalabels:{
-          color:"#fff",
-          formatter:(v,ctx)=>{
-            const t=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
-            return `${v.toLocaleString()} (${((v/t)*100).toFixed(1)}%)`;
-          }
-        }
-      }
-    }
+    options:{plugins:{title:{display:true,text:"City-wise Sales"},datalabels:{color:"#fff",formatter:(v,ctx)=>`${v.toLocaleString()} (${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)`}}}
   }));
 
   charts.push(new Chart(doughnutChart,{
     type:"doughnut",
     data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},
-    options:{
-      aspectRatio:1,
-      plugins:{
-        title:{display:true,text:"Sales vs Purchase"},
-        datalabels:{
-          color:"#fff",
-          formatter:v=>v.toLocaleString("en-IN")
-        }
-      }
-    }
+    options:{plugins:{title:{display:true,text:"Sales vs Purchase"},datalabels:{color:"#fff",formatter:v=>v.toLocaleString("en-IN")}}}
   }));
 
   charts.push(new Chart(lineChart,{
@@ -235,19 +156,14 @@ function render(ps,pq,city,ts,tp,gain,ss,sq,sg){
   charts.push(new Chart(sellerChart,{
     type:"bar",
     data:{labels:Object.keys(ss),datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
-    options:{
-      indexAxis:"y",
-      plugins:{
-        title:{display:true,text:"Seller Performance"},
-        datalabels:{
-          color:"#000",
-          formatter:(v,ctx)=>{
-            const s=ctx.chart.data.labels[ctx.dataIndex];
-            return sq[s]?`Qty: ${sq[s].toLocaleString()}`:"";
-          }
-        }
-      }
-    }
+    options:{indexAxis:"y",plugins:{title:{display:true,text:"Seller Performance"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString()}`:""}}}
+  }));
+
+  // ✅ NEW CHART
+  charts.push(new Chart(cityProductQtyChart,{
+    type:"bar",
+    data:{labels:Object.keys(cityProdQty),datasets:[{data:Object.values(cityProdQty),backgroundColor:"#f97316"}]},
+    options:{indexAxis:"y",plugins:{title:{display:true,text:"City-wise Product Sold (Quantity)"},datalabels:{color:"#000",formatter:v=>v.toLocaleString("en-IN")}}}
   }));
 
   log("All charts rendered successfully.");
@@ -271,9 +187,9 @@ async function downloadPDF(){
 function downloadPPT(){
   const ppt=new PptxGenJS();
   charts.forEach((c,i)=>{
-    const slide=ppt.addSlide();
-    slide.addText(`Chart ${i+1}`,{x:0.5,y:0.3,fontSize:18});
-    slide.addImage({data:c.canvas.toDataURL(),x:0.5,y:1,w:9});
+    const s=ppt.addSlide();
+    s.addText(`Chart ${i+1}`,{x:0.5,y:0.3,fontSize:18});
+    s.addImage({data:c.canvas.toDataURL(),x:0.5,y:1,w:9});
   });
   ppt.writeFile("CSV_Report.pptx");
 }
