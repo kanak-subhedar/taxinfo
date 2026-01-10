@@ -56,9 +56,9 @@ Sales_Amount, Purchase_Amount, Seller_Name, Gain
 <div class="box"><canvas id="lineChart"></canvas></div>
 <div class="box"><canvas id="sellerChart"></canvas></div>
 
-<!-- ✅ NEW CHART -->
+<!-- ✅ STACKED CITY × PRODUCT -->
 <div class="box">
-  <canvas id="cityProductQtyChart"></canvas>
+  <canvas id="cityProductStackedChart"></canvas>
 </div>
 
 <div class="box" style="text-align:center;">
@@ -74,12 +74,16 @@ Sales_Amount, Purchase_Amount, Seller_Name, Gain
 Chart.register(ChartDataLabels);
 let charts=[];
 
-function log(m){const l=document.getElementById("log");l.textContent+=m+"\n";l.scrollTop=l.scrollHeight}
+function log(m){
+  const l=document.getElementById("log");
+  l.textContent+=m+"\n";
+  l.scrollTop=l.scrollHeight;
+}
 
 function start(){
   log("Reading CSV...");
   const f=document.getElementById("csvFile").files[0];
-  if(!f) return;
+  if(!f){log("No file selected");return;}
   const r=new FileReader();
   r.onload=e=>parseCSV(e.target.result);
   r.readAsText(f);
@@ -91,7 +95,8 @@ function parseCSV(t){
   const h=rows[0].map(x=>x.trim().toLowerCase());
   const i=c=>h.indexOf(c);
 
-  const ps={},pq={},city={},gain={},ss={},sq={},sg={},cityProdQty={};
+  const ps={},pq={},city={},gain={},ss={},sq={},sg={};
+  const cityProduct={};
   let ts=0,tp=0;
 
   for(let r=1;r<rows.length;r++){
@@ -114,18 +119,21 @@ function parseCSV(t){
     if(!isNaN(q)) sq[s]=(sq[s]||0)+q;
     sg[s]=(sg[s]||0)+g;
 
-    const key=`${c} – ${p}`;
-    cityProdQty[key]=(cityProdQty[key]||0)+(isNaN(q)?0:q);
+    cityProduct[c]=cityProduct[c]||{};
+    cityProduct[c][p]=(cityProduct[c][p]||0)+(isNaN(q)?0:q);
 
     ts+=sa||0; tp+=pa||0;
   }
 
-  render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProdQty);
+  render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct);
 }
 
-function destroy(){charts.forEach(c=>c.destroy());charts=[]}
+function destroy(){
+  charts.forEach(c=>c.destroy());
+  charts=[];
+}
 
-function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProdQty){
+function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct){
   destroy();
   const dates=Object.keys(gain).sort();
 
@@ -156,14 +164,30 @@ function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProdQty){
   charts.push(new Chart(sellerChart,{
     type:"bar",
     data:{labels:Object.keys(ss),datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
-    options:{indexAxis:"y",plugins:{title:{display:true,text:"Seller Performance"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString()}`:""}}}
+    options:{indexAxis:"y",plugins:{title:{display:true,text:"Seller Performance"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString("en-IN")}`:""}}}
   }));
 
-  // ✅ NEW CHART
-  charts.push(new Chart(cityProductQtyChart,{
+  // ✅ STACKED CITY × PRODUCT
+  const cities=Object.keys(cityProduct);
+  const products=[...new Set(cities.flatMap(c=>Object.keys(cityProduct[c])))];
+
+  const datasets=products.map((p,i)=>({
+    label:p,
+    data:cities.map(c=>cityProduct[c][p]||0),
+    backgroundColor:`hsl(${i*45},70%,55%)`
+  }));
+
+  charts.push(new Chart(cityProductStackedChart,{
     type:"bar",
-    data:{labels:Object.keys(cityProdQty),datasets:[{data:Object.values(cityProdQty),backgroundColor:"#f97316"}]},
-    options:{indexAxis:"y",plugins:{title:{display:true,text:"City-wise Product Sold (Quantity)"},datalabels:{color:"#000",formatter:v=>v.toLocaleString("en-IN")}}}
+    data:{labels:cities,datasets},
+    options:{
+      responsive:true,
+      scales:{x:{stacked:true},y:{stacked:true}},
+      plugins:{
+        title:{display:true,text:"City-wise Product Sold (Quantity)"},
+        datalabels:{color:"#000",formatter:v=>v?v.toLocaleString("en-IN"):""}
+      }
+    }
   }));
 
   log("All charts rendered successfully.");
@@ -184,14 +208,17 @@ async function downloadPDF(){
   pdf.save("CSV_Report.pdf");
 }
 
-function downloadPPT(){
+async function downloadPPT(){
+  if(charts.length===0){alert("Generate report first");return;}
   const ppt=new PptxGenJS();
+
   charts.forEach((c,i)=>{
     const s=ppt.addSlide();
     s.addText(`Chart ${i+1}`,{x:0.5,y:0.3,fontSize:18});
-    s.addImage({data:c.canvas.toDataURL(),x:0.5,y:1,w:9});
+    s.addImage({data:c.canvas.toDataURL("image/png"),x:0.5,y:1,w:9});
   });
-  ppt.writeFile("CSV_Report.pptx");
+
+  await ppt.writeFile("CSV_Report.pptx");
 }
 </script>
 </body>
