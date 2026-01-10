@@ -23,6 +23,7 @@ button { background:#2563eb; color:#fff; border:none; padding:10px 18px; cursor:
 button:hover { background:#1e40af; }
 .log { background:#020617; color:#e5e7eb; padding:10px; height:160px; overflow:auto; font-family:monospace; }
 .chart-fixed { width:420px; height:420px; margin:auto; }
+canvas { max-width:100%; }
 </style>
 </head>
 
@@ -114,7 +115,9 @@ function parseCSV(text) {
     ts+=s||0; tp+=pur||0;
   }
 
+  log("Rendering charts...");
   render(ps,pq,cs,ts,tp,gd,ss,sq,sg,cityProdQty);
+  log("All charts rendered successfully.");
 }
 
 function render(ps,pq,cs,ts,tp,gd,ss,sq,sg,cityProdQty){
@@ -124,42 +127,53 @@ function render(ps,pq,cs,ts,tp,gd,ss,sq,sg,cityProdQty){
   charts.push(new Chart(barChart,{
     type:"bar",
     data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:"#3b82f6"}]},
-    options:{plugins:{datalabels:{color:"#fff",backgroundColor:"#000",formatter:(v,i)=>`₹${fmt(v)}\nQty ${fmt(pq[i.chart.data.labels[i.dataIndex]])}`}}}
+    options:{plugins:{datalabels:{color:"#fff",backgroundColor:"#000",
+      formatter:(v,ctx)=>`₹${fmt(v)}\nQty ${fmt(pq[ctx.chart.data.labels[ctx.dataIndex]])}`}}}
   }));
 
   charts.push(new Chart(pieChart,{
     type:"pie",
     data:{labels:Object.keys(cs),datasets:[{data:Object.values(cs)}]},
-    options:{plugins:{datalabels:{
-      color:"#fff",
+    options:{plugins:{datalabels:{color:"#fff",
       formatter:(v,ctx)=>{
         const sum=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
-        return `₹${fmt(v)}\n(${(v/sum*100).toFixed(1)}%)`;
-      }
-    }}}
+        return `₹${fmt(v)} (${(v/sum*100).toFixed(1)}%)`;
+      }}}}
   }));
 
   charts.push(new Chart(doughnutChart,{
     type:"doughnut",
     data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},
-    options:{plugins:{datalabels:{
-      color:"#fff",
+    options:{plugins:{datalabels:{color:"#fff",
       formatter:(v,ctx)=>{
         const sum=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
-        return `₹${fmt(v)}\n(${(v/sum*100).toFixed(1)}%)`;
-      }
-    }}}
+        return `₹${fmt(v)} (${(v/sum*100).toFixed(1)}%)`;
+      }}}}
   }));
 
   charts.push(new Chart(lineChart,{
     type:"line",
-    data:{labels:Object.keys(gd),datasets:[{label:"Gain",data:Object.values(gd),borderColor:"#16a34a",tension:0.3}]}
+    data:{labels:Object.keys(gd),datasets:[{
+      label:"Gain",
+      data:Object.values(gd),
+      borderColor:"#16a34a",
+      borderWidth:3,
+      fill:false,
+      pointRadius:4,
+      tension:0.3
+    }]}
   }));
 
   charts.push(new Chart(sellerChart,{
     type:"bar",
     data:{labels:Object.keys(ss),datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
-    options:{indexAxis:"y",plugins:{datalabels:{color:"#fff",backgroundColor:"#000",formatter:(v,ctx)=>`₹${fmt(v)} | Qty ${fmt(sq[ctx.label])}`}}}
+    options:{indexAxis:"y",plugins:{datalabels:{
+      color:"#fff",backgroundColor:"#000",
+      formatter:(v,ctx)=>{
+        const qty=sq[ctx.label];
+        return isNaN(qty) ? `₹${fmt(v)}` : `₹${fmt(v)} | Qty ${fmt(qty)}`;
+      }
+    }}}
   }));
 
   const cities=Object.keys(cityProdQty);
@@ -172,7 +186,8 @@ function render(ps,pq,cs,ts,tp,gd,ss,sq,sg,cityProdQty){
   charts.push(new Chart(cityProductQtyChart,{
     type:"bar",
     data:{labels:cities,datasets},
-    options:{responsive:true,scales:{x:{stacked:true},y:{stacked:true}},plugins:{title:{display:true,text:"City-wise Product Quantity Sold"}}}
+    options:{scales:{x:{stacked:true},y:{stacked:true}},
+      plugins:{title:{display:true,text:"City-wise Product Quantity Sold"}}}
   }));
 }
 
@@ -195,7 +210,7 @@ function downloadPPT(){
   const ppt=new PptxGenJS();
   document.querySelectorAll("canvas").forEach(c=>{
     const s=ppt.addSlide();
-    s.addImage({data:c.toDataURL(),x:0.5,y:0.5,w:9});
+    s.addImage({data:c.toDataURL("image/png"),x:0.5,y:0.5,w:9});
   });
   ppt.writeFile("CSV_Report.pptx");
 }
