@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Advanced CSV Report Generator</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
+<!-- PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- PPT -->
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
 
 <style>
 body { font-family: Arial; background:#f3f4f6; margin:0; }
 .container { max-width:1200px; margin:auto; padding:20px; }
 .box { background:#fff; padding:20px; border-radius:8px; margin-bottom:25px; }
-.chart-fixed { width:420px; height:420px; margin:auto; }
 button { background:#2563eb; color:#fff; border:none; padding:10px 18px; cursor:pointer; }
 button:hover { background:#1e40af; }
-.log { background:#020617; color:#e5e7eb; padding:10px; height:160px; overflow:auto; }
+.log { background:#020617; color:#e5e7eb; padding:10px; height:160px; overflow:auto; font-family:monospace; }
+.chart-fixed { width:420px; height:420px; margin:auto; }
 </style>
 </head>
 
@@ -35,22 +39,16 @@ button:hover { background:#1e40af; }
 <p id="error" style="color:red"></p>
 </div>
 
-<div class="box"><div id="log" class="log"></div></div>
+<div class="box">
+<h3>Execution Log</h3>
+<div id="log" class="log"></div>
+</div>
 
 <div class="box"><canvas id="barChart"></canvas></div>
-
 <div class="box"><div class="chart-fixed"><canvas id="pieChart"></canvas></div></div>
-
 <div class="box"><div class="chart-fixed"><canvas id="doughnutChart"></canvas></div></div>
-
 <div class="box"><canvas id="lineChart"></canvas></div>
-
 <div class="box"><canvas id="sellerChart"></canvas></div>
-
-<div class="box">
-<canvas id="productCityQtyChart"></canvas>
-<p>Product-wise quantity sold in each city</p>
-</div>
 
 <div class="box" style="text-align:center;">
 <button onclick="downloadPDF()">📄 Download PDF</button>
@@ -61,30 +59,43 @@ button:hover { background:#1e40af; }
 
 <script>
 Chart.register(ChartDataLabels);
-let charts=[];
-
+let charts = [];
+const logBox = document.getElementById("log");
 const fmt = n => Number(n).toLocaleString("en-IN");
 
-function log(m){document.getElementById("log").textContent+=m+"\n";}
-
-function start(){
-  const f=document.getElementById("csvFile").files[0];
-  if(!f){error.textContent="Upload CSV";return;}
-  const r=new FileReader();
-  r.onload=e=>parseCSV(e.target.result);
-  r.readAsText(f);
+function log(msg) {
+  logBox.textContent += msg + "\n";
+  logBox.scrollTop = logBox.scrollHeight;
 }
 
-function parseCSV(text){
-  const rows=text.trim().split("\n").map(r=>r.split(","));
-  const h=rows[0].map(x=>x.toLowerCase());
-  const idx=k=>h.indexOf(k);
+function start() {
+  logBox.textContent = "";
+  document.getElementById("error").textContent = "";
 
-  let ps={}, pq={}, cs={}, gd={}, ss={}, sq={}, sg={}, pcq={};
-  let ts=0,tp=0;
+  const file = document.getElementById("csvFile").files[0];
+  if (!file) {
+    document.getElementById("error").textContent = "Upload CSV file";
+    return;
+  }
 
-  for(let i=1;i<rows.length;i++){
-    const r=rows[i];
+  log("✔ File selected");
+  const reader = new FileReader();
+  reader.onload = e => parseCSV(e.target.result);
+  reader.readAsText(file);
+}
+
+function parseCSV(text) {
+  log("✔ Parsing CSV");
+  const rows = text.trim().split("\n").map(r => r.split(","));
+  const h = rows[0].map(x => x.toLowerCase());
+
+  const idx = k => h.indexOf(k);
+
+  let ps={}, pq={}, cs={}, gd={}, ss={}, sq={}, sg={};
+  let ts=0, tp=0;
+
+  for (let i=1;i<rows.length;i++) {
+    const r = rows[i];
     const p=r[idx("product_name")];
     const q=+r[idx("quantity")];
     const s=+r[idx("sales_amount")];
@@ -102,111 +113,114 @@ function parseCSV(text){
     sq[sel]=(sq[sel]||0)+q;
     sg[sel]=(sg[sel]||0)+g;
 
-    pcq[c]??={};
-    pcq[c][p]=(pcq[c][p]||0)+q;
-
-    ts+=s; tp+=pur;
+    ts+=s||0; tp+=pur||0;
   }
-  render(ps,pq,cs,ts,tp,gd,ss,sq,sg,pcq);
+
+  log("✔ Aggregation complete");
+  render(ps,pq,cs,ts,tp,gd,ss,sq,sg);
 }
 
-function render(ps,pq,cs,ts,tp,gd,ss,sq,sg,pcq){
-charts.forEach(c=>c.destroy()); charts=[];
+function render(ps,pq,cs,ts,tp,gd,ss,sq,sg) {
+  charts.forEach(c=>c.destroy());
+  charts=[];
 
-charts.push(new Chart(barChart,{
- type:"bar",
- data:{labels:Object.keys(ps),
- datasets:[{label:"Sales",data:Object.values(ps),backgroundColor:"#3b82f6"}]},
- options:{plugins:{tooltip:{callbacks:{label:c=>fmt(c.raw)}}}}
-}));
+  log("✔ Rendering Product Sales chart");
 
-charts.push(new Chart(pieChart,{
- type:"pie",
- data:{labels:Object.keys(cs),datasets:[{data:Object.values(cs)}]},
- options:{plugins:{datalabels:{
-   color:"#fff",backgroundColor:"#000",borderRadius:4,
-   formatter:(v,ctx)=>{
-     const t=ctx.dataset.data.reduce((a,b)=>a+b,0);
-     return `${fmt(v)} (${(v/t*100).toFixed(1)}%)`;
-   }
- }}}
-}));
-
-charts.push(new Chart(doughnutChart,{
- type:"doughnut",
- data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},
- options:{plugins:{datalabels:{
-   color:"#fff",backgroundColor:"#000",borderRadius:4,
-   formatter:(v,ctx)=>{
-     const t=ctx.dataset.data.reduce((a,b)=>a+b,0);
-     return `${fmt(v)} (${(v/t*100).toFixed(1)}%)`;
-   }
- }}}
-}));
-
-charts.push(new Chart(lineChart,{
- type:"line",
- data:{labels:Object.keys(gd),
- datasets:[{data:Object.values(gd),borderColor:"#16a34a"}]}
-}));
-
-charts.push(new Chart(sellerChart,{
- type:"bar",
- data:{labels:Object.keys(ss),
- datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
- options:{
-  indexAxis:"y",
-  plugins:{
-    datalabels:{
-      color:"#fff",
-      backgroundColor:"#000",
-      borderRadius:4,
-      formatter:(v,ctx)=>{
-        const s=ctx.label;
-        return `₹${fmt(v)} | Qty ${fmt(sq[s])}`;
+  charts.push(new Chart(barChart,{
+    type:"bar",
+    data:{labels:Object.keys(ps),
+      datasets:[{data:Object.values(ps),backgroundColor:"#3b82f6"}]},
+    options:{
+      plugins:{
+        datalabels:{
+          color:"#fff",
+          backgroundColor:"#000",
+          borderRadius:4,
+          anchor:"end",
+          align:"top",
+          formatter:(v,ctx)=>{
+            const p=ctx.chart.data.labels[ctx.dataIndex];
+            return `₹${fmt(v)}\nQty ${fmt(pq[p])}`;
+          }
+        }
       }
     }
-  }
- }
-}));
+  }));
 
-const cities=Object.keys(pcq);
-const products=[...new Set(cities.flatMap(c=>Object.keys(pcq[c])))];
+  log("✔ Rendering other charts");
 
-charts.push(new Chart(productCityQtyChart,{
- type:"bar",
- data:{
-  labels:cities,
-  datasets:products.map(p=>({
-    label:p,
-    data:cities.map(c=>pcq[c][p]||0)
-  }))
- }
-}));
+  charts.push(new Chart(pieChart,{
+    type:"pie",
+    data:{labels:Object.keys(cs),datasets:[{data:Object.values(cs)}]},
+    options:{plugins:{datalabels:{color:"#fff"}}}
+  }));
+
+  charts.push(new Chart(doughnutChart,{
+    type:"doughnut",
+    data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},
+    options:{plugins:{datalabels:{color:"#fff"}}}
+  }));
+
+  charts.push(new Chart(lineChart,{
+    type:"line",
+    data:{labels:Object.keys(gd),datasets:[{data:Object.values(gd)}]}
+  }));
+
+  charts.push(new Chart(sellerChart,{
+    type:"bar",
+    data:{labels:Object.keys(ss),
+      datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
+    options:{
+      indexAxis:"y",
+      plugins:{
+        datalabels:{
+          color:"#fff",
+          backgroundColor:"#000",
+          formatter:(v,ctx)=>{
+            const s=ctx.label;
+            return `₹${fmt(v)} | Qty ${fmt(sq[s])}`;
+          }
+        }
+      }
+    }
+  }));
+
+  log("✔ All charts rendered successfully");
 }
 
 async function downloadPDF(){
- const {jsPDF}=window.jspdf;
- const pdf=new jsPDF();
- let y=10;
- for(const b of document.querySelectorAll(".box")){
-  const c=await html2canvas(b,{scale:2});
-  const h=(c.height*190)/c.width;
-  if(y+h>280){pdf.addPage();y=10;}
-  pdf.addImage(c.toDataURL(),"PNG",10,y,190,h);
-  y+=h+10;
- }
- pdf.save("CSV_Report.pdf");
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
+  let y=10;
+  for(const b of document.querySelectorAll(".box")){
+    const c=await html2canvas(b,{scale:2});
+    const h=(c.height*190)/c.width;
+    if(y+h>280){pdf.addPage();y=10;}
+    pdf.addImage(c.toDataURL(),"PNG",10,y,190,h);
+    y+=h+10;
+  }
+  pdf.save("CSV_Report.pdf");
 }
 
 function downloadPPT(){
- const ppt=new PptxGenJS();
- ["barChart","pieChart","doughnutChart","lineChart","sellerChart","productCityQtyChart"]
- .forEach(id=>{
-  const s=ppt.addSlide();
-  s.addImage({data:document.getElementById(id).toDataURL(),x:0.5,y:0.5,w:9});
- });
- ppt.writeFile("CSV_Report.pptx");
+  if(charts.length===0){
+    alert("Generate report first");
+    return;
+  }
+
+  const ppt=new PptxGenJS();
+
+  ["barChart","pieChart","doughnutChart","lineChart","sellerChart"].forEach(id=>{
+    const canvas=document.getElementById(id);
+    if(!canvas) return;
+    const slide=ppt.addSlide();
+    slide.addImage({
+      data: canvas.toDataURL("image/png"),
+      x:0.5,y:0.5,w:9
+    });
+  });
+
+  ppt.writeFile("CSV_Report.pptx");
 }
 </script>
 </body>
