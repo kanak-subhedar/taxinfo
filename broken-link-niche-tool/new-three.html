@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CSV Sales & Performance Analyzer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
+
+<style>
+body { font-family: Arial; background:#f3f4f6; margin:0 }
+.container { max-width:1200px; margin:auto; padding:20px }
+.box { background:#fff; padding:20px; border-radius:8px; margin-bottom:25px }
+canvas { width:100% !important; height:420px !important }
+button { background:#2563eb; color:#fff; border:none; padding:10px 18px; cursor:pointer }
+button:hover { background:#1e40af }
+.log { background:#020617; color:#e5e7eb; padding:10px; height:150px; overflow:auto; font-family:monospace }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>CSV Sales & Performance Analyzer</h1>
+
+<div class="box">
+<input type="file" id="csvFile" accept=".csv">
+<br><br>
+<button onclick="start()">Generate Report</button>
+</div>
+
+<div class="box">
+<h3>Execution Log</h3>
+<div id="log" class="log"></div>
+</div>
+
+<div class="box"><canvas id="barChart"></canvas></div>
+<div class="box"><canvas id="pieChart"></canvas></div>
+<div class="box"><canvas id="doughnutChart"></canvas></div>
+<div class="box"><canvas id="lineChart"></canvas></div>
+<div class="box"><canvas id="sellerChart"></canvas></div>
+<div class="box"><canvas id="cityProductQtyChart"></canvas></div>
+
+<div class="box" style="text-align:center">
+<button onclick="downloadPPT()">📊 Download PPT</button>
+</div>
+
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+let charts = [];
+const logBox = document.getElementById("log");
+const fmt = n => Number(n).toLocaleString("en-IN");
+
+function log(msg){ logBox.textContent += msg + "\n"; }
+
+function start(){
+  logBox.textContent="";
+  const f=document.getElementById("csvFile").files[0];
+  if(!f){ log("No file selected"); return; }
+  log("Reading CSV...");
+  const r=new FileReader();
+  r.onload=e=>parseCSV(e.target.result);
+  r.readAsText(f);
+}
+
+function parseCSV(t){
+  log("Parsing CSV...");
+  const rows=t.trim().split("\n").map(r=>r.split(","));
+  const h=rows[0].map(x=>x.toLowerCase());
+  const i=k=>h.indexOf(k);
+
+  let ps={}, pq={}, cs={}, gd={}, ss={}, sq={}, cityProd={};
+  let ts=0,tp=0;
+
+  for(let r=1;r<rows.length;r++){
+    const row=rows[r];
+    const p=row[i("product_name")];
+    const c=row[i("city")];
+    const q=+row[i("quantity")];
+    const s=+row[i("sales_amount")];
+    const pur=+row[i("purchase_amount")];
+    const d=row[i("date")];
+    const sel=row[i("seller_name")];
+
+    ps[p]=(ps[p]||0)+s;
+    pq[p]=(pq[p]||0)+q;
+    cs[c]=(cs[c]||0)+s;
+    gd[d]=(gd[d]||0)+(+row[i("gain")]||0);
+    ss[sel]=(ss[sel]||0)+s;
+    sq[sel]=(sq[sel]||0)+q;
+
+    cityProd[c] ??= {};
+    cityProd[c][p]=(cityProd[c][p]||0)+q;
+
+    ts+=s||0; tp+=pur||0;
+  }
+
+  log("Rendering charts...");
+  render(ps,pq,cs,gd,ss,sq,cityProd);
+  log("Done.");
+}
+
+function render(ps,pq,cs,gd,ss,sq,cityProd){
+  charts.forEach(c=>c.destroy()); charts=[];
+
+  charts.push(new Chart(barChart,{
+    type:"bar",
+    data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:"#2563eb"}]},
+    options:{plugins:{datalabels:{color:"#fff",formatter:(v,i)=>`₹${fmt(v)}\nQty ${fmt(pq[i.chart.data.labels[i.dataIndex]])}`}}}
+  }));
+
+  charts.push(new Chart(pieChart,{
+    type:"pie",
+    data:{labels:Object.keys(cs),datasets:[{data:Object.values(cs)}]},
+    options:{plugins:{datalabels:{color:"#fff",formatter:(v,c)=>`${fmt(v)} (${(v/c.chart._metasets[0].total*100).toFixed(1)}%)`}}}
+  }));
+
+  charts.push(new Chart(doughnutChart,{
+    type:"doughnut",
+    data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},
+    options:{plugins:{datalabels:{color:"#fff",formatter:v=>fmt(v)}}}
+  }));
+
+  const dates=Object.keys(gd).sort();
+  charts.push(new Chart(lineChart,{
+    type:"line",
+    data:{labels:dates,datasets:[{
+      data:dates.map(d=>gd[d]),
+      borderColor:"#16a34a",
+      borderWidth:4,
+      pointRadius:5,
+      pointBackgroundColor:"#16a34a",
+      fill:false,
+      spanGaps:true
+    }]}
+  }));
+
+  charts.push(new Chart(sellerChart,{
+    type:"bar",
+    data:{labels:Object.keys(ss),datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
+    options:{indexAxis:"y",plugins:{datalabels:{color:"#fff",
+      formatter:(v,i)=>isNaN(sq[i.chart.data.labels[i.dataIndex]])?fmt(v):`${fmt(v)} | Qty ${fmt(sq[i.chart.data.labels[i.dataIndex]])}`
+    }}}
+  }));
+
+  const cities=Object.keys(cityProd);
+  const products=[...new Set(Object.values(cityProd).flatMap(o=>Object.keys(o)))];
+  const colors=["#ef4444","#22c55e","#3b82f6","#f59e0b","#8b5cf6"];
+
+  charts.push(new Chart(cityProductQtyChart,{
+    type:"bar",
+    data:{
+      labels:cities,
+      datasets:products.map((p,i)=>({
+        label:p,
+        data:cities.map(c=>cityProd[c][p]||0),
+        backgroundColor:colors[i%colors.length]
+      }))
+    },
+    options:{scales:{x:{stacked:true},y:{stacked:true}}}
+  }));
+}
+
+function downloadPPT(){
+  if(!charts.length){ alert("Generate report first"); return; }
+  const ppt=new PptxGenJS();
+  document.querySelectorAll("canvas").forEach(c=>{
+    const s=ppt.addSlide();
+    s.addImage({data:c.toDataURL("image/png"),x:0.5,y:0.5,w:9,h:4.5});
+  });
+  ppt.writeFile("CSV_Report.pptx");
+}
+</script>
+</body>
+</html>
