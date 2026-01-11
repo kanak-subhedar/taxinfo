@@ -208,17 +208,47 @@ async function downloadPDF(){
   pdf.save("CSV_Report.pdf");
 }
 
-async function downloadPPT(){
-  if(charts.length===0){alert("Generate report first");return;}
-  const ppt=new PptxGenJS();
+async function downloadPPT() {
+  try {
+    if (!charts || charts.length === 0) {
+      alert("Generate report first");
+      return;
+    }
 
-  charts.forEach((c,i)=>{
-    const s=ppt.addSlide();
-    s.addText(`Chart ${i+1}`,{x:0.5,y:0.3,fontSize:18});
-    s.addImage({data:c.canvas.toDataURL("image/png"),x:0.5,y:1,w:9});
-  });
+    const pptx = new PptxGenJS();
+    pptx.author = "T24K Tools";
+    pptx.company = "T24K";
+    pptx.title = "CSV Sales Report";
 
-  await ppt.writeFile("CSV_Report.pptx");
+    charts.forEach((chart, index) => {
+      if (!chart || !chart.canvas) return;
+
+      const slide = pptx.addSlide();
+
+      slide.addText(`Chart ${index + 1}`, {
+        x: 0.5,
+        y: 0.3,
+        fontSize: 18,
+        bold: true
+      });
+
+      const imgData = chart.canvas.toDataURL("image/png", 1.0);
+
+      slide.addImage({
+        data: imgData,
+        x: 0.5,
+        y: 1.0,
+        w: 9.0
+      });
+    });
+
+    // ✅ THIS IS THE CRITICAL LINE
+    await pptx.writeFile({ fileName: "CSV_Report.pptx" });
+
+  } catch (err) {
+    console.error(err);
+    alert("PPT generation failed. Check console.");
+  }
 }
 </script>
 </body>
