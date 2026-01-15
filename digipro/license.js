@@ -13,6 +13,6 @@
         This tool works only on t24k.com
       </h2>
     `;
-    throw new Error("Unauthorized domain");
+    throw new Error("Piracy Detected! Pay Fine Of $2000");
   }
 })();
