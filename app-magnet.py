@@ -76,9 +76,6 @@ def check_availability():
     except socket.gaierror:
         return jsonify({"available": True})   # Available
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-
 @app.route("/verify-license", methods=["POST"])
 def verify_license():
     data = request.get_json()
@@ -89,3 +86,6 @@ def verify_license():
 
     return jsonify({"valid": False}), 401
 
+# ✅ This must ALWAYS be LAST
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
