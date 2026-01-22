@@ -77,3 +77,20 @@ def check_availability():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+app.post("/verify-license", (req, res) => {
+  const { licenseKey, domain } = req.body;
+
+  if (domain !== process.env.ALLOWED_DOMAIN) {
+    return res.json({ valid: false });
+  }
+
+  const validKeys = process.env.LICENSE_KEYS.split(",");
+
+  if (validKeys.includes(licenseKey)) {
+    return res.json({ valid: true });
+  }
+
+  return res.json({ valid: false });
+});
+
