@@ -1,32 +1,36 @@
 async function validateLicense() {
-  const key = localStorage.getItem("LICENSE_KEYS");
+  const userKey = localStorage.getItem("T24K_LICENSE");
 
-  if (!key) block("License required");
+  if (!userKey) {
+    block("License key missing");
+    return;
+  }
 
   try {
-    const res = await fetch("https://YOUR-RENDER-APP.onrender.com/verify-license", {
+    const res = await fetch("https://YOUR-APP.onrender.com/verify-license", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        licenseKey: key,
+        licenseKey: userKey,
         domain: location.hostname
       })
     });
 
-    if (!res.ok) throw new Error();
+    const data = await res.json();
+
+    if (!data.valid) throw new Error();
+
   } catch {
-    block("Invalid or revoked license");
+    block("Invalid or expired license");
   }
 }
 
 function block(msg) {
   document.body.innerHTML = `
-    <h2 style="color:red;text-align:center">
+    <h2 style="text-align:center;color:red">
       ${msg}<br><br>
-      Purchase at t24k.com
+      Purchase from t24k.com
     </h2>`;
-  throw new Error(msg);
 }
 
 validateLicense();
-
