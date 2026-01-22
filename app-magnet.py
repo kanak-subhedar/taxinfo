@@ -10,7 +10,7 @@ import socket
 
 app = Flask(__name__)
 CORS(app)
-VALID_KEYS = os.getenv("LICENSE_KEYS", "").split(",")
+
 
 @app.route('/')
 def home():
@@ -81,6 +81,7 @@ def verify_license():
     data = request.get_json()
     key = data.get("license", "").strip()
 
+    VALID_KEYS = os.getenv("LICENSE_KEYS", "").split(",")
     if key in VALID_KEYS:
         return jsonify({"valid": True})
 
