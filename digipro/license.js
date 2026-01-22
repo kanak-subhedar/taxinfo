@@ -1,18 +1,32 @@
-(function () {
-  const allowedDomains = [
-    "t24k.com",
-    "www.t24k.com"
-  ];
+async function validateLicense() {
+  const key = localStorage.getItem("LICENSE_KEYS");
 
-  const currentDomain = location.hostname;
+  if (!key) block("License required");
 
-  if (!allowedDomains.includes(currentDomain)) {
-    document.body.innerHTML = `
-      <h2 style="color:red;text-align:center">
-        Unauthorized domain<br>
-        This tool works only on t24k.com
-      </h2>
-    `;
-    throw new Error("Piracy Detected! Pay Fine Of $2000");
+  try {
+    const res = await fetch("https://YOUR-RENDER-APP.onrender.com/verify-license", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        licenseKey: key,
+        domain: location.hostname
+      })
+    });
+
+    if (!res.ok) throw new Error();
+  } catch {
+    block("Invalid or revoked license");
   }
-})();
+}
+
+function block(msg) {
+  document.body.innerHTML = `
+    <h2 style="color:red;text-align:center">
+      ${msg}<br><br>
+      Purchase at t24k.com
+    </h2>`;
+  throw new Error(msg);
+}
+
+validateLicense();
+
