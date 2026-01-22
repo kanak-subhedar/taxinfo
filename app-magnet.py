@@ -10,6 +10,7 @@ import socket
 
 app = Flask(__name__)
 CORS(app)
+VALID_KEYS = os.getenv("LICENSE_KEYS", "").split(",")
 
 @app.route('/')
 def home():
@@ -78,19 +79,13 @@ def check_availability():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
 
-app.post("/verify-license", (req, res) => {
-  const { licenseKey, domain } = req.body;
+@app.route("/verify-license", methods=["POST"])
+def verify_license():
+    data = request.get_json()
+    key = data.get("license", "").strip()
 
-  if (domain !== process.env.ALLOWED_DOMAIN) {
-    return res.json({ valid: false });
-  }
+    if key in VALID_KEYS:
+        return jsonify({"valid": True})
 
-  const validKeys = process.env.LICENSE_KEYS.split(",");
-
-  if (validKeys.includes(licenseKey)) {
-    return res.json({ valid: true });
-  }
-
-  return res.json({ valid: false });
-});
+    return jsonify({"valid": False}), 401
 
