@@ -3,7 +3,7 @@ from rlps.models import Quotation
 from rlps.schemas import QuotationCreate
 
 def create_quotation(db: Session, quotation: QuotationCreate):
-    db_quotation = Quotation(**quotation.dict())
+    db_quotation = Quotation(**quotation)
     db.add(db_quotation)
     db.commit()
     db.refresh(db_quotation)
