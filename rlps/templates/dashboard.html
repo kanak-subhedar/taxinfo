@@ -1,1 +1,33 @@
+{% extends "base.html" %}
 
+{% block content %}
+
+<a href="/add">Add New Quotation</a>
+
+<h2>All Quotations</h2>
+<table border="1">
+<tr>
+    <th>Client</th>
+    <th>Amount</th>
+    <th>Follow-up Date</th>
+    <th>Status</th>
+</tr>
+
+{% for q in quotations %}
+<tr>
+    <td>{{ q.client_name }}</td>
+    <td>{{ q.amount }}</td>
+    <td>{{ q.followup_date }}</td>
+    <td>{{ q.status }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Pending Follow-ups (Due Today or Earlier)</h2>
+<ul>
+{% for p in pending %}
+    <li>{{ p.client_name }} - ₹{{ p.amount }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
