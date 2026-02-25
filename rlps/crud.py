@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Quotation
+from rlps.models import Quotation
 from schemas import QuotationCreate
 
 def create_quotation(db: Session, quotation: QuotationCreate):
