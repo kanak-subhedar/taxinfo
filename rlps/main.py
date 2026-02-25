@@ -58,3 +58,6 @@ def add_quotation(
 
     crud.create_quotation(db, quotation_data)
     return RedirectResponse("/", status_code=303)
+@app.get("/test")
+def test():
+    return {"message": "Server is working"}
