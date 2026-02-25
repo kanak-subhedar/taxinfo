@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Date
-from database import Base
+from rlps.database import Base
 
 class Quotation(Base):
     __tablename__ = "quotations"
