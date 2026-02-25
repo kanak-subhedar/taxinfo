@@ -1,1 +1,17 @@
+{% extends "base.html" %}
 
+{% block content %}
+
+<h2>Add Quotation</h2>
+
+<form method="post">
+    Client Name: <input type="text" name="client_name"><br><br>
+    Phone: <input type="text" name="phone"><br><br>
+    Email: <input type="email" name="email"><br><br>
+    Amount: <input type="number" step="0.01" name="amount"><br><br>
+    Date Sent: <input type="date" name="date_sent"><br><br>
+    Follow-up Date: <input type="date" name="followup_date"><br><br>
+    <button type="submit">Save</button>
+</form>
+
+{% endblock %}
