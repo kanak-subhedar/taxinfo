@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from rlps.models import Quotation
-from schemas import QuotationCreate
+from rlps.schemas import QuotationCreate
 
 def create_quotation(db: Session, quotation: QuotationCreate):
     db_quotation = Quotation(**quotation.dict())
