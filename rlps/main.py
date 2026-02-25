@@ -4,9 +4,8 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import date
 
-import models
-import crud
-from database import engine, SessionLocal
+from rlps import models, crud
+from rlps.database import engine, SessionLocal
 
 models.Base.metadata.create_all(bind=engine)
 
