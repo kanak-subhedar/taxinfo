@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EnglishToAll | Speak & Translate</title>
+
+  <meta name="description" content="Speak Hindi to English, Translate English to all Indian languages, Improve your English sentences. Free tool.">
+
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 900px; margin: auto; }
+    textarea { width: 100%; height: 100px; padding: 10px; }
+    button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    .box { border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 6px; }
+    h2 { margin-top: 40px; }
+  </style>
+</head>
+
+<body>
+
+<h1>🌍 EnglishToAll</h1>
+
+<!-- ================= TRANSLATE ================= -->
+<h2>Translate English → All Languages</h2>
+
+<textarea id="inputText" placeholder="Enter English text..."></textarea><br>
+
+<button onclick="translate()">Translate</button>
+<button onclick="speakHindi()">🔊 Speak Hindi Accent</button>
+
+<div id="output"></div>
+
+<!-- ================= HINDI VOICE ================= -->
+<h2>🎤 Speak Hindi → English</h2>
+
+<button onclick="startHindiListening()">Start Speaking</button>
+
+<div id="voiceOutput"></div>
+
+<!-- ================= IMPROVE ================= -->
+<h2>✨ Improve Your Sentence</h2>
+
+<textarea id="improveText" placeholder="Type wrong English sentence..."></textarea><br>
+
+<button onclick="improveSentence()">Improve Sentence</button>
+
+<div id="improveOutput"></div>
+
+<script>
+
+// ----------- TRANSLATE -----------
+async function translate() {
+  const text = document.getElementById("inputText").value;
+
+  const res = await fetch("https://YOUR-RENDER-URL/translate", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ text })
+  });
+
+  const data = await res.json();
+
+  let html = "";
+  for (let lang in data) {
+    html += `<div class="box"><b>${lang}</b><br>${data[lang]}</div>`;
+  }
+
+  document.getElementById("output").innerHTML = html;
+}
+
+// ----------- SPEAK HINDI ACCENT -----------
+function speakHindi() {
+  const text = document.getElementById("inputText").value;
+  const speech = new SpeechSynthesisUtterance(text);
+
+  const voice = speechSynthesis.getVoices().find(v => v.lang.includes("hi"));
+  if (voice) speech.voice = voice;
+
+  speech.rate = 0.9;
+  speechSynthesis.speak(speech);
+}
+
+// ----------- HINDI VOICE TO ENGLISH -----------
+function startHindiListening() {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "hi-IN";
+
+  recognition.onresult = async (event) => {
+    const hindiText = event.results[0][0].transcript;
+
+    const res = await fetch("https://YOUR-RENDER-URL/translate-hi-en", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ text: hindiText })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("voiceOutput").innerHTML =
+      `<div class="box"><b>English:</b><br>${data.english}</div>`;
+
+    speakEnglish(data.english);
+  };
+
+  recognition.start();
+}
+
+function speakEnglish(text) {
+  const speech = new SpeechSynthesisUtterance(text);
+  const voice = speechSynthesis.getVoices().find(v => v.lang.includes("en"));
+  if (voice) speech.voice = voice;
+  speechSynthesis.speak(speech);
+}
+
+// ----------- IMPROVE SENTENCE -----------
+async function improveSentence() {
+  const text = document.getElementById("improveText").value;
+
+  const res = await fetch("https://YOUR-RENDER-URL/improve", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ text })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("improveOutput").innerHTML = `
+    <div class="box"><b>Correct:</b><br>${data.corrected}</div>
+    <div class="box"><b>Explanation:</b><br>${data.explanation}</div>
+    <button onclick="speakEnglish('${data.corrected}')">🔊 Speak</button>
+  `;
+}
+
+</script>
+
+</body>
+</html>
