@@ -36,5 +36,4 @@ soundfile
 # English Speaking
 deep-translator
 language-tool-python
-setuptools
 ffmpeg-python
