@@ -7,7 +7,7 @@ razorpay==1.4.1
 setuptools>=45.0.0
 python-whois==0.8.0
 dnspython==2.4.2
-==3.11.9
+python==3.11.9
 
 # Encryption / Security
 cryptography==41.0.7
