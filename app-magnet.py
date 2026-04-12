@@ -7,6 +7,8 @@ import whois
 from flask_cors import CORS  # ✅ 1. Import CORS
 from fetch_client_magnet_email_pdf import fetch_pdf_if_missing
 import socket
+from deep_translator import GoogleTranslator
+import language_tool_python
 
 app = Flask(__name__)
 CORS(app)
@@ -86,6 +88,58 @@ def verify_license():
         return jsonify({"valid": True})
 
     return jsonify({"valid": False}), 401
+
+# speak & improve your English
+
+# ----------- ENGLISH → MULTI LANGUAGE -----------
+@app.route("/translate", methods=["POST"])
+def translate():
+    text = request.json.get("text", "")
+
+    langs = {
+        "Hindi": "hi",
+        "Kannada": "kn",
+        "Tamil": "ta",
+        "Telugu": "te",
+        "Malayalam": "ml",
+        "Marathi": "mr"
+    }
+
+    result = {}
+
+    for name, code in langs.items():
+        try:
+            result[name] = GoogleTranslator(source='en', target=code).translate(text)
+        except:
+            result[name] = "Error"
+
+    return jsonify(result)
+
+# ----------- HINDI → ENGLISH -----------
+@app.route("/translate-hi-en", methods=["POST"])
+def translate_hi_en():
+    text = request.json.get("text", "")
+    try:
+        translated = GoogleTranslator(source='hi', target='en').translate(text)
+    except:
+        translated = "Error"
+
+    return jsonify({"english": translated})
+
+# ----------- IMPROVE SENTENCE (FREE VERSION) -----------
+
+tool = language_tool_python.LanguageTool('en-US')
+
+@app.route("/improve", methods=["POST"])
+def improve():
+    text = request.json.get("text", "")
+    matches = tool.check(text)
+    corrected = language_tool_python.utils.correct(text, matches)
+
+    return jsonify({
+        "corrected": corrected,
+        "explanation": "Grammar corrected using standard rules"
+    })
 
 # ✅ This must ALWAYS be LAST
 if __name__ == "__main__":
