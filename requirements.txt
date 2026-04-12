@@ -31,4 +31,9 @@ Pillow==10.4.0
 librosa
 noisereduce
 soundfile
+
+# English Speaking
+deep-translator
+language-tool-python
+
 ffmpeg-python
