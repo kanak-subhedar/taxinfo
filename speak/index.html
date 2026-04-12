@@ -50,7 +50,7 @@
 async function translate() {
   const text = document.getElementById("inputText").value;
 
-  const res = await fetch("https://YOUR-RENDER-URL/translate", {
+  const res = await fetch("https://client-magnet.onrender.com/translate", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ text })
@@ -86,7 +86,7 @@ function startHindiListening() {
   recognition.onresult = async (event) => {
     const hindiText = event.results[0][0].transcript;
 
-    const res = await fetch("https://YOUR-RENDER-URL/translate-hi-en", {
+    const res = await fetch("https://client-magnet.onrender.com/translate-hi-en", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ text: hindiText })
@@ -114,7 +114,7 @@ function speakEnglish(text) {
 async function improveSentence() {
   const text = document.getElementById("improveText").value;
 
-  const res = await fetch("https://YOUR-RENDER-URL/improve", {
+  const res = await fetch("https://client-magnet.onrender.com/improve", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ text })
