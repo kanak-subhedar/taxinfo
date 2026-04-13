@@ -127,7 +127,48 @@ def translate_hi_en():
     return jsonify({"english": translated})
 
 # ----------- IMPROVE SENTENCE (FREE VERSION) -----------
+@app.route("/improve-sentence", methods=["POST"])
+def improve_sentence():
+    try:
+        data = request.get_json()
+        text = data.get("text", "").strip()
 
+        if not text:
+            return jsonify({"error": "No text provided"}), 400
+
+        # Call LanguageTool Public API
+        response = requests.post(
+            "https://api.languagetool.org/v2/check",
+            data={
+                "text": text,
+                "language": "en-US"
+            }
+        )
+
+        result = response.json()
+
+        corrected_text = text
+
+        # Apply corrections
+        for match in reversed(result.get("matches", [])):
+            if match["replacements"]:
+                replacement = match["replacements"][0]["value"]
+                start = match["offset"]
+                length = match["length"]
+
+                corrected_text = (
+                    corrected_text[:start] +
+                    replacement +
+                    corrected_text[start + length:]
+                )
+
+        return jsonify({
+            "original": text,
+            "improved": corrected_text
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ✅ This must ALWAYS be LAST
