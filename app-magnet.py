@@ -8,7 +8,7 @@ from flask_cors import CORS  # ✅ 1. Import CORS
 from fetch_client_magnet_email_pdf import fetch_pdf_if_missing
 import socket
 from deep_translator import GoogleTranslator
-import language_tool_python
+#import language_tool_python
 
 app = Flask(__name__)
 CORS(app)
@@ -128,18 +128,7 @@ def translate_hi_en():
 
 # ----------- IMPROVE SENTENCE (FREE VERSION) -----------
 
-tool = language_tool_python.LanguageTool('en-US')
 
-@app.route("/improve", methods=["POST"])
-def improve():
-    text = request.json.get("text", "")
-    matches = tool.check(text)
-    corrected = language_tool_python.utils.correct(text, matches)
-
-    return jsonify({
-        "corrected": corrected,
-        "explanation": "Grammar corrected using standard rules"
-    })
 
 # ✅ This must ALWAYS be LAST
 if __name__ == "__main__":
