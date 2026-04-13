@@ -114,7 +114,7 @@ function speakEnglish(text) {
 async function improveSentence() {
   const text = document.getElementById("improveText").value;
 
-  const res = await fetch("https://client-magnet.onrender.com/improve", {
+  const res = await fetch("https://client-magnet.onrender.com/improve-sentence", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ text })
