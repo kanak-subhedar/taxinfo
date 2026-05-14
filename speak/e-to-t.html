@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>English To Telugu Translation</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            padding:20px;
+        }
+
+        textarea{
+            width:90%;
+            height:120px;
+            font-size:18px;
+            padding:10px;
+        }
+
+        button{
+            padding:10px 20px;
+            font-size:18px;
+            margin:5px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>English To Telugu Translation</h1>
+
+<!-- INPUT -->
+<textarea
+    id="inputText"
+    placeholder="Type or Speak English">
+</textarea>
+
+<br><br>
+
+<!-- BUTTONS -->
+<button onclick="startSpeechRecognition()">
+🎤 Speak English
+</button>
+
+<button onclick="translateText()">
+Translate
+</button>
+
+<button onclick="speakTelugu()">
+🔊 Speak Telugu
+</button>
+
+<br><br>
+
+<!-- OUTPUT -->
+<textarea
+    id="outputText"
+    placeholder="Telugu Translation">
+</textarea>
+
+<script>
+
+let teluguText = "";
+
+// =========================
+// SPEECH TO TEXT (ENGLISH)
+// =========================
+
+function startSpeechRecognition() {
+
+    const recognition =
+        new webkitSpeechRecognition();
+
+    recognition.lang = "en-US";
+
+    recognition.onresult = function(event) {
+
+        const spokenText =
+            event.results[0][0].transcript;
+
+        document.getElementById("inputText").value =
+            spokenText;
+
+        // auto translate after speaking
+        translateText();
+    };
+
+    recognition.start();
+}
+
+// =========================
+// TRANSLATE
+// =========================
+
+async function translateText() {
+
+    const text =
+        document.getElementById("inputText").value;
+
+    const response = await fetch(
+        "https://file-mgmt.onrender.com/english-to-telugu",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                text: text
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    teluguText =
+        data.translated || data.error;
+
+    document.getElementById("outputText").value =
+        teluguText;
+
+    // auto speak after translation
+    speakTelugu();
+}
+
+// =========================
+// TEXT TO SPEECH (TELUGU)
+// =========================
+
+function speakTelugu() {
+
+    if(!teluguText) return;
+
+    const speech =
+        new SpeechSynthesisUtterance(teluguText);
+
+    speech.lang = "te-IN";
+
+    window.speechSynthesis.speak(speech);
+}
+
+</script>
+
+</body>
+</html>
