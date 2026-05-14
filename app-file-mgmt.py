@@ -8,6 +8,8 @@ from pydub import AudioSegment
 from docx import Document
 from PyPDF2 import PdfReader
 from PIL import Image
+import socket
+from deep_translator import GoogleTranslator
 from flask_cors import CORS
 
 app = Flask(__name__)
