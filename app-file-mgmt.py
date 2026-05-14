@@ -179,6 +179,55 @@ def convert_image():
     out_name = os.path.splitext(secure_filename(file.filename))[0] + "." + fmt
     return send_file(buf, as_attachment=True, download_name=out_name)
 
+# === English to Telugu ===
+@app.route("/english-to-telugu", methods=["POST"])
+def english_to_telugu():
+
+    try:
+        text = request.json.get("text", "").strip()
+
+        if not text:
+            return jsonify({"error": "No text"}), 400
+
+        translated = GoogleTranslator(
+            source='en',
+            target='te'
+        ).translate(text)
+
+        return jsonify({
+            "translated": translated
+        })
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+# === Telugu to English ===
+
+@app.route("/telugu-to-english", methods=["POST"])
+def telugu_to_english():
+
+    try:
+        text = request.json.get("text", "").strip()
+
+        if not text:
+            return jsonify({"error": "No text"}), 400
+
+        translated = GoogleTranslator(
+            source='te',
+            target='en'
+        ).translate(text)
+
+        return jsonify({
+            "translated": translated
+        })
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
 # === Start Server ===
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
