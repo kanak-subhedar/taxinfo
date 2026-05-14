@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telugu To English Translation</title>
+</head>
+<body>
+
+<h1>Telugu To English Translation</h1>
+
+<textarea id="inputText"></textarea>
+
+<br><br>
+
+<button onclick="translateText()">
+Translate
+</button>
+
+<br><br>
+
+<textarea id="outputText"></textarea>
+
+<script>
+async function translateText() {
+
+    const text =
+        document.getElementById("inputText").value;
+
+    const response = await fetch(
+        "https://YOUR-RENDER-URL/telugu-to-english",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                text: text
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("outputText").value =
+        data.translated || data.error;
+}
+</script>
+
+</body>
+</html>
