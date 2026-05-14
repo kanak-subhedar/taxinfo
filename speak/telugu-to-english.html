@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telugu To English Translation</title>
+</head>
+
+<body>
+
+<h1>Telugu To English Translation</h1>
+
+<!-- Telugu Input -->
+<textarea
+    id="inputText"
+    rows="8"
+    cols="60"
+    placeholder="తెలుగులో టైప్ చేయండి లేదా మైక్ ఉపయోగించండి">
+</textarea>
+
+<br><br>
+
+<!-- Start Voice -->
+<button onclick="startVoiceInput()">
+🎤 Speak Telugu
+</button>
+
+<!-- Translate -->
+<button onclick="translateText()">
+Translate To English
+</button>
+
+<!-- Speak English Output -->
+<button onclick="speakEnglish()">
+🔊 Speak English
+</button>
+
+<br><br>
+
+<!-- English Output -->
+<textarea
+    id="outputText"
+    rows="8"
+    cols="60"
+    placeholder="English translation will appear here">
+</textarea>
+
+<script>
+
+let englishOutput = "";
+
+
+// --------------------
+// Telugu Voice Input
+// --------------------
+
+function startVoiceInput() {
+
+    if (!('webkitSpeechRecognition' in window)) {
+        alert("Speech Recognition not supported");
+        return;
+    }
+
+    const recognition =
+        new webkitSpeechRecognition();
+
+    recognition.lang = "te-IN";
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+
+        const spokenText =
+            event.results[0][0].transcript;
+
+        document.getElementById("inputText").value =
+            spokenText;
+    };
+}
+
+
+
+// --------------------
+// Translate Telugu -> English
+// --------------------
+
+async function translateText() {
+
+    const text =
+        document.getElementById("inputText").value;
+
+    const response = await fetch(
+        "https://file-mgmt.onrender.com/telugu-to-english",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                text: text
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    englishOutput =
+        data.translated || data.error;
+
+    document.getElementById("outputText").value =
+        englishOutput;
+}
+
+
+
+// --------------------
+// Speak English Output
+// --------------------
+
+function speakEnglish() {
+
+    if (englishOutput.trim() === "") {
+        alert("No translated text available");
+        return;
+    }
+
+    const speech =
+        new SpeechSynthesisUtterance(
+            englishOutput
+        );
+
+    speech.lang = "en-US";
+
+    speechSynthesis.speak(speech);
+}
+
+</script>
+
+</body>
+</html>
