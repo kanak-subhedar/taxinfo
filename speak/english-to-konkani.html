@@ -139,7 +139,8 @@ function speakKonkani() {
             konkaniText
         );
 
-    speech.lang = "gom-IN";
+    // speech.lang = "gom-IN"; changed because voice was not coming in browser
+    speech.lang = "hi-IN";
 
     window.speechSynthesis.speak(speech);
 }
