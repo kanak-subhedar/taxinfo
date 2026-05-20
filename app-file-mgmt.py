@@ -230,6 +230,35 @@ def telugu_to_english():
             "error": str(e)
         }), 500
 
+# === English to Konkani translation ===
+
+@app.route("/english-to-konkani", methods=["POST"])
+def english_to_konkani():
+
+    text = request.json.get("text", "").strip()
+
+    if not text:
+        return jsonify({
+            "error": "No text provided"
+        }), 400
+
+    try:
+
+        translated = GoogleTranslator(
+            source='en',
+            target='gom'
+        ).translate(text)
+
+        return jsonify({
+            "translated": translated
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+
 # === Start Server ===
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
