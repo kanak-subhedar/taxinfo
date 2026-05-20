@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>English To Konkani Translation</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            padding:20px;
+        }
+
+        textarea{
+            width:90%;
+            height:120px;
+            font-size:18px;
+            padding:10px;
+        }
+
+        button{
+            padding:10px 20px;
+            margin:5px;
+            font-size:18px;
+            cursor:pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h1>English To Konkani Translation</h1>
+
+<textarea
+    id="inputText"
+    placeholder="Type or Speak English">
+</textarea>
+
+<br><br>
+
+<button onclick="startSpeechRecognition()">
+🎤 Speak English
+</button>
+
+<button onclick="translateText()">
+Translate
+</button>
+
+<button onclick="speakKonkani()">
+🔊 Speak Konkani
+</button>
+
+<br><br>
+
+<textarea
+    id="outputText"
+    placeholder="Konkani translation will appear here">
+</textarea>
+
+<script>
+
+let konkaniText = "";
+
+
+// ==================================
+// SPEECH RECOGNITION
+// ==================================
+
+function startSpeechRecognition() {
+
+    const recognition =
+        new webkitSpeechRecognition();
+
+    recognition.lang = "en-US";
+
+    recognition.onresult = function(event) {
+
+        const spokenText =
+            event.results[0][0].transcript;
+
+        document.getElementById("inputText").value =
+            spokenText;
+
+        translateText();
+    };
+
+    recognition.start();
+}
+
+
+
+// ==================================
+// TRANSLATE
+// ==================================
+
+async function translateText() {
+
+    const text =
+        document.getElementById("inputText").value;
+
+    const response = await fetch(
+        "https://file-mgmt.onrender.com/english-to-konkani",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                text: text
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    konkaniText =
+        data.translated || data.error;
+
+    document.getElementById("outputText").value =
+        konkaniText;
+
+    speakKonkani();
+}
+
+
+
+// ==================================
+// SPEAK KONKANI
+// ==================================
+
+function speakKonkani() {
+
+    if(!konkaniText) return;
+
+    const speech =
+        new SpeechSynthesisUtterance(
+            konkaniText
+        );
+
+    speech.lang = "gom-IN";
+
+    window.speechSynthesis.speak(speech);
+}
+
+</script>
+
+</body>
+</html>
