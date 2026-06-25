@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced SystemC TLM-2.0 Bus Router Architecture: Handling Device-Specific Latency | T24K</title>
+    <meta name="description" content="Master ESL design with our SystemC TLM-2.0 parametric bus router blueprint. Learn clean methods to handle dynamic address mapping and device-specific latency for SRAM and Flash.">
+    <meta name="keywords" content="SystemC TLM 2.0 bus router design, parametric address mapping, device specific latency systemc, Vayavya labs interview preparation, ESL system architecture design patterns, T24K developer guides">
+    <link rel="canonical" href="https://t24k.com" />
+    
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #2563eb;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --code-bg: #1e293b;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            font-size: 2.3rem;
+            color: var(--primary);
+            line-height: 1.25;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        h2 {
+            font-size: 1.6rem;
+            color: #1e3a8a;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-top: 40px;
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+        .pro-tip {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left: 5px solid var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .pro-tip strong {
+            color: #1e40af;
+        }
+        pre {
+            background-color: var(--code-bg);
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: "Fira Code", Consolas, Monaco, monospace;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border: 1px solid #334155;
+            margin: 25px 0;
+        }
+        code {
+            font-family: monospace;
+            background-color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover { background-color: #f1f5f9; }
+        
+        /* Premium AdSense Native Containers */
+        .adsense-box {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            text-align: center;
+            padding: 20px;
+            margin: 35px 0;
+            font-size: 0.8rem;
+            color: #64748b;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.3rem; }
+            pre { font-size: 0.8rem; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="https://t24k.com">T24K.com — Engineering Knowledge base</a>
+</header>
+
+<div class="container">
+    
+    <!-- Top Leaderboard Ad Slot -->
+    <div class="adsense-box">
+        <!-- [AdSense Code: Top Header Responsive Banner] -->
+        Advertisement Space (Leaderboard Banner)
+    </div>
+
+    <h1>Designing an Advanced SystemC TLM-2.0 Bus Router: Handling Dynamic Address Mapping and Device-Specific Latencies</h1>
+    
+    <p>In electronic system-level (ESL) modeling, designing an interconnect bus router presents a classic engineering trade-off: <strong>flexibility versus structural awareness</strong>. A production-grade simulator must map incoming multi-core requests dynamically while handling unique hardware traits—such as the slow write latency of Flash memory versus the instant execution velocity of Data SRAM.</p>
+    
+    <p>Hardcoding address map segments inside the decode cycle creates unmaintainable design bottlenecks. Below, we step through a comprehensive, scalable design pattern that implements an adaptable vector tracking architecture capable of adjusting transaction pathways and simulating distinct hardware processing loops on the fly.</p>
+
+    <div class="pro-tip">
+        <strong>The Design Breakthrough:</strong> Instead of executing a static memory decoding block, we upgrade our router to utilize an object-oriented vector structure. This allows us to assign a <code>Device ID</code> status wrapper to distinct target segments. The router can then apply dynamic latency offsets while remaining a completely reusable class component.
+    </div>
+
+    <!-- Mid-Article Contextual Ad Slot -->
+    <div class="adsense-box">
+        <!-- [AdSense Code: In-Article Native Component] -->
+        Advertisement Space (In-Article Inline)
+    </div>
+
+    <h2>The Structural Blueprint: Why Basic Decoding Fails</h2>
+    <p>An intermediate verification layout often handles target processing by evaluating boundaries using a primitive conditional index pattern, like this:</p>
+    
+    <pre><code>int decode_address(uint64_t addr) {
+    if (addr &lt; 0x40000) return 0;  // 0x00000 - 0x3FFFF -&gt; Flash Memory Device
+    return 1;                     // 0x40000+          -&gt; Data SRAM
+}</code></pre>
+
+    <p>While this configuration successfully flags if a target coordinate points to Flash (Device <code>0</code>) or SRAM (Device <code>1</code>), it leaves the system brittle. If an engineering update inserts a third element—like a Boot ROM or a hardware peripheral—the foundational logic breaks, requiring full codebase refactoring and recompilation.</p>
+
+    <h2>The Advanced Solution: The Parametric Vector Matrix</h2>
+    <p>To preserve reusability without sacrificing the capability to implement specific processing behaviors, we register target attributes inside a structured look-up block vector. Here is the refactored, production-ready SystemC implementation:</p>
+
+    <pre><code>#include &lt;systemc.h&gt;
+#include &lt;tlm.h&gt;
+#include &lt;tlm_utils/multi_passthrough_target_socket.h&gt;
+#include &lt;tlm_utils/multi_passthrough_initiator_socket.h&gt;
+#include &lt;vector&gt;
+
+struct AddrMapping {
+    uint64_t start_address;
+    uint64_t end_address;
+    int target_socket_index; // Acts as the explicit Device ID identifier
+    std::string device_name;
+};
+
+class ParametricRouter : public sc_module {
+public:
+    tlm_utils::multi_passthrough_target_socket&lt;ParametricRouter&gt;    cpu_inputs;
+    tlm_utils::multi_passthrough_initiator_socket&lt;ParametricRouter&gt; mem_outputs;
+
+    SC_HAS_PROCESS(ParametricRouter);
+    ParametricRouter(sc_module_name name) 
+        : sc_module(name), cpu_inputs("cpu_inputs"), mem_outputs("mem_outputs") {
+        
+        cpu_inputs.register_b_transport(this, &ParametricRouter::b_transport);
+    }
+
+    void register_device(uint64_t start, uint64_t end, int device_id, std::string name) {
+        AddrMapping mapping = {start, end, device_id, name};
+        m_routing_table.push_back(mapping);
+    }
+
+    virtual void b_transport(int id, tlm::tlm_generic_payload& trans, sc_time& delay) {
+        uint64_t global_addr = trans.get_address();
+        int matched_idx = decode_address(global_addr);
+        
+        if (matched_idx == -1) {
+            trans.set_response_status(tlm::TLM_ADDRESS_ERROR_RESPONSE);
+            return;
+        }
+
+        int device_id = m_routing_table[matched_idx].target_socket_index;
+        uint64_t local_offset = global_addr - m_routing_table[matched_idx].start_address;
+        trans.set_address(local_offset);
+
+        // Execute Device-Specific Latency Processing Logic inside the central hub
+        if (device_id == 0) {
+            // Specialized handling for FLASH MEMORY: Inject access latency penality
+            delay += sc_time(50, SC_NS); 
+            cout &lt;&lt; "@ " &lt;&lt; sc_time_stamp() &lt;&lt; " [Router] Slow Flash Wrapper Mode Triggered\n";
+        } else if (device_id == 1) {
+            // Specialized handling for DATA SRAM: High speed operational routing
+            delay += sc_time(1, SC_NS);
+        }
+
+        // Forward transaction payload to the validated destination target socket interface
+        mem_outputs[device_id]-&gt;b_transport(trans, delay);
+                trans.set_address(global_addr); // Crucial: Re-align mapping state before return
+    }
+
+    virtual bool get_direct_mem_ptr(int id, tlm::tlm_generic_payload& trans, tlm::tlm_dmi& dmi_data) {
+        uint64_t global_addr = trans.get_address();
+        int matched_idx = decode_address(global_addr);
+        
+        if (matched_idx == -1) return false;
+
+        int device_id = m_routing_table[matched_idx].target_socket_index;
+        uint64_t base_addr = m_routing_table[matched_idx].start_address;
+        uint64_t local_offset = global_addr - base_addr;
+
+        trans.set_address(local_offset);
+        bool success = mem_outputs[device_id]->get_direct_mem_ptr(trans, dmi_data);
+        trans.set_address(global_addr);
+        
+        if (success) {
+            // Re-align DMI slice boundaries back up to global system mapping coordinate spaces
+            dmi_data.set_start_address(dmi_data.get_start_address() + base_addr);
+            dmi_data.set_end_address(dmi_data.get_end_address() + base_addr);
+        }
+        return success;
+    }
+
+private:
+    std::vector<AddrMapping> m_routing_table;
+
+    int decode_address(uint64_t addr) {
+        for (size_t i = 0; i < m_routing_table.size(); ++i) {
+            if (addr >= m_routing_table[i].start_address && addr <= m_routing_table[i].end_address) {
+                return i;
+            }
+        }
+        return -1; // Address Mapping Range Fault
+    }
+};</code></pre>
+
+    <!-- Mid-Article/Multiplex Content Ad Slot -->
+    <div class="adsense-box">
+        <!-- [AdSense Code: Native Multiplex / Content Grid Recommendation] -->
+        Advertisement Space (Multiplex Recommended Links)
+    </div>
+
+    <h2>How the Dynamic Lookup Array Operates</h2>
+    <p>By leveraging this structural pattern, the memory maps are initialized outside the tracking architecture during system configuration. Let's trace how the internal system maps these elements:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Vector Array Index</th>
+                <th>Target Memory Boundary</th>
+                <th>Assigned Device ID</th>
+                <th>Router Internal Behavior Logic</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Index 0</strong></td>
+                <td>0x00000 to 0x3FFFF</td>
+                <td>Device 0 (Flash)</td>
+                <td>Appends a 50ns wait-state synchronization penalty</td>
+            </tr>
+            <tr>
+                <td><strong>Index 1</strong></td>
+                <td>0x40000 to 0x7FFFF</td>
+                <td>Device 1 (SRAM)</td>
+                <td>Appends a baseline 1ns structural access delay</td>
+            </tr>
+            <tr>
+                <td><strong>Index 2</strong></td>
+                <td>0x80000 to 0x9FFFF</td>
+                <td>Device 2 (Boot ROM)</td>
+                <td>Applies read-only execution constraints (Custom Extensible)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Architectural Advantages for Technical Interview Evaluations</h2>
+    <p>Demonstrating this refactored approach during embedded engineering technical screenings (such as recruitment tracks at specialized design firms like <strong>Vayavya Labs</strong>) signals an advanced command of electronic system-level validation practices:</p>
+    
+    <ul>
+        <li><strong>Decoupled Scalability:</strong> The central router functions as a black-box system asset. Address parameters can be re-routed via JSON input modules without altering core processing code loops.</li>
+        <li><strong>Functional Memory Bounds:</strong> Out-of-bounds address calls hit a clean fallback trap, safely returning a <code>TLM_ADDRESS_ERROR_RESPONSE</code> flag rather than risking simulation memory leaks or runtime segmentation deadlocks.</li>
+    </ul>
+
+    <p style="text-align: center; margin-top: 45px; font-weight: bold; font-size: 1.1rem;">
+        Looking to verify further system architectures or check real-time portfolio optimization parameters? Check out our complete interactive code suites at <a href="https://t24k.com" style="color: var(--secondary); text-decoration: underline;">T24K.com</a>!
+    </p>
+
+    <!-- Bottom Anchor Ad Space -->
+    <div class="adsense-box">
+        <!-- [AdSense Code: Bottom Fixed Banner / Anchor Ad] -->
+        Advertisement Space (Sticky Anchor Footer)
+    </div>
+
+</div>
+
+</body>
+</html>
