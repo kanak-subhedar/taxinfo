@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commercial Vehicle Yatra Profit & Expense Calculator | T24K</title>
+    <meta name="description" content="Calculate real net profit margins for yellow board commercial cars in India. Deduct fuel, toll, driver bhatta, and vehicle taxes automatically.">
+    <meta name="keywords" content="yellow board car profit calculator, commercial vehicle tax karnataka, driver bhatta calculation, t24k transport tool, pilgrimage taxi cost breakdown">
+    <link rel="canonical" href="https://t24k.com" />
+    
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #ea580c; /* Transport Amber */
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #cbd5e1;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        header a { color: white; text-decoration: none; font-weight: bold; font-size: 1.3rem; }
+        .container { max-width: 750px; margin: 30px auto; padding: 0 20px; }
+        h1 { font-size: 2rem; color: var(--primary); font-weight: 800; }
+        .calc-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.95rem; }
+        input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        .btn-calc { background-color: var(--secondary); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .result-box { display: none; background-color: #f0fdf4; border-left: 5px solid #16a34a; padding: 20px; border-radius: 6px; margin-top: 20px; }
+        .result-line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.05rem; }
+        .ads-slot { background: #e2e8f0; text-align: center; padding: 15px; margin: 25px 0; font-size: 0.8rem; color: #94a3b8; font-weight: bold; border-radius: 6px; letter-spacing: 1px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="https://t24k.com">T24K.com — Fleet Optimization Systems</a>
+</header>
+
+<div class="container">
+    
+    <div class="ads-slot">GOOGLE ADSENSE: TOP BANNER AD UNIT</div>
+
+    <h1>Commercial Vehicle Yatra Expense & Net Profit Calculator</h1>
+    <p>Traditional yellow-board car operators often see their margins wiped out by hidden road leaks. Use this auditing tool to compute your true net earnings after factoring in driver payment bundles, fuel variances, and fixed annual vehicle tax amortizations.</p>
+
+    <div class="calc-box">
+        <div class="input-group">
+            <label for="grossRevenue">Total Ride Gross Revenue (₹)</label>
+            <input type="number" id="grossRevenue" placeholder="e.g. 8000">
+        </div>
+        <div class="input-group">
+            <label for="fuelCost">Estimated Fuel Cost for Trip (₹)</label>
+            <input type="number" id="fuelCost" placeholder="e.g. 3000">
+        </div>
+        <div class="input-group">
+            <label for="driverSalary">Driver Base Salary + Daily Bhatta (₹)</label>
+            <input type="number" id="driverSalary" placeholder="e.g. 1500">
+        </div>
+        <div class="input-group">
+            <label for="tolls">Toll Gate Charges (₹)</label>
+            <input type="number" id="tolls" placeholder="e.g. 600">
+        </div>
+        <div class="input-group">
+            <label for="fixedTax">Amortized Fixed Costs (Tax/Ins/PUC per trip) (₹)</label>
+            <input type="number" id="fixedTax" placeholder="Default estimation: 350" value="350">
+        </div>
+        
+        <button class="btn-calc" onclick="calculateNetMargin()">Compute Real Net Profit</button>
+        
+        <div id="resultBlock" class="result-box">
+            <div class="result-line"><strong>Total Operating Expenses:</strong> <span id="outExpenses" style="color: #dc2626;">₹0</span></div>
+            <div class="result-line" style="font-size: 1.2rem; font-weight: bold; border-top: 1px solid #cbd5e1; padding-top: 8px; margin-top: 8px;"><strong>Take-Home Net Profit:</strong> <span id="netProfit" style="color: #16a34a;">₹0</span></div>
+            <div class="result-line" style="font-size: 0.95rem; color: #64748b;"><span id="marginPercent">Margin Performance: 0%</span></div>
+        </div>
+    </div>
+
+    <div class="ads-slot">GOOGLE ADSENSE: MULTIPLEX RESPONSIVE GRID</div>
+
+    <h2>How to Optimize Your Transport Assets</h2>
+    <p>If your Take-Home Net Profit shows an unsustainable margin tier under 25%, you must transition away from standard single-family hiring contracts. Moving to a per-seat dynamic fare setup across crowded coastal Karnataka pilgrimage loops ensures your vehicle operates at peak capacity, fully clearing fixed asset depreciation overheads safely.</p>
+
+    <p style="text-align: center; margin-top: 35px; font-weight: bold;">
+        Need to analyze dynamic compound deposit models or calculate clean tax returns? Return to our main portal at <a href="https://t24k.com" style="color: var(--secondary); text-decoration: underline;">T24K.com</a>!
+    </p>
+
+    <div class="ads-slot">GOOGLE ADSENSE: STICKY FOOTER ANCHOR</div>
+
+</div>
+
+<script>
+function calculateNetMargin() {
+    var gross = parseFloat(document.getElementById('grossRevenue').value) || 0;
+    var fuel = parseFloat(document.getElementById('fuelCost').value) || 0;
+    var driver = parseFloat(document.getElementById('driverSalary').value) || 0;
+    var toll = parseFloat(document.getElementById('tolls').value) || 0;
+    var fixed = parseFloat(document.getElementById('fixedTax').value) || 0;
+
+    var totalExpenses = fuel + driver + toll + fixed;
+    var net = gross - totalExpenses;
+    var percentage = gross > 0 ? ((net / gross) * 100).toFixed(1) : 0;
+
+    document.getElementById('outExpenses').innerText = "₹" + totalExpenses;
+    document.getElementById('netProfit').innerText = "₹" + net;
+    document.getElementById('marginPercent').innerText = "Margin Performance Yield: " + percentage + "%";
+    
+    document.getElementById('resultBlock').style.display = "block";
+}
+</script>
+
+</body>
+</html>
