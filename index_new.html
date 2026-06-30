@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Income Tax calculators & earning options with loan details by T24K.com</title>
+  <meta name="p:domain_verify" content="d62ede7814cf55f30f22b3df60b975a0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate your exact tax liability with T24K's advanced Income Tax Calculator. Get personalized results with exemptions, deductions & yearly breakdown with T24K.com">
+  <link rel="canonical" href="https://t24k.com">
+
+  <!-- Favicon --- like company label -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6272193760158994" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4b9f4;
+    }
+    h1, h2 {
+      color: #003366;
+    }
+    .calculator-block {
+      background: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .ads {
+      text-align: center;
+      margin: 20px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .footer, .menu {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .menu a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #0066cc;
+    }
+
+    /* Dropdown container */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Dropdown button */
+    .dropdown .dropbtn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Dropdown content (hidden by default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .dropdown:hover .dropbtn {
+      background-color: #3e8e41;
+    }
+
+    .ad-slot {
+      width: 100%;
+      min-height: 90px;
+      display: block;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0 12px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button.calc-btn {
+      background-color: #003366;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button.calc-btn:hover {
+      background-color: #002244;
+    }
+
+    .result-box {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #e6f2ff;
+      border-left: 6px solid #0066cc;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .ad-slot {
+        width: 100%;
+        min-height: 250px; /* Safe size for 300x250 ads on mobile */
+        display: block;
+        overflow: hidden;
+        position: relative;
+      }
+      img, iframe {
+        max-width: 100%;
+        height: auto;
+      }
+      body {
+        font-display: swap;
+      }
+    }
+	  
+    footer1 {
+      position: static;
+      bottom: 0;
+      width: 100%;
+      background-color: blue;
+      color: black;
+      text-align: center;
+      padding: 10px 0;
+    }
+    .footer-menu1 {
+      background-color: #FAAF10;
+      color: white;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .footer-menu1 a {
+      color: white;
+      text-decoration: none;
+      font-size: 24px;
+    }
+    .footer-menu1 a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 10px;
+      background-color: #f1f1f1;
+    }    
+  </style>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4DTVCDS8M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-Q4DTVCDS8M');
+  </script>	
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-11310375055"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-11310375055');
+  </script>
+	
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Income Tax Calculator 1 (New Regime)",
+    "description": "Calculate income tax under the modern New Tax Regime as per rules applicable from April 2026.",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "provider": {
+      "@type": "Organization",
+      "name": "T24K",
+      "url": "https://t24k.com"
+    },  
+    "url": "https://t24k.com",
+    "potentialAction": {
+      "@type": "Action",
+      "name": "Calculate Tax New Regime 2026",
+      "target": "https://t24k.com"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Income Tax Calculator 2 (Old Regime)",
+    "description": "Estimate tax under India’s Old Tax Regime utilizing comprehensive standard structured deductions (80C, 80D, HRA).",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "provider": {
+      "@type": "Organization",
+      "name": "T24K",
+      "url": "https://t24k.com"
+    },  
+    "url": "https://t24k.com",
+    "potentialAction": {
+      "@type": "Action",
+      "name": "Calculate Tax Old Regime",
+      "target": "https://t24k.com"
+    }
+  }
+  </script>
+
+  <!-- verifying for bing -->
+  <meta name="msvalidate.01" content="01C32B4B30717D4B63BA318E566F7375" />
+	
+</head>
+<body>
+  <h1>Income Tax Calculators by T24K</h1>
+
+  <div class="dropdown">
+    <button class="dropbtn">Tax_Exemptions</button>
+    <div class="dropdown-content">
+      <a href="https://t24k.com/agriculture-and-capital-gain-tax">Capital-Gain & Agriculture Tax Exemption</a>
+      <a href="https://t24k.com/tax-on-interest-of-saving-account">Interest on Savings-Account</a>
+      <a href="https://t24k.com/vehile-purchase-tax-saving">Vehicle Purchase Tax</a>
+      <a href="https://t24k.com/about-us">About this site</a>
+      <a href="https://t24k.com/income-tax-calculator">Tax Calculator Information</a>
+      <a href="https://t24k.com/self-education">Interest on Education loan for Self</a>
+      <a href="https://t24k.com/start-up">Start-Up Investments</a>
+      <a href="https://t24k.com/taxes-on-fixed-deposit-and-recurring-deposit-interest">Income from FD/RD interest</a>
+    </div>
+  </div>
+
+  <div class="dropdown">
+    <button class="dropbtn">Exemptions_under_80</button>
+    <div class="dropdown-content">   
+      <a href="https://t24k.com/ccf-80">Tax-Saving Bonds-80CCF</a>
+      <a href="https://t24k.com/options-under-80c">Options for 80C</a>
+      <a href="https://t24k.com/donation-calculation">Donation Calculation_Exemption on 80G</a>
+      <a href="https://t24k.com/ccg-80">Rajiv Gandhi Equity Savings Scheme (RGESS) - 80CCG</a>
+      <a href="https://t24k.com">Leave Travel Allowance - LTA</a>
+    </div>
+  </div>
+
+  <!-- Ad Slot -->
+  <div class="ads">
+    <ins class="adsbygoogle ad-slot"
+         style="display:block"
+         data-ad-client="ca-pub-6272193760158994"
+         data-ad-slot="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- TABLE 1: NEW TAX REGIME (April 2026 onwards) -->
+  <div class="calculator-block">
+    <h2>1. New Tax Regime Calculator (As per April 2026 Rules)</h2>
+    <p>This evaluation incorporates the updated slabs alongside the fixed ₹75,000 Standard Deduction. Full tax rebate applies for net taxable income up to ₹12 Lakhs.</p>
+    
+    <label for="newGrossIncome">Gross Annual Income (₹):</label>
+    <input type="number" id="newGrossIncome" placeholder="Enter annual salary/income" value="1300000">
+    
+    <button class="calc-btn" onclick="calculateNewRegime()">Calculate New Regime Tax</button>
+    
+    <div class="result-box" id="newRegimeResult">
+      Click calculate to view breakdown.
+    </div>
+
+    <br>
+    <h3>New Tax Regime Slab Structure (April 2026)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Income Slabs (₹)</th>
+          <th>Tax Rate (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0 - 4,000,000</td><td>0%</td></tr>
+        <tr><td>4,000,001 - 8,000,000</td><td>5%</td></tr>
+        <tr><td>8,000,001 - 1,200,000</td><td>10%</td></tr>
+        <tr><td>1,200,001 - 1,600,000</td><td>15%</td></tr>
+        <tr><td>1,600,001 - 2,000,000</td><td>20%</td></tr>
+        <tr><td>Above 2,000,000</td><td>30%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TABLE 2: OLD TAX REGIME -->
+  <div class="calculator-block">
+    <h2>2. Old Tax Regime Calculator</h2>
