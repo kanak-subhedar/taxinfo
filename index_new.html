@@ -336,3 +336,150 @@
   <!-- TABLE 2: OLD TAX REGIME -->
   <div class="calculator-block">
     <h2>2. Old Tax Regime Calculator</h2>
+	      <p>Traditional slab structure utilizing custom exemptions including Section 80C, 80D, HRA, and a baseline ₹50,000 Standard Deduction. Tax rebate applies up to ₹5 Lakhs.</p>
+    
+    <label for="oldGrossIncome">Gross Annual Income (₹):</label>
+    <input type="number" id="oldGrossIncome" placeholder="Enter annual salary/income" value="1300000">
+
+    <label for="oldDeductions">Total Deductions & Exemptions (80C, 80D, HRA, etc.) (₹):</label>
+    <input type="number" id="oldDeductions" placeholder="Enter total deductions" value="200000">
+    
+    <button class="calc-btn" onclick="calculateOldRegime()">Calculate Old Regime Tax</button>
+    
+    <div class="result-box" id="oldRegimeResult">
+      Click calculate to view breakdown.
+    </div>
+
+    <br>
+    <h3>Old Tax Regime Slab Structure</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Income Slabs (₹)</th>
+          <th>Tax Rate (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0 - 2,50,000</td><td>0%</td></tr>
+        <tr><td>2,50,001 - 5,00,000</td><td>5%</td></tr>
+        <tr><td>5,00,001 - 10,00,000</td><td>20%</td></tr>
+        <tr><td>Above 10,00,000</td><td>30%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ads">
+    <ins class="adsbygoogle ad-slot"
+         style="display:block"
+         data-ad-client="ca-pub-6272193760158994"
+         data-ad-slot="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 T24K.com | Advanced Finance Matrix Optimization Tools</p>
+  </footer>
+
+  <footer1>
+    <div class="footer-menu1">
+      <a href="https://t24k.com">Home</a>
+      <a href="https://t24k.com">Privacy Policy</a>
+      <a href="https://t24k.com">Terms & Conditions</a>
+    </div>
+  </footer1>
+
+  <script>
+    function calculateNewRegime() {
+      const gross = parseFloat(document.getElementById('newGrossIncome').value) || 0;
+      const stdDeduction = 75000;
+      const taxableIncome = Math.max(0, gross - stdDeduction);
+      
+      let baseTax = 0;
+
+      // New Tax Regime Slabs as per April 2026 rules (with Section 87A rebate up to 12 Lakhs)
+      if (taxableIncome <= 1200000) {
+        baseTax = 0;
+      } else {
+        if (taxableIncome > 2000000) {
+          baseTax += (taxableIncome - 2000000) * 0.30;
+          baseTax += 400000 * 0.20; // 16L to 20L
+          baseTax += 400000 * 0.15; // 12L to 16L
+          baseTax += 400000 * 0.10; // 8L to 12L
+          baseTax += 400000 * 0.05; // 4L to 8L
+        } else if (taxableIncome > 1600000) {
+          baseTax += (taxableIncome - 1600000) * 0.20;
+          baseTax += 400000 * 0.15;
+          baseTax += 400000 * 0.10;
+          baseTax += 400000 * 0.05;
+        } else if (taxableIncome > 1200000) {
+          baseTax += (taxableIncome - 1200000) * 0.15;
+          baseTax += 400000 * 0.10;
+          baseTax += 400000 * 0.05;
+        } else if (taxableIncome > 800000) {
+          baseTax += (taxableIncome - 800000) * 0.10;
+          baseTax += 400000 * 0.05;
+        } else if (taxableIncome > 400000) {
+          baseTax += (taxableIncome - 400000) * 0.05;
+        }
+      }
+
+      const cess = baseTax * 0.04;
+      const totalTax = baseTax + cess;
+
+      document.getElementById('newRegimeResult').innerHTML = `
+        Standard Deduction: ₹${stdDeduction.toLocaleString('en-IN')}<br>
+        Net Taxable Income: ₹${taxableIncome.toLocaleString('en-IN')}<br>
+        Base Income Tax: ₹${baseTax.toLocaleString('en-IN')}<br>
+        Health & Education Cess (4%): ₹${cess.toLocaleString('en-IN')}<br>
+        <span style="color: #003366;">Total Payable Tax: ₹${Math.round(totalTax).toLocaleString('en-IN')}</span>
+      `;
+    }
+
+    function calculateOldRegime() {
+      const gross = parseFloat(document.getElementById('oldGrossIncome').value) || 0;
+      const deductions = parseFloat(document.getElementById('oldDeductions').value) || 0;
+      const stdDeduction = 50000;
+      
+      const taxableIncome = Math.max(0, gross - deductions - stdDeduction);
+      let baseTax = 0;
+
+      // Old Regime 87A Rebate applies if taxable income is less than or equal to 5 Lakhs
+      if (taxableIncome <= 500000) {
+        if (taxableIncome > 250000) {
+          baseTax = (taxableIncome - 250000) * 0.05;
+          baseTax = 0; // Wiped out by 87A rebate
+        }
+      } else {
+        if (taxableIncome > 1000000) {
+          baseTax += (taxableIncome - 1000000) * 0.30;
+          baseTax += 500000 * 0.20; // 5L to 10L
+          baseTax += 250000 * 0.05; // 2.5L to 5L
+        } else if (taxableIncome > 500000) {
+          baseTax += (taxableIncome - 500000) * 0.20;
+          baseTax += 250000 * 0.05;
+        }
+      }
+
+      const cess = baseTax * 0.04;
+      const totalTax = baseTax + cess;
+
+      document.getElementById('oldRegimeResult').innerHTML = `
+        Standard Deduction: ₹${stdDeduction.toLocaleString('en-IN')}<br>
+        Declared Custom Deductions: ₹${deductions.toLocaleString('en-IN')}<br>
+        Net Taxable Income: ₹${taxableIncome.toLocaleString('en-IN')}<br>
+        Base Income Tax: ₹${baseTax.toLocaleString('en-IN')}<br>
+        Health & Education Cess (4%): ₹${cess.toLocaleString('en-IN')}<br>
+        <span style="color: #003366;">Total Payable Tax: ₹${Math.round(totalTax).toLocaleString('en-IN')}</span>
+      `;
+    }
+
+    // Run calculations automatically on page load
+    window.onload = function() {
+      calculateNewRegime();
+      calculateOldRegime();
+    };
+  </script>
+</body>
+</html>
+
