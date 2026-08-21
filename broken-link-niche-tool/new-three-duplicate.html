@@ -102,6 +102,7 @@ function parseCSV(t){
 
   const ps={},pq={},city={},gain={},ss={},sq={},sg={};
   const cityProduct={};
+  const sellerProductQty={};
   let ts=0,tp=0;
     
   for(let r=1;r<rows.length;r++){
@@ -130,82 +131,30 @@ function parseCSV(t){
     ts+=sa||0; tp+=pa||0;
   }
 
+   // =========================================================================
+  // NEW SEGMENT STEP 2: FLATTENING NESTED MATRICES FOR THE CHART CONTROLLER
   // =========================================================================
-  // START: REFUSED & ADJUSTED SEGMENT [sellerProductChart Data Aggregation]
+  
+  // 1. Extract Unique Sellers (This will form your Chart's X-Axis Labels)
+  const sellerLabels = Object.keys(sellerProductQty);
+
+  // 2. Extract Unique Products (This identifies each stacked group line)
+  const uniqueProducts = Object.keys(qtyByProduct);
+
+  // 3. Build Flat Dataset Arrays for the Chart UI Engine
+  const sellerProductDatasets = uniqueProducts.map(productName => {
+    return {
+      label: productName,
+      // Loop through each seller and extract their specific quantity for this product
+      data: sellerLabels.map(sellerName => {
+        return sellerProductQty[sellerName][productName] || 0;
+      })
+    };
+  });
+
   // =========================================================================
-  
-  // High-Density Analytical Storage Maps
-  const salesByProduct = {};
-  const qtyByProduct = {};
-  const salesByCity = {};
-  const gainByDate = {};
-  
-  // Seller-Specific Metric Aggregators
-  const sellerSales = {};
-  const sellerQty = {};
-  const sellerGain = {};
-  
-  // Matrix Tracking: Multi-Dimensional Stacked Object Mapper [Seller -> Product -> Qty]
-  const sellerProductQty = {};
-
-  // Financial Operational Accumulators
-  let totalSales = 0;
-  let totalPurchase = 0;
-
-  // Primary Row Iteration Sequence (Bypassing Headers at Index 0)
-  for (let i = 1; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r || r.length === 0) continue; // Boundary Condition Guard
-
-    // Extraction Engine via Core Mapping Pointer Array (idx)
-    const product  = r[idx.product_name];
-    const seller   = r[idx.seller_name];
-    const city     = r[idx.city];
-    const date     = r[idx.date];
-    
-    // Numeric Cast Engine with Strict Zero-Fallbacks to Prevent NaN Pollution
-    const qty      = Number(r[idx.quantity]) || 0;
-    const sales    = Number(r[idx.sales_amount]) || 0;
-    const purchase = Number(r[idx.purchase_amount]) || 0;
-    const gain     = Number(r[idx.gain]) || 0;
-
-    // Structural Mapping Execution
-    if (product) {
-      salesByProduct[product] = (salesByProduct[product] || 0) + sales;
-      qtyByProduct[product]   = (qtyByProduct[product] || 0) + qty;
-    }
-    
-    if (city) {
-      salesByCity[city] = (salesByCity[city] || 0) + sales;
-    }
-
-    if (date) {
-      gainByDate[date] = (gainByDate[date] || 0) + gain;
-    }
-
-    // Accumulating Seller Performance Matrices
-    if (seller) {
-      sellerSales[seller] = (sellerSales[seller] || 0) + sales;
-      sellerQty[seller]   = (sellerQty[seller] || 0) + qty;
-      sellerGain[seller]  = (sellerGain[seller] || 0) + gain;
-
-      // Executing Multi-Tier Nested Structure for Staggered Stacked Component Chart
-      if (!sellerProductQty[seller]) {
-        sellerProductQty[seller] = {};
-      }
-      if (product) {
-        sellerProductQty[seller][product] = (sellerProductQty[seller][product] || 0) + qty;
-      }
-    }
-
-    // Consolidated Core Corporate Running Metrics
-    totalSales    += sales;
-    totalPurchase += purchase;
-  }  
-  
+  // END OF ADJUSTMENT CODE
   // =========================================================================
-  // END: REFUSED & ADJUSTED SEGMENT [sellerProductChart Data Aggregation]
-  // ========================================================================
   
   render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProductQty);
 }
