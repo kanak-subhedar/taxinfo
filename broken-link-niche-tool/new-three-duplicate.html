@@ -183,6 +183,7 @@ function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProductQty){
 
   charts.push(new Chart(barChart,{
     type:"bar",
+    label: "Sales Amount",
     data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:"#3b82f6"}]},
     options:{plugins:{title:{display:true,text:"Sales by Product"},datalabels:{color:"#000",anchor:"end",align:"top",formatter:v=>v.toLocaleString("en-IN")}}}
   }));
