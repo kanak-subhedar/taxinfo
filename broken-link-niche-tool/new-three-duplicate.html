@@ -94,7 +94,7 @@ function start(){
   r.readAsText(f);
 }
 
-function parseCSV(t){
+function parseCSV(t){ 
   log("Parsing CSV...");
   const rows=t.trim().split("\n").map(r=>r.split(","));
   const h=rows[0].map(x=>x.trim().toLowerCase());
