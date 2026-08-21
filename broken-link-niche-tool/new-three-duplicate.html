@@ -268,7 +268,195 @@ function render(
     data:{labels:dates,datasets:[{label:"Gain Amount",data:dates.map(d=>gain[d]),borderColor:"#16a34a",tension:0.3}]},
     options:{plugins:{title:{display:true,text:"Gain Trend"}}}
   }));
+// 3 gain charts.
 
+// ============================================================
+// CITY-WISE GAIN BAR CHART
+// ============================================================
+
+charts.push(new Chart(cityGainChart, {
+    type: "bar",
+
+    data: {
+        labels: Object.keys(cityGain),
+
+        datasets: [{
+            label: "Gain",
+            data: Object.values(cityGain),
+            backgroundColor: "#16a34a"
+        }]
+    },
+
+    options: {
+        responsive: true,
+
+        plugins: {
+            title: {
+                display: true,
+                text: "City-wise Gain"
+            },
+
+            legend: {
+                display: false
+            },
+
+            datalabels: {
+                color: "#000",
+                anchor: "end",
+                align: "top",
+
+                formatter: function(value) {
+                    return value.toLocaleString("en-IN");
+                }
+            }
+        },
+
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "City"
+                }
+            },
+
+            y: {
+                beginAtZero: true,
+
+                title: {
+                    display: true,
+                    text: "Gain"
+                }
+            }
+        }
+    }
+}));
+
+
+// ============================================================
+// PRODUCT-WISE GAIN BAR CHART
+// ============================================================
+
+charts.push(new Chart(productGainChart, {
+    type: "bar",
+
+    data: {
+        labels: Object.keys(productGain),
+
+        datasets: [{
+            label: "Gain",
+            data: Object.values(productGain),
+            backgroundColor: "#2563eb"
+        }]
+    },
+
+    options: {
+        responsive: true,
+
+        plugins: {
+            title: {
+                display: true,
+                text: "Product-wise Gain"
+            },
+
+            legend: {
+                display: false
+            },
+
+            datalabels: {
+                color: "#000",
+                anchor: "end",
+                align: "top",
+
+                formatter: function(value) {
+                    return value.toLocaleString("en-IN");
+                }
+            }
+        },
+
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Product"
+                }
+            },
+
+            y: {
+                beginAtZero: true,
+
+                title: {
+                    display: true,
+                    text: "Gain"
+                }
+            }
+        }
+    }
+}));
+
+
+// ============================================================
+// SELLER-WISE GAIN BAR CHART
+// ============================================================
+
+charts.push(new Chart(sellerGainChart, {
+    type: "bar",
+
+    data: {
+        labels: Object.keys(sellerGain),
+
+        datasets: [{
+            label: "Gain",
+            data: Object.values(sellerGain),
+            backgroundColor: "#7c3aed"
+        }]
+    },
+
+    options: {
+        responsive: true,
+
+        plugins: {
+            title: {
+                display: true,
+                text: "Seller-wise Gain"
+            },
+
+            legend: {
+                display: false
+            },
+
+            datalabels: {
+                color: "#000",
+                anchor: "end",
+                align: "top",
+
+                formatter: function(value) {
+                    return value.toLocaleString("en-IN");
+                }
+            }
+        },
+
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Seller"
+                }
+            },
+
+            y: {
+                beginAtZero: true,
+
+                title: {
+                    display: true,
+                    text: "Gain"
+                }
+            }
+        }
+    }
+}));
+  
+// end of 3 gain charts  
+  
   charts.push(new Chart(sellerChart,{
     type:"bar",
     data:{labels:Object.keys(ss),datasets:[{label:"Sales Amount",data:Object.values(ss),backgroundColor:"#7c3aed"}]},
