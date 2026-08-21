@@ -397,63 +397,69 @@ charts.push(new Chart(productGainChart, {
 // ============================================================
 // SELLER-WISE GAIN BAR CHART
 // ============================================================
-
+  charts.push(new Chart(sellerChart,{
+    type:"bar",
+    data:{labels:Object.keys(ss),datasets:[{label:"Sales Amount",data:Object.values(ss),backgroundColor:"#7c3aed"}]},
+    options:{indexAxis:"y",plugins:{title:{display:true,text:"Seller Performance"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString("en-IN")}`:""}}}
+  }));
 charts.push(new Chart(sellerGainChart, {
     type: "bar",
+    data:{labels:Object.keys(sellerGain),datasets:[{label: "Gain",data:Object.values(sellerGain),
+ //           backgroundColor: "#7c3aed"
+ //       }]
+ //   data: {
+ //       labels: Object.keys(sellerGain),
 
-    data: {
-        labels: Object.keys(sellerGain),
+//        datasets: [{
+//            label: "Gain",
+ //           data: Object.values(sellerGain),
+ //           backgroundColor: "#7c3aed"
+ //       }]
+ //   },
 
-        datasets: [{
-            label: "Gain",
-            data: Object.values(sellerGain),
-            backgroundColor: "#7c3aed"
-        }]
-    },
+  //  options: {
+  //      responsive: true,
 
-    options: {
-        responsive: true,
+  //      plugins: {
+  //          title: {
+    //            display: true,
+    //            text: "Seller-wise Gain"
+    //       },
 
-        plugins: {
-            title: {
-                display: true,
-                text: "Seller-wise Gain"
-            },
+     //       legend: {
+     //           display: false
+      //      },
 
-            legend: {
-                display: false
-            },
+     //       datalabels: {
+     //           color: "#000",
+     //           anchor: "end",
+      //          align: "top",
 
-            datalabels: {
-                color: "#000",
-                anchor: "end",
-                align: "top",
+       //         formatter: function(value) {
+       //             return value.toLocaleString("en-IN");
+       //         }
+       //     }
+       //  },
 
-                formatter: function(value) {
-                    return value.toLocaleString("en-IN");
-                }
-            }
-        },
+        // scales: {
+        //    x: {
+        //        title: {
+        //            display: true,
+        //            text: "Seller"
+        //        }
+        //    },
 
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: "Seller"
-                }
-            },
+        //    y: {
+        //        beginAtZero: true,
 
-            y: {
-                beginAtZero: true,
-
-                title: {
-                    display: true,
-                    text: "Gain"
-                }
-            }
-        }
-    }
-}));
+         //       title: {
+         //           display: true,
+         //           text: "Gain"
+         //       }
+         //   }
+         //   }
+         //    }
+// }));
   
 // end of 3 gain charts  
   
