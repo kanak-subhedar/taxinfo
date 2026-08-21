@@ -169,7 +169,7 @@ function parseCSV(t){
   }  
   
 // end of new chart
-  render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProduct);
+  render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProductQty);
 }
 
 function destroy(){
@@ -177,7 +177,7 @@ function destroy(){
   charts=[];
 }
 
-function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProduct){
+function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProductQty){
   destroy();
   const dates=Object.keys(gain).sort();
 
