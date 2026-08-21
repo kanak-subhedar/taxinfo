@@ -130,44 +130,83 @@ function parseCSV(t){
     ts+=sa||0; tp+=pa||0;
   }
 
-// Adding new staggered chart - sellerProductChart
-
-  const salesByProduct = {}, qtyByProduct = {}, salesByCity = {};
+  // =========================================================================
+  // START: REFUSED & ADJUSTED SEGMENT [sellerProductChart Data Aggregation]
+  // =========================================================================
+  
+  // High-Density Analytical Storage Maps
+  const salesByProduct = {};
+  const qtyByProduct = {};
+  const salesByCity = {};
   const gainByDate = {};
-  const sellerSales = {}, sellerQty = {}, sellerGain = {};
+  
+  // Seller-Specific Metric Aggregators
+  const sellerSales = {};
+  const sellerQty = {};
+  const sellerGain = {};
+  
+  // Matrix Tracking: Multi-Dimensional Stacked Object Mapper [Seller -> Product -> Qty]
   const sellerProductQty = {};
 
-  let totalSales = 0, totalPurchase = 0;
+  // Financial Operational Accumulators
+  let totalSales = 0;
+  let totalPurchase = 0;
 
+  // Primary Row Iteration Sequence (Bypassing Headers at Index 0)
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
+    if (!r || r.length === 0) continue; // Boundary Condition Guard
 
-    const product = r[idx.product_name];
-    const qty = +r[idx.quantity];
-    const sales = +r[idx.sales_amount];
-    const purchase = +r[idx.purchase_amount];
-    const gain = +r[idx.gain];
-    const seller = r[idx.seller_name];
+    // Extraction Engine via Core Mapping Pointer Array (idx)
+    const product  = r[idx.product_name];
+    const seller   = r[idx.seller_name];
+    const city     = r[idx.city];
+    const date     = r[idx.date];
+    
+    // Numeric Cast Engine with Strict Zero-Fallbacks to Prevent NaN Pollution
+    const qty      = Number(r[idx.quantity]) || 0;
+    const sales    = Number(r[idx.sales_amount]) || 0;
+    const purchase = Number(r[idx.purchase_amount]) || 0;
+    const gain     = Number(r[idx.gain]) || 0;
 
-    salesByProduct[product] = (salesByProduct[product] || 0) + sales;
-    qtyByProduct[product] = (qtyByProduct[product] || 0) + qty;
-    salesByCity[r[idx.city]] = (salesByCity[r[idx.city]] || 0) + sales;
+    // Structural Mapping Execution
+    if (product) {
+      salesByProduct[product] = (salesByProduct[product] || 0) + sales;
+      qtyByProduct[product]   = (qtyByProduct[product] || 0) + qty;
+    }
+    
+    if (city) {
+      salesByCity[city] = (salesByCity[city] || 0) + sales;
+    }
 
-    gainByDate[r[idx.date]] = (gainByDate[r[idx.date]] || 0) + gain;
+    if (date) {
+      gainByDate[date] = (gainByDate[date] || 0) + gain;
+    }
 
-    sellerSales[seller] = (sellerSales[seller] || 0) + sales;
-    sellerQty[seller] = (sellerQty[seller] || 0) + qty;
-    sellerGain[seller] = (sellerGain[seller] || 0) + gain;
+    // Accumulating Seller Performance Matrices
+    if (seller) {
+      sellerSales[seller] = (sellerSales[seller] || 0) + sales;
+      sellerQty[seller]   = (sellerQty[seller] || 0) + qty;
+      sellerGain[seller]  = (sellerGain[seller] || 0) + gain;
 
-    if (!sellerProductQty[seller]) sellerProductQty[seller] = {};
-    sellerProductQty[seller][product] =
-      (sellerProductQty[seller][product] || 0) + qty;
+      // Executing Multi-Tier Nested Structure for Staggered Stacked Component Chart
+      if (!sellerProductQty[seller]) {
+        sellerProductQty[seller] = {};
+      }
+      if (product) {
+        sellerProductQty[seller][product] = (sellerProductQty[seller][product] || 0) + qty;
+      }
+    }
 
-    totalSales += sales || 0;
-    totalPurchase += purchase || 0;
+    // Consolidated Core Corporate Running Metrics
+    totalSales    += sales;
+    totalPurchase += purchase;
   }  
   
-// end of new chart
+  // =========================================================================
+  // END: REFUSED & ADJUSTED SEGMENT [sellerProductChart Data Aggregation]
+  // ========================================================================
+  
   render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProductQty);
 }
 
