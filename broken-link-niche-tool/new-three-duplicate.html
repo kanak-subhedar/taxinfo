@@ -101,8 +101,7 @@ function parseCSV(t){
   const i=c=>h.indexOf(c);
 
   const ps={},pq={},city={},gain={},ss={},sq={},sg={};
-  const cityProduct={};
-  const sellerProductQty={};
+  const cityProduct={};  
   let ts=0,tp=0;
 
   for(let r=1;r<rows.length;r++){
@@ -130,7 +129,49 @@ function parseCSV(t){
 
     ts+=sa||0; tp+=pa||0;
   }
+  // additional chart
+// ============================================================
+// NEW CHART ONLY: SELLER-WISE PRODUCT QUANTITY CALCULATION
+// Do NOT modify the existing calculations.
+// ============================================================
 
+const sellerProductQty = {};
+
+for (let i = 0; i < rows.length; i++) {
+
+    const row = rows[i];
+
+    const seller = String(row.Seller_Name || "").trim();
+    const product = String(row.Product_Name || "").trim();
+    const quantity = parseFloat(row.Quantity) || 0;
+
+    // Skip incomplete rows
+    if (!seller || !product) {
+        continue;
+    }
+
+    // Create seller
+    if (!sellerProductQty[seller]) {
+        sellerProductQty[seller] = {};
+    }
+
+    // Create product under seller
+    if (!sellerProductQty[seller][product]) {
+        sellerProductQty[seller][product] = 0;
+    }
+
+    // Add quantity
+    sellerProductQty[seller][product] += quantity;
+}
+
+// Debug - you can temporarily keep this
+console.log(
+    "SELLER-WISE PRODUCT QUANTITY:",
+    sellerProductQty
+);
+  
+  // end of additional chart
+  
   render(
     ps,pq,city,ts,tp,gain,
     ss,sq,sg,
