@@ -131,6 +131,44 @@ function parseCSV(t){
     ts+=sa||0; tp+=pa||0;
   }
 
+// Adding new staggered chart - sellerProductChart
+
+  const salesByProduct = {}, qtyByProduct = {}, salesByCity = {};
+  const gainByDate = {};
+  const sellerSales = {}, sellerQty = {}, sellerGain = {};
+  const sellerProductQty = {};
+
+  let totalSales = 0, totalPurchase = 0;
+
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+
+    const product = r[idx.product_name];
+    const qty = +r[idx.quantity];
+    const sales = +r[idx.sales_amount];
+    const purchase = +r[idx.purchase_amount];
+    const gain = +r[idx.gain];
+    const seller = r[idx.seller_name];
+
+    salesByProduct[product] = (salesByProduct[product] || 0) + sales;
+    qtyByProduct[product] = (qtyByProduct[product] || 0) + qty;
+    salesByCity[r[idx.city]] = (salesByCity[r[idx.city]] || 0) + sales;
+
+    gainByDate[r[idx.date]] = (gainByDate[r[idx.date]] || 0) + gain;
+
+    sellerSales[seller] = (sellerSales[seller] || 0) + sales;
+    sellerQty[seller] = (sellerQty[seller] || 0) + qty;
+    sellerGain[seller] = (sellerGain[seller] || 0) + gain;
+
+    if (!sellerProductQty[seller]) sellerProductQty[seller] = {};
+    sellerProductQty[seller][product] =
+      (sellerProductQty[seller][product] || 0) + qty;
+
+    totalSales += sales || 0;
+    totalPurchase += purchase || 0;
+  }  
+  
+// end of new chart
   render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProduct);
 }
 
