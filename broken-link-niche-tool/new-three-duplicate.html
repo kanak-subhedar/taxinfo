@@ -214,7 +214,7 @@ function render(
 
   charts.push(new Chart(lineChart,{
     type:"line",    
-    data:{labels:dates,datasets:[{label:"Sales Amount",data:dates.map(d=>gain[d]),borderColor:"#16a34a",tension:0.3}]},
+    data:{labels:dates,datasets:[{label:"Gain Amount",data:dates.map(d=>gain[d]),borderColor:"#16a34a",tension:0.3}]},
     options:{plugins:{title:{display:true,text:"Gain Trend"}}}
   }));
 
