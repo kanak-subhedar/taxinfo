@@ -220,8 +220,7 @@ function render(
 
   charts.push(new Chart(sellerChart,{
     type:"bar",
-    label:"Sales Amount",
-    data:{labels:Object.keys(ss),datasets:[{data:Object.values(ss),backgroundColor:"#7c3aed"}]},
+    data:{labels:Object.keys(ss),datasets:[{label:"Sales Amount",data:Object.values(ss),backgroundColor:"#7c3aed"}]},
     options:{indexAxis:"y",plugins:{title:{display:true,text:"Seller Performance"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString("en-IN")}`:""}}}
   }));
 
