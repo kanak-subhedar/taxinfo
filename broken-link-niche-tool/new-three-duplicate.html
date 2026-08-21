@@ -103,7 +103,8 @@ function parseCSV(t){
   const ps={},pq={},city={},gain={},ss={},sq={},sg={};
   const cityProduct={};
   let ts=0,tp=0;
-
+  const sellerProduct={};
+  
   for(let r=1;r<rows.length;r++){
     const row=rows[r];
     const p=row[i("product_name")];
@@ -130,7 +131,7 @@ function parseCSV(t){
     ts+=sa||0; tp+=pa||0;
   }
 
-  render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct);
+  render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProduct);
 }
 
 function destroy(){
@@ -138,7 +139,7 @@ function destroy(){
   charts=[];
 }
 
-function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct){
+function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct,sellerProduct){
   destroy();
   const dates=Object.keys(gain).sort();
 
