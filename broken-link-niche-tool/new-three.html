@@ -192,28 +192,28 @@ function render(ps,pq,city,ts,tp,gain,ss,sq,sg,cityProduct){
   }));
 
   // ===== NEW STACKED CHART =====
-  const sellers = Object.keys(sellerProductQty);
-  const products = [...new Set(
-    sellers.flatMap(s => Object.keys(sellerProductQty[s]))
-  )];
+//  const sellers = Object.keys(sellerProductQty);
+//  const products = [...new Set(
+//    sellers.flatMap(s => Object.keys(sellerProductQty[s]))
+//  )];
 
-  charts.push(new Chart(sellerProductChart, {
-    type: "bar",
-    data: {
-      labels: sellers,
-      datasets: products.map((p, i) => ({
-        label: p,
-        data: sellers.map(s => sellerProductQty[s][p] || 0),
-        backgroundColor: `hsl(${i * 60},70%,60%)`
-      }))
-    },
-    options: {
-      scales: {
-        x: { stacked: true },
-        y: { stacked: true, title: { display: true, text: "Quantity" } }
-      }
-    }
-  }));
+//  charts.push(new Chart(sellerProductChart, {
+//    type: "bar",
+//    data: {
+//      labels: sellers,
+//      datasets: products.map((p, i) => ({
+//        label: p,
+//        data: sellers.map(s => sellerProductQty[s][p] || 0),
+//        backgroundColor: `hsl(${i * 60},70%,60%)`
+//      }))
+//    },
+//    options: {
+//     scales: {
+//        x: { stacked: true },
+//        y: { stacked: true, title: { display: true, text: "Quantity" } }
+//      }
+//    }
+//  }));
   
   log("All charts rendered successfully.");
 }
