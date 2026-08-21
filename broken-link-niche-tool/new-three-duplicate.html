@@ -141,9 +141,9 @@ for (let i = 0; i < rows.length; i++) {
 
     const row = rows[i];
 
-    const seller = String(row.Seller_Name || "").trim();
-    const product = String(row.Product_Name || "").trim();
-    const quantity = parseFloat(row.Quantity) || 0;
+    const seller = String(row[i("seller_name")] || "").trim();
+    const product = String(row[i("product_name")] || "").trim();
+    const quantity = parseFloat(row[i("quantity")]) || 0;
 
     // Skip incomplete rows
     if (!seller || !product) {
