@@ -404,10 +404,10 @@ charts.push(new Chart(productGainChart, {
   }));
 charts.push(new Chart(sellerGainChart, {
     type: "bar",
-    data:{labels:Object.keys(sellerGain),datasets:[{label: "Gain",data:Object.values(sellerGain),
- //           backgroundColor: "#7c3aed"
- //       }]
- //   data: {
+    data:{labels:Object.keys(sellerGain),datasets:[{label: "Gain",data:Object.values(sellerGain),backgroundColor:"#7c3aed"}]},
+    options:{indexAxis:"y",plugins:{title:{display:true,text:"Seller Gain"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString("en-IN")}`:""}}}
+  }));
+  //   data: {
  //       labels: Object.keys(sellerGain),
 
 //        datasets: [{
