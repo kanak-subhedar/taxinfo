@@ -196,6 +196,7 @@ function render(
 
   charts.push(new Chart(barChart,{
     type:"bar",
+    label: "Sales Amount",
     data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:"#3b82f6"}]},
     options:{plugins:{title:{display:true,text:"Sales by Product"},datalabels:{color:"#000",anchor:"end",align:"top",formatter:v=>v.toLocaleString("en-IN")}}}
   }));
@@ -214,6 +215,7 @@ function render(
 
   charts.push(new Chart(lineChart,{
     type:"line",
+    label: "Sales Amount",
     data:{labels:dates,datasets:[{data:dates.map(d=>gain[d]),borderColor:"#16a34a",tension:0.3}]},
     options:{plugins:{title:{display:true,text:"Gain Trend"}}}
   }));
