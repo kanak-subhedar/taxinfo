@@ -137,15 +137,15 @@ function parseCSV(t){
 
 const sellerProductQty = {};
 
-for (let i = 0; i < rows.length; i++) {
+for(let r=1;r<rows.length;r++) {
 
-    const row = rows[i];
+    const row=rows[r];
 
-    const seller = String(row[i("seller_name")] || "").trim();
-    const product = String(row[i("product_name")] || "").trim();
-    const quantity = parseFloat(row[i("quantity")]) || 0;
+    const seller = row[i("seller_name")];
+    const product = row[i("product_name")];
+    const quantity = row[i("quantity")];
 
-    // Skip incomplete rows
+  // Skip incomplete rows
     if (!seller || !product) {
         continue;
     }
