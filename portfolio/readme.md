@@ -80,4 +80,4 @@ The model executes as a native Windows executable.
 Small fixed-price SystemC/TLM engineering tasks,
 peripheral modelling and virtual-platform development.
 
-Contact for a fixed-scope quotation.
+Contact support@t24k.com for a fixed-scope quotation.
