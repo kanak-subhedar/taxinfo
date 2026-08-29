@@ -9,13 +9,13 @@ virtual platforms for embedded and semiconductor applications.
 
 This reference implementation demonstrates:
 
-CPU
-  ↓
-TLM 2.0 Initiator
-  ↓
-Virtual GPIO
-  ↓
-Motor Control
+CPU <br>
+  ↓ <br>
+TLM 2.0 Initiator <br>
+  ↓ <br>
+Virtual GPIO <br>
+  ↓ <br>
+Motor Control <br>
 
 The model executes as a native Windows executable.
 
