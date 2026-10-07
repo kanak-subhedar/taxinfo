@@ -204,13 +204,32 @@ function render(
   destroy();
   const dates=Object.keys(gain).sort();
 
-  charts.push(new Chart(barChart,{
-    type:"bar",   
-    data:{labels:Object.keys(ps),datasets:[{label:"Sales Amount",data:Object.values(ps),backgroundColor:"#3b82f6"}]},
-    options:{
-      locale: "en-US",
-      plugins:{title:{display:true,text:"Sales by Product"},datalabels:{color:"#000",anchor:"end",align:"top",formatter:v=>v.toLocaleString("en-US")}}}
-  }));
+  charts.push(new Chart(barChart, {
+    type: "bar",   
+    data: {
+        // AUTOMATICALLY transposes keys into your chart's horizontal X-axis labels
+        labels: Object.keys(ps), 
+        datasets: [{
+            label: "Quantity Sold",
+            // AUTOMATICALLY maps the transposed quantities directly into your bars
+            data: Object.values(ps), 
+            backgroundColor: "#3b82f6"
+        }]
+    },
+    options: {
+        locale: "en-US", // Natively fixes the international 3-digit comma layouts!
+        plugins: {
+            title: { display: true, text: "Product Sales Volume" },
+            datalabels: {
+                color: "#000",
+                anchor: "end",
+                align: "top",
+                // Natively clears database leading zeros globally
+                formatter: v => v ? Number(v).toLocaleString("en-US") : "" 
+            }
+        }
+    }
+}));
 
   charts.push(new Chart(pieChart,{
     type:"pie",
