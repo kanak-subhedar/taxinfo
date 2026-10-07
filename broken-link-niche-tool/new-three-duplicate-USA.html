@@ -207,25 +207,33 @@ function render(
   charts.push(new Chart(barChart,{
     type:"bar",   
     data:{labels:Object.keys(ps),datasets:[{label:"Sales Amount",data:Object.values(ps),backgroundColor:"#3b82f6"}]},
-    options:{plugins:{title:{display:true,text:"Sales by Product"},datalabels:{color:"#000",anchor:"end",align:"top",formatter:v=>v.toLocaleString("en-US")}}}
+    options:{
+      locale: "en-US",
+      plugins:{title:{display:true,text:"Sales by Product"},datalabels:{color:"#000",anchor:"end",align:"top",formatter:v=>v.toLocaleString("en-US")}}}
   }));
 
   charts.push(new Chart(pieChart,{
     type:"pie",
     data:{labels:Object.keys(city),datasets:[{data:Object.values(city)}]},
-    options:{plugins:{title:{display:true,text:"City-wise Sales"},datalabels:{color:"#fff",formatter:(v,ctx)=>`${v.toLocaleString()} (${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)`}}}
+    options:{
+      locale: "en-US",
+      plugins:{title:{display:true,text:"City-wise Sales"},datalabels:{color:"#fff",formatter:(v,ctx)=>`${v.toLocaleString()} (${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)`}}}
   }));
 
   charts.push(new Chart(doughnutChart,{
     type:"doughnut",
     data:{labels:["Sales","Purchase"],datasets:[{data:[ts,tp]}]},
-    options:{plugins:{title:{display:true,text:"Sales vs Purchase"},datalabels:{color:"#fff",formatter:v=>v.toLocaleString("en-US")}}}
+    options:{
+      locale: "en-US",
+      plugins:{title:{display:true,text:"Sales vs Purchase"},datalabels:{color:"#fff",formatter:v=>v.toLocaleString("en-US")}}}
   }));
 
   charts.push(new Chart(lineChart,{
     type:"line",    
     data:{labels:dates,datasets:[{label:"Gain Amount",data:dates.map(d=>gain[d]),borderColor:"#16a34a",tension:0.3}]},
-    options:{plugins:{title:{display:true,text:"Gain Trend"}}}
+    options:{
+      locale: "en-US",
+      plugins:{title:{display:true,text:"Gain Trend"}}}
   }));
 // 3 gain charts.
 
@@ -235,7 +243,9 @@ function render(
   charts.push(new Chart(sellerChart,{
     type:"bar",
     data:{labels:Object.keys(ss),datasets:[{label:"Sales Amount",data:Object.values(ss),backgroundColor:"#7c3aed"}]},
-    options:{indexAxis:"y",plugins:{title:{display:true,text:"Seller Performance"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString("en-US")}`:""}}}
+    options:{
+      locale: "en-US",
+      indexAxis:"y",plugins:{title:{display:true,text:"Seller Performance"},datalabels:{color:"#000",formatter:(v,ctx)=>sq[ctx.chart.data.labels[ctx.dataIndex]]?`Qty: ${sq[ctx.chart.data.labels[ctx.dataIndex]].toLocaleString("en-US")}`:""}}}
   }));
 
   // ✅ STACKED CITY × PRODUCT
@@ -252,11 +262,14 @@ function render(
     type:"bar",
     data:{labels:cities,datasets},
     options:{
+      locale: "en-US",
       responsive:true,
       scales:{x:{stacked:true},y:{stacked:true}},
       plugins:{
         title:{display:true,text:"City-wise Product Sold (Quantity)"},
-        datalabels:{color:"#000",formatter:v=>v?v.toLocaleString("en-US"):""}
+        datalabels:{color:"#000",
+                    formatter: v => v ? Number(v).toLocaleString("en-US") : ""
+                   }
       }
     }
   }));
@@ -305,7 +318,7 @@ function render(
         },
         datalabels:{
           color:"#000",
-          formatter:v=>v?v.toLocaleString("en-US"):""
+          formatter: v => v ? Number(v).toLocaleString("en-US"):""
         }
       }
     }
