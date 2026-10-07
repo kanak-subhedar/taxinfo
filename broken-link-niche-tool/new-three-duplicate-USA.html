@@ -217,7 +217,9 @@ function render(
     data:{labels:Object.keys(city),datasets:[{data:Object.values(city)}]},
     options:{
       locale: "en-US",
-      plugins:{title:{display:true,text:"City-wise Sales"},datalabels:{color:"#fff",formatter:(v,ctx)=>`${v.toLocaleString()} (${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)`}}}
+      plugins:{title:{display:true,text:"City-wise Sales"},datalabels:{color:"#fff",
+              /* formatter:(v,ctx)=>`${v.toLocaleString()} (${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)`}}} */
+      formatter: (v, ctx) => `${Number(v).toLocaleString("en-US")} (${((Number(v) / ctx.dataset.data.reduce((a, b) => a + b, 0)) * 100).toFixed(1)}%)`}}}                                                           
   }));
 
   charts.push(new Chart(doughnutChart,{
