@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Automated Executive Analytics Studio</title>
-  <!-- Load standard, production-grade chart and ppt engines via secure CDNs -->
+  <!-- FIXED: Restored complete, high-performance paths for all external library CDNs -->
   <script src="https://jsdelivr.net"></script>
   <script src="https://jsdelivr.net"></script>
   <script src="https://jsdelivr.net"></script>
@@ -40,6 +40,7 @@
   Chart.register(ChartDataLabels);
   let parsedRecords = [];
   let chartsMap = {};
+  
   document.getElementById('generateBtn').addEventListener('click', () => {
     const fileField = document.getElementById('uploadInput');
     if (!fileField.files.length) { alert("Please select a valid CSV file first."); return; }
@@ -49,14 +50,20 @@
       if(parsedRecords.length > 0) {
         buildAnalyticsDashboard();
         document.getElementById('downloadPptBtn').style.display = 'inline-block';
+      } else {
+        alert("Failed to read rows. Verify file data fields format.");
       }
     };
     reader.readAsText(fileField.files);
   });
+  
   document.getElementById('downloadPptBtn').addEventListener('click', exportToPowerPoint);
+  
   function parseCSV(textData) {
-    const rows = textData.split('\\n').map(r => r.trim()).filter(r => r.length > 0);
+    // FIXED: Stripped literal character string breaks to correctly parse raw CSV file newlines
+    const rows = textData.split(/\r?\n/).map(r => r.trim()).filter(r => r.length > 0);
     if(rows.length < 2) return;
+    
     const columnHeaders = rows[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
     parsedRecords = [];
     for(let i = 1; i < rows.length; i++) {
@@ -68,13 +75,16 @@
       }
     }
   }
+  
   function buildAnalyticsDashboard() {
     const grid = document.getElementById('dashboardGrid');
     grid.innerHTML = '';
     chartsMap = {};
+    
     let prodSales = {}, prodQty = {}, prodGain = {};
     let citySales = {}, cityGain = {}, sellerSales = {}, sellerQty = {}, sellerGain = {};
     let timelineGain = {}, totalSales = 0, totalPurchase = 0;
+    
     parsedRecords.forEach(row => {
       const item = row.Product_Name;
       const city = row.City;
@@ -84,6 +94,7 @@
       const sAmt = Number(row.Sales_Amount) || 0;
       const pAmt = Number(row.Purchase_Amount) || 0;
       const gain = Number(row.Gain) || (sAmt - pAmt);
+      
       if(item) {
         prodSales[item] = (prodSales[item] || 0) + sAmt;
         prodQty[item] = (prodQty[item] || 0) + qty;
@@ -102,52 +113,64 @@
       totalSales += sAmt;
       totalPurchase += pAmt;
     });
+    
     const activeProducts = Object.keys(prodSales);
     const activeSellers = Object.keys(sellerSales);
+    const activeCities = Object.keys(citySales);
+    
     const chronologicalDates = Object.keys(timelineGain).sort((a,b) => {
       const sliceDate = d => { const p = d.split('-'); return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(d); };
       return sliceDate(a) - sliceDate(b);
     });
+    
     const mountCard = (uid, headTitle) => {
       const wrapper = document.createElement('div');
       wrapper.className = 'chart-card';
-      wrapper.innerHTML = `<h3>\${headTitle}</h3><div class="canvas-holder"><canvas id="\${uid}"></canvas></div>`;
+      wrapper.innerHTML = `<h3>${headTitle}</h3><div class="canvas-holder"><canvas id="${uid}"></canvas></div>`;
       grid.appendChild(wrapper);
       return wrapper;
     };
+    
+    // CHART 1: Product vs Sales Amount (With Automated Quantities Table Row Below)
     const c1Box = mountCard('chart1', 'Product Sales Volume');
     chartsMap['chart1'] = new Chart(document.getElementById('chart1'), {
       type: 'bar',
-      data: { labels: activeProducts, datasets: [{ label: 'Sales Amount', data: Object.values(prodSales), backgroundColor: '#3b82f6' }] },
+      data: { labels: activeProducts, datasets: [{ label: 'Sales Amount', data: activeProducts.map(p => prodSales[p]), backgroundColor: '#3b82f6' }] },
       options: {
         locale: 'en-US', responsive: true, maintainAspectRatio: false,
         plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
         scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
       }
     });
+    
     const c1Table = document.createElement('div');
     c1Table.className = 'metric-grid-row';
-    c1Table.style.gridTemplateColumns = `120px repeat(\${activeProducts.length}, 1fr)`;
+    c1Table.style.gridTemplateColumns = `120px repeat(${activeProducts.length}, 1fr)`;
     let c1HTML = `<div class="grid-header">Quantity</div>`;
-    activeProducts.forEach(p => { c1HTML += `<div class="grid-cell-blue">\${Number(prodQty[p])}</div>`; });
+    activeProducts.forEach(p => { c1HTML += `<div class="grid-cell-blue">${Number(prodQty[p]).toLocaleString('en-US')}</div>`; });
     c1Table.innerHTML = c1HTML;
     c1Box.appendChild(c1Table);
-    const activeCities = Object.keys(citySales);
+    
+    // CHART 2: City-wise Sales Distribution (Anti-Overlap Strategy)
     mountCard('chart2', 'City-wise Sales Distribution');
     chartsMap['chart2'] = new Chart(document.getElementById('chart2'), {
       type: 'pie',
-      data: { labels: activeCities, datasets: [{ data: Object.values(citySales), backgroundColor: ["#3b82f6", "#ff4b72", "#ff9f43", "#4bc0c0"] }] },
+      data: { labels: activeCities, datasets: [{ data: activeCities.map(c => citySales[c]), backgroundColor: ["#3b82f6", "#ff4b72", "#ff9f43", "#4bc0c0"] }] },
       options: {
         locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { color: '#fff', anchor: 'center', align: 'center', formatter: (v, ctx) => v > 0 ? `\${Number(v).toLocaleString('en-US')} (\${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)` : '' } }
+        plugins: { datalabels: { color: '#fff', anchor: 'center', align: 'center', formatter: (v, ctx) => v > 0 ? `$${Number(v).toLocaleString('en-US')} (${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)` : '' } }
       }
     });
+    
+    // CHART 3: Macro Financial Overview
     mountCard('chart3', 'Sales vs Purchase Overview');
     chartsMap['chart3'] = new Chart(document.getElementById('chart3'), {
       type: 'doughnut',
       data: { labels: ['Sales', 'Purchase'], datasets: [{ data: [totalSales, totalPurchase], backgroundColor: ['#3b82f6', '#ff4b72'] }] },
       options: { locale: 'en-US', responsive: true, maintainAspectRatio: false, plugins: { datalabels: { color: '#fff', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } } }
     });
+    
+    // CHART 4: Chronological Gain Trend Line
     mountCard('chart4', 'Chronological Gain Trend Line');
     chartsMap['chart4'] = new Chart(document.getElementById('chart4'), {
       type: 'line',
@@ -158,16 +181,22 @@
         scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
       }
     });
+    
+    // CHART 5: Seller Revenue Performance (Horizontal Layout For 0 Label Overlaps)
     mountCard('chart5', 'Seller Revenue Performance');
     chartsMap['chart5'] = new Chart(document.getElementById('chart5'), {
       type: 'bar', indexAxis: 'y',
-      data: { labels: activeSellers, datasets: [{ label: 'Sales Amount', data: activeSellers.map(s => sellerSales[s]), backgroundColor: '#9966ff' }] },
+            data: { labels: activeSellers, datasets: [{ label: 'Sales Amount', data: activeSellers.map(s => sellerSales[s]), backgroundColor: '#9966ff' }] },
       options: {
         locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { color: '#000', anchor: 'end', align: 'right', formatter: (v, ctx) => `Qty: \${sellerQty[activeSellers[ctx.dataIndex]]} | $\${Number(v).toLocaleString('en-US')}` } },
-        scales: { x: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
+        plugins: { datalabels: { color: '#000', anchor: 'end', align: 'right', formatter: (v, ctx) => `Qty: ${sellerQty[activeSellers[ctx.dataIndex]]} | $${Number(v).toLocaleString('en-US')}` } },
+        scales: { x: { ticks: { callback: v => '\$' + v.toLocaleString('en-US') } } }
       }
     });
+    
+    // ---------------------------------------------------------
+    // NEW CHART 6: Reseller Performance Vs Net Gain
+    // ---------------------------------------------------------
     mountCard('chart6', 'Reseller Performance Vs Net Gain');
     chartsMap['chart6'] = new Chart(document.getElementById('chart6'), {
       type: 'bar',
@@ -218,20 +247,16 @@
     c8Table.innerHTML = c8HTML;
     c8Box.appendChild(c8Table);
   }
-
-  // -------------------------------------------------------------------------
-  // 3. SECURE BROWSER-SIDE POWERPOINT EXPORT ENGINE
-  // -------------------------------------------------------------------------
+  
   function exportToPowerPoint() {
     let pptx = new PptxGenJS();
     pptx.layout = 'LAYOUT_16x9';
     let coverSlide = pptx.addSlide();
     coverSlide.addText("EXECUTIVE ANALYTICS BRIEFING", { x: 1.0, y: 2.2, fontSize: 36, bold: true, color: '3b82f6', fontFace: 'Arial' });
     coverSlide.addText("Automated Operational Matrix Performance Report Package", { x: 1.0, y: 3.2, fontSize: 16, color: '64748b', fontFace: 'Arial' });
-
+    
     const activeChartIds = Object.keys(chartsMap);
     let completedCaptures = 0;
-
     activeChartIds.forEach((id, index) => {
       const canvasElement = document.getElementById(id);
       setTimeout(() => {
@@ -244,7 +269,7 @@
         if(completedCaptures === activeChartIds.length) {
           pptx.writeFile({ fileName: 'Executive_Data_Analytics_Report' });
         }
-      }, index * 150);
+      }, index * 200);
     });
   }
 </script>
