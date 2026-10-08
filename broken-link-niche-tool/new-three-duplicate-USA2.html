@@ -60,14 +60,18 @@
   document.getElementById('downloadPptBtn').addEventListener('click', exportToPowerPoint);
   
   function parseCSV(textData) {
-    // FIXED: Stripped literal character string breaks to correctly parse raw CSV file newlines
     const rows = textData.split(/\r?\n/).map(r => r.trim()).filter(r => r.length > 0);
     if(rows.length < 2) return;
-    
-    const columnHeaders = rows[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+
+    // DETECT DELIMITER: Automatically checks if the file uses semicolons or commas
+    const delimiter = rows[0].includes(';') ? ';' : ',';
+
+    // Parse column headers using the dynamically detected delimiter
+    const columnHeaders = rows[0].split(delimiter).map(h => h.trim().replace(/^["']|["']$/g, ''));
     parsedRecords = [];
+
     for(let i = 1; i < rows.length; i++) {
-      const parts = rows[i].split(',').map(p => p.trim().replace(/^["']|["']$/g, ''));
+      const parts = rows[i].split(delimiter).map(p => p.trim().replace(/^["']|["']$/g, ''));
       if(parts.length === columnHeaders.length) {
         let entry = {};
         columnHeaders.forEach((head, index) => { entry[head] = parts[index]; });
