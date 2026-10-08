@@ -2,173 +2,151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Advanced Executive CSV Report Studio</title>
-  <!-- Chart.js, DataLabels Plugin, and PptxGenJS via CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <title>Automated Executive Analytics Studio</title>
+  <!-- Load standard, production-grade chart and ppt engines via secure CDNs -->
+  <script src="https://jsdelivr.net"></script>
+  <script src="https://jsdelivr.net"></script>
+  <script src="https://jsdelivr.net"></script>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 20px; }
-    .studio-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .control-panel { display: flex; gap: 15px; justify-content: center; align-items: center; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
-    .btn { padding: 12px 24px; font-weight: 600; border-radius: 6px; cursor: pointer; border: none; font-size: 14px; transition: background 0.2s; }
-    .btn-upload { background-color: #3b82f6; color: white; }
-    .btn-upload:hover { background-color: #2563eb; }
-    .btn-generate { background-color: #10b981; color: white; }
-    .btn-generate:hover { background-color: #059669; }
-    .btn-ppt { background-color: #8b5cf6; color: white; display: none; }
-    .btn-ppt:hover { background-color: #7c3aed; }
-    .file-status { font-size: 14px; color: #64748b; font-weight: 500; }
-    .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 35px; margin-top: 20px; }
-    .chart-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
-    .canvas-wrapper { position: relative; width: 100%; height: 320px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 30px; }
+    .studio-box { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .control-panel { display: flex; gap: 15px; align-items: center; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
+    .btn { padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; }
+    .btn-blue { background-color: #3b82f6; color: white; }
+    .btn-green { background-color: #16a34a; color: white; display: none; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(550px, 1fr)); gap: 40px; margin-top: 20px; }
+    .chart-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.01); display: flex; flex-direction: column; }
+    .canvas-holder { position: relative; width: 100%; height: 340px; }
+    
+    /* Automated Custom Data Table Alignments */
     .metric-grid-row { display: grid; width: 100%; margin-top: 15px; font-family: Arial, sans-serif; font-size: 13px; border-top: 1px solid #e2e8f0; }
-    .grid-header { background-color: #f8fafc; color: #1e293b; padding: 10px; font-weight: bold; display: flex; align-items: center; border: 1px solid #e2e8f0; }
-    .grid-cell-blue { background-color: #3b82f6; color: white; font-weight: bold; padding: 10px; text-align: center; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; }
-    .grid-cell-green { background-color: #16a34a; color: white; font-weight: bold; padding: 10px; text-align: center; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; }
-    .side-data-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-    .side-data-table th { background-color: #3b82f6; color: white; padding: 8px; text-align: left; }
-    .side-data-table td { padding: 8px; border: 1px solid #e2e8f0; }
-    .side-data-table tr:nth-child(even) { background-color: #f8fafc; }
+    .grid-header { background-color: #f8fafc; color: #1e293b; padding: 12px; font-weight: bold; display: flex; align-items: center; border: 1px solid #e2e8f0; }
+    .grid-cell-blue { background-color: #3b82f6; color: #fff; font-weight: bold; padding: 12px; text-align: center; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; }
+    .grid-cell-green { background-color: #16a34a; color: #fff; font-weight: bold; padding: 12px; text-align: center; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; }
   </style>
 </head>
 <body>
 
-<div class="studio-container">
-  <h2>📊 Enterprise Data Visualization Studio</h2>
-  <p>Select your CSV file, click generate to review the localized dashboard, and download your PowerPoint report instantly.</p>
+<div class="studio-box">
+  <h2>📊 Automated Executive Analytics Studio</h2>
+  <p>Upload your CSV data file below to instantly generate localized, presentation-ready metrics packages.</p>
   
   <div class="control-panel">
-    <button class="btn btn-upload" id="uploadBtn">Choose CSV File</button>
-    <input type="file" id="csvFileInput" accept=".csv" style="display:none;">
-    <span class="file-status" id="fileStatus">No file chosen</span>
-    <button class="btn btn-generate" id="generateBtn">Generate Report</button>
-    <button class="btn btn-ppt" id="downloadPptBtn">Download PPT Report</button>
+    <input type="file" id="uploadInput" accept=".csv">
+    <button class="btn btn-blue" id="generateBtn">Generate Report</button>
+    <button class="btn btn-green" id="downloadPptBtn">Download PPT Report</button>
   </div>
 
-  <div class="grid-dashboard" id="dashboardGrid" style="display:none;"></div>
+  <div class="dashboard-grid" id="dashboardGrid"></div>
 </div>
 
 <script>
+  // Ensure the datalabels charting plugin is explicitly active globally
   Chart.register(ChartDataLabels);
 
-  const uploadBtn = document.getElementById('uploadBtn');
-  const csvFileInput = document.getElementById('csvFileInput');
-  const fileStatus = document.getElementById('fileStatus');
-  const generateBtn = document.getElementById('generateBtn');
-  const downloadPptBtn = document.getElementById('downloadPptBtn');
-  const dashboardGrid = document.getElementById('dashboardGrid');
+  let parsedRecords = [];
+  let chartsMap = {};
 
-  let parsedData = null;
-  let chartInstances = {};
-
-  uploadBtn.addEventListener('click', () => csvFileInput.click());
-  csvFileInput.addEventListener('change', (e) => {
-    if (e.target.files.length) {
-      fileStatus.textContent = e.target.files[0].name;
-      const reader = new FileReader();
-      reader.onload = function(event) { parseCSV(event.target.result); };
-      reader.readAsText(e.target.files[0]);
-    }
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const fileField = document.getElementById('uploadInput');
+    if (!fileField.files.length) { alert("Please select a valid CSV file first."); return; }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      parseCSV(e.target.result);
+      if(parsedRecords.length > 0) {
+        buildAnalyticsDashboard();
+        document.getElementById('downloadPptBtn').style.display = 'inline-block';
+      }
+    };
+    reader.readAsText(fileField.files[0]);
   });
 
-  generateBtn.addEventListener('click', () => {
-    if (!parsedData) {
-      alert("Please upload a valid CSV file first.");
-      return;
-    }
-    renderDashboard(parsedData);
-    downloadPptBtn.style.display = 'inline-block';
-  });
+  document.getElementById('downloadPptBtn').addEventListener('click', exportToPowerPoint);
 
-  function parseCSV(text) {
-    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    if (lines.length < 2) return;
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
-    const rows = [];
-    for (let i = 1; i < lines.length; i++) {
-      const currentLine = lines[i].split(',').map(v => v.trim().replace(/^["']|["']$/g, ''));
-      if (currentLine.length === headers.length) {
-        let obj = {};
-        headers.forEach((header, idx) => { obj[header] = currentLine[idx]; });
-        rows.push(obj);
+  function parseCSV(textData) {
+    const rows = textData.split('\n').map(r => r.trim()).filter(r => r.length > 0);
+    if(rows.length < 2) return;
+
+    const columnHeaders = rows[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+    parsedRecords = [];
+
+    for(let i = 1; i < rows.length; i++) {
+      const parts = rows[i].split(',').map(p => p.trim().replace(/^["']|["']$/g, ''));
+      if(parts.length === columnHeaders.length) {
+        let entry = {};
+        columnHeaders.forEach((head, index) => { entry[head] = parts[index]; });
+        parsedRecords.push(entry);
       }
     }
-    parsedData = rows;
   }
 
-  function renderDashboard(data) {
-    dashboardGrid.innerHTML = '';
-    dashboardGrid.style.display = 'grid';
-    chartInstances = {};
+  function buildAnalyticsDashboard() {
+    const grid = document.getElementById('dashboardGrid');
+    grid.innerHTML = '';
+    chartsMap = {};
 
-    let productSales = {}, productQty = {}, citySales = {}, salesTotal = 0, purchaseTotal = 0;
-    let sellerSales = {}, sellerQty = {}, cityProductMap = {}, dateGainMap = {};
-    let sellerGain = {}, productGain = {}, cityGain = {};
+    // 1. Data Ingestion & Transformation Matrix
+    let prodSales = {}, prodQty = {}, prodGain = {};
+    let citySales = {}, cityGain = {}, sellerSales = {}, sellerQty = {}, sellerGain = {};
+    let timelineGain = {}, totalSales = 0, totalPurchase = 0;
 
-    data.forEach(row => {
-      const prod = row.Product_Name;
-      const qty = Number(row.Quantity) || 0;
+    parsedRecords.forEach(row => {
+      const item = row.Product_Name;
       const city = row.City;
-      const date = row.Date;
       const seller = row.Seller_Name;
-      const sales = Number(row.Sales_Amount) || 0;
-      const purchase = Number(row.Purchase_Amount) || 0;
-      const gain = Number(row.Gain) || (sales - purchase);
+      const dt = row.Date;
+      const qty = Number(row.Quantity) || 0;
+      const sAmt = Number(row.Sales_Amount) || 0;
+      const pAmt = Number(row.Purchase_Amount) || 0;
+      const gain = Number(row.Gain) || (sAmt - pAmt);
 
-      if (prod) {
-        productSales[prod] = (productSales[prod] || 0) + sales;
-        productQty[prod] = (productQty[prod] || 0) + qty;
-        productGain[prod] = (productGain[prod] || 0) + gain;
+      if(item) {
+        prodSales[item] = (prodSales[item] || 0) + sAmt;
+        prodQty[item] = (prodQty[item] || 0) + qty;
+        prodGain[item] = (prodGain[item] || 0) + gain;
       }
-      if (city) {
-        citySales[city] = (citySales[city] || 0) + sales;
+      if(city) {
+        citySales[city] = (citySales[city] || 0) + sAmt;
         cityGain[city] = (cityGain[city] || 0) + gain;
       }
-      if (seller) {
-        sellerSales[seller] = (sellerSales[seller] || 0) + sales;
+      if(seller) {
+        sellerSales[seller] = (sellerSales[seller] || 0) + sAmt;
         sellerQty[seller] = (sellerQty[seller] || 0) + qty;
         sellerGain[seller] = (sellerGain[seller] || 0) + gain;
       }
-      if (date) {
-        dateGainMap[date] = (dateGainMap[date] || 0) + gain;
+      if(dt) {
+        timelineGain[dt] = (timelineGain[dt] || 0) + gain;
       }
-      salesTotal += sales;
-      purchaseTotal += purchase;
-
-      if (city && prod) {
-        if (!cityProductMap[city]) cityProductMap[city] = {};
-        cityProductMap[city][prod] = (cityProductMap[city][prod] || 0) + qty;
-      }
+      totalSales += sAmt;
+      totalPurchase += pAmt;
     });
 
-    const sortedDates = Object.keys(dateGainMap).sort((a, b) => {
-      const pA = a.split('-'), pB = b.split('-');
-      return (pA.length === 3 && pB.length === 3) ? new Date(pA[2], pA[1]-1, pA[0]) - new Date(pB[2], pB[1]-1, pB[0]) : new Date(a) - new Date(b);
+    const activeProducts = Object.keys(prodSales);
+    const activeSellers = Object.keys(sellerSales);
+
+    // Timeline sorting tool to prevent zig-zag line graphs
+    const chronologicalDates = Object.keys(timelineGain).sort((a,b) => {
+      const sliceDate = d => { const p = d.split('-'); return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(d); };
+      return sliceDate(a) - sliceDate(b);
     });
 
-    const getPalette = (num) => {
-      const colors = ["#3b82f6", "#ff4b72", "#ff9f43", "#4bc0c0", "#9966ff", "#06b6d4", "#22c55e"];
-      return Array.from({length: num}, (_, i) => colors[i % colors.length]);
+    // Helper functions to spawn dashboard panels
+    const mountCard = (uid, headTitle) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'chart-card';
+      wrapper.innerHTML = `<h3>${headTitle}</h3><div class="canvas-holder"><canvas id="${uid}"></canvas></div>`;
+      grid.appendChild(wrapper);
+      return wrapper;
     };
 
-    const createCard = (id, title) => {
-      const card = document.createElement('div');
-      card.className = 'chart-card';
-      card.innerHTML = `<h3>${title}</h3><div class="canvas-wrapper"><canvas id="${id}"></canvas></div>`;
-      dashboardGrid.appendChild(card);
-      return card;
-    };
-
-    // CHART 1: Product vs Sales Amount (With Quantity Table below)
-    const c1Card = createCard('chart1', 'Product Sales Performance');
-    const uProdKeys = Object.keys(productSales);
-    chartInstances['chart1'] = new Chart(document.getElementById('chart1'), {
+    // ---------------------------------------------------------
+    // CHART 1: Product vs Sales Amount (With Automated Quantities Table Row)
+    // ---------------------------------------------------------
+    const c1Box = mountCard('chart1', 'Product Sales Volume');
+    chartsMap['chart1'] = new Chart(document.getElementById('chart1'), {
       type: 'bar',
-      data: {
-        labels: uProdKeys,
-        datasets: [{ label: 'Sales Amount', data: Object.values(productSales), backgroundColor: '#3b82f6' }]
-      },
+      data: { labels: activeProducts, datasets: [{ label: 'Sales Amount', data: Object.values(prodSales), backgroundColor: '#3b82f6' }] },
       options: {
         locale: 'en-US', responsive: true, maintainAspectRatio: false,
         plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
@@ -178,184 +156,156 @@
 
     const c1Table = document.createElement('div');
     c1Table.className = 'metric-grid-row';
-    c1Table.style.gridTemplateColumns = `110px repeat(${uProdKeys.length}, 1fr)`;
+    c1Table.style.gridTemplateColumns = `120px repeat(${activeProducts.length}, 1fr)`;
     let c1HTML = `<div class="grid-header">Quantity</div>`;
-    uProdKeys.forEach(k => { c1HTML += `<div class="grid-cell-blue">${Number(productQty[k])}</div>`; });
+    activeProducts.forEach(p => { c1HTML += `<div class="grid-cell-blue">${Number(prodQty[p])}</div>`; });
     c1Table.innerHTML = c1HTML;
-    c1Card.appendChild(c1Table);
+    c1Box.appendChild(c1Table);
 
-    // CHART 2: City-wise Sales Distribution (Pie chart with anti-overlap adjustments)
-    const c2Card = createCard('chart2', 'City-wise Sales Distribution');
-    const uCityKeys = Object.keys(citySales).filter(k => citySales[k] > 0);
-    chartInstances['chart2'] = new Chart(document.getElementById('chart2'), {
+    // ---------------------------------------------------------
+    // CHART 2: City-wise Sales Distribution (Anti-Overlap Strategy)
+    // ---------------------------------------------------------
+    const activeCities = Object.keys(citySales);
+    mountCard('chart2', 'City-wise Sales Distribution');
+    chartsMap['chart2'] = new Chart(document.getElementById('chart2'), {
       type: 'pie',
-      data: {
-        labels: uCityKeys,
-        datasets: [{ data: uCityKeys.map(k => citySales[k]), backgroundColor: getPalette(uCityKeys.length) }]
-      },
+      data: { labels: activeCities, datasets: [{ data: Object.values(citySales), backgroundColor: ["#3b82f6", "#ff4b72", "#ff9f43", "#4bc0c0"] }] },
       options: {
         locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        layout: { padding: 25 },
         plugins: {
           datalabels: {
-            color: '#fff', font: { weight: 'bold' },
-            anchor: 'center', align: 'center',
-            formatter: (v, ctx) => v > 0 ? `${Number(v).toLocaleString('en-US')}\n(${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)` : ''
+            color: '#fff',
+            anchor: 'center',
+            align: 'center',
+            formatter: (v, ctx) => v > 0 ? `${Number(v).toLocaleString('en-US')} (${((v/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)` : ''
           }
         }
       }
     });
 
-    let c2HTML = `<table class="side-data-table"><thead><tr><th>City</th><th>Amount</th><th>%</th></tr></thead><tbody>`;
-    uCityKeys.forEach(k => {
-      const pct = ((citySales[k] / salesTotal) * 100).toFixed(1);
-      c2HTML += `<tr><td><b>${k}</b></td><td>$${Number(citySales[k]).toLocaleString('en-US')}</td><td>${pct}%</td></tr>`;
-    });
-    c2HTML += `</tbody></table>`;
-    c2Card.insertAdjacentHTML('beforeend', c2HTML);
-
-    // CHART 3: Sales vs Purchase Ring View
-    const c3Card = createCard('chart3', 'Sales vs Purchase Overview');
-    const netGainVal = salesTotal - purchaseTotal;
-    const gainPct = ((netGainVal / purchaseTotal) * 100).toFixed(1);
-    chartInstances['chart3'] = new Chart(document.getElementById('chart3'), {
+    // ---------------------------------------------------------
+    // CHART 3: Macro Financial Overview (Sales vs Purchase)
+    // ---------------------------------------------------------
+    mountCard('chart3', 'Sales vs Purchase Overview');
+    chartsMap['chart3'] = new Chart(document.getElementById('chart3'), {
       type: 'doughnut',
-      data: { labels: ['Sales', 'Purchase'], datasets: [{ data: [salesTotal, purchaseTotal], backgroundColor: ['#3b82f6', '#ff4b72'] }] },
+      data: { labels: ['Sales', 'Purchase'], datasets: [{ data: [totalSales, totalPurchase], backgroundColor: ['#3b82f6', '#ff4b72'] }] },
       options: {
         locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } }
+        plugins: { datalabels: { color: '#fff', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } }
       }
     });
 
-    let c3HTML = `<table class="side-data-table"><thead><tr><th>Financial Activity</th><th>Amount</th><th>%</th></tr></thead><tbody>` +
-                 `<tr><td>Gross Sales Revenue</td><td>$${salesTotal.toLocaleString('en-US')}</td><td>-</td></tr>` +
-                 `<tr><td>Procurement Cost (Purchase)</td><td>$${purchaseTotal.toLocaleString('en-US')}</td><td>-</td></tr>` +
-                 `<tr><td>Net Consolidated Gain</td><td><b>$${netGainVal.toLocaleString('en-US')}</b></td><td><b>${gainPct}%</b></td></tr>` +
-                 `</tbody></table><p style="font-size:11px; color:#64748b; margin-top:8px; font-style:italic;">* Gain percentage is calculated directly on Purchase price.</p>`;
-    c3Card.insertAdjacentHTML('beforeend', c3HTML);
-
-    // CHART 4: Chronological Gain Trend
-    chartInstances['chart4'] = new Chart(createCard('chart4', 'Chronological Gain Trend Line').querySelector('canvas'), {
+    // ---------------------------------------------------------
+    // CHART 4: Chronological Gain Trend Line
+    // ---------------------------------------------------------
+    mountCard('chart4', 'Chronological Gain Trend Line');
+    chartsMap['chart4'] = new Chart(document.getElementById('chart4'), {
       type: 'line',
-      data: { labels: sortedDates, datasets: [{ label: 'Gain Amount', data: sortedDates.map(d => dateGainMap[d]), borderColor: '#16a34a', tension: 0.2, fill: false }] },
+      data: { labels: chronologicalDates, datasets: [{ label: 'Gain Amount', data: chronologicalDates.map(d => timelineGain[d]), borderColor: '#16a34a', tension: 0.2, fill: false }] },
       options: {
         locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { align: 'top', formatter: v => '$' + Number(v).toLocaleString('en-US') } },
-        scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
-      }
-    });
-
-    // CHART 5: Seller Revenue Performance (Defensive Layout Spacing)
-    const uSellers = Object.keys(sellerSales).filter(k => sellerSales[k] > 0);
-    chartInstances['chart5'] = new Chart(createCard('chart5', 'Seller Revenue Performance').querySelector('canvas'), {
-      type: 'bar', indexAxis: 'y',
-      data: { labels: uSellers, datasets: [{ label: 'Sales Amount', data: uSellers.map(s => sellerSales[s]), backgroundColor: '#9966ff' }] },
-      options: {
-        locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { color: '#000', anchor: 'end', align: 'right', formatter: (v, ctx) => `Qty: ${sellerQty[uSellers[ctx.dataIndex]]} | $${Number(v).toLocaleString('en-US')}` } },
-        scales: { x: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
-      }
-    });
-
-    // CHART 6: City-wise Product Segments (Dynamic Stacked Matrix Allocation)
-    const activeProducts = Array.from(new Set(data.map(r => r.Product_Name).filter(Boolean)));
-    const stackedDatasets = activeProducts.map((product, idx) => ({
-      label: product, data: uCityKeys.map(city => cityProductMap[city]?.[product] || 0), backgroundColor: getPalette(activeProducts.length)[idx]
-    }));
-    chartInstances['chart6'] = new Chart(createCard('chart6', 'City-wise Product Distribution').querySelector('canvas'), {
-      type: 'bar',
-      data: { labels: uCityKeys, datasets: stackedDatasets },
-      options: {
-        locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => v.toLocaleString('en-US') } } },
-        plugins: { datalabels: { color: '#000', formatter: v => v > 0 ? Number(v).toLocaleString('en-US') : '' } }
-      }
-    });
-
-    // CHART 7: Dynamic Seller Quantity Allocation
-    const sellerProductMap = {};
-    data.forEach(r => {
-      if(r.Seller_Name && r.Product_Name) {
-        if(!sellerProductMap[r.Seller_Name]) sellerProductMap[r.Seller_Name] = {};
-        sellerProductMap[r.Seller_Name][r.Product_Name] = (sellerProductMap[r.Seller_Name][r.Product_Name] || 0) + (Number(r.Quantity) || 0);
-      }
-    });
-    const sellerStackedDatasets = activeProducts.map((product, idx) => ({
-      label: product, data: uSellers.map(s => sellerProductMap[s]?.[product] || 0), backgroundColor: getPalette(activeProducts.length)[idx]
-    }));
-    chartInstances['chart7'] = new Chart(createCard('chart7', 'Seller-wise Quantities Mapped').querySelector('canvas'), {
-      type: 'bar',
-      data: { labels: uSellers, datasets: sellerStackedDatasets },
-      options: {
-        locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => v.toLocaleString('en-US') } } },
-        plugins: { datalabels: { color: '#000', formatter: v => v > 0 ? Number(v).toLocaleString('en-US') : '' } }
-      }
-    });
-
-    // CHART 8: Reseller Vs Net Gain
-    chartInstances['chart8'] = new Chart(createCard('chart8', 'Reseller Performance Vs Net Gain').querySelector('canvas'), {
-      type: 'bar',
-      data: { labels: Object.keys(sellerGain), datasets: [{ label: 'Net Profit Realized', data: Object.values(sellerGain), backgroundColor: '#16a34a' }] },
-      options: {
-        locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
-        scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
-      }
-    });
-
-    // CHART 9: City Vs Net Gain
-    chartInstances['chart9'] = new Chart(createCard('chart9', 'Geographic Vector Vs Net Gain').querySelector('canvas'), {
-      type: 'bar',
-      data: { labels: Object.keys(cityGain), datasets: [{ label: 'Net Profit Realized', data: Object.values(cityGain), backgroundColor: '#10b981' }] },
-      options: {
-        locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
-        scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
-      }
-    });
-
-    // CHART 10: Product-Name Vs Gain (With Automated Unit-Gain Table)
-    const c10Card = createCard('chart10', 'Product-Name Performance Vs Net Gain');
-    chartInstances['chart10'] = new Chart(document.getElementById('chart10'), {
-      type: 'bar',
-      data: { labels: uProdKeys, datasets: [{ label: 'Net Profit Realized', data: uProdKeys.map(k => productGain[k]), backgroundColor: '#059669' }] },
-      options: {
-        locale: 'en-US', responsive: true, maintainAspectRatio: false,
-        plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
-        scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
-      }
-    });
-
-    const c10Table = document.createElement('div');
-    c10Table.className = 'metric-grid-row';
-    c10Table.style.gridTemplateColumns = `110px repeat(${uProdKeys.length}, 1fr)`;
-    let c10HTML = `<div class="grid-header">Unit Gain</div>`;
-    uProdKeys.forEach(k => {
-      const tG = productGain[k] || 0;
-      const tQ = productQty[k] || 1;
-      c10HTML += `<div class="grid-cell-green">$${Math.round(tG / tQ).toLocaleString('en-US')}</div>`;
-    });
-    c10Table.innerHTML = c10HTML;
-    c10Card.appendChild(c10Table);
-  }
-
-  downloadPptBtn.addEventListener('click', () => {
-    let pptx = new Presentation();
-    
-    Object.keys(chartInstances).forEach((chartId, index) => {
-      let slide = pptx.addSlide();
-      let chartCanvas = document.getElementById(chartId);
-      if (chartCanvas) {
-        let dataUrl = chartCanvas.toDataURL('image/png');
-        slide.addText(`Executive Report: Component ${index + 1}`, { x: 0.5, y: 0.3, fontFace: 'Arial', fontSize: 20, color: '3B82F6', bold: true });
-        slide.addImage({ data: dataUrl, x: 0.5, y: 1.0, w: 9.0, h: 4.5 });
-      }
-    });
-
-    pptx.writeFile({ fileName: "Executive_Sales_Performance_Report.pptx" });
-  });
-</script>
-
-</body>
-</html>
+plugins: { datalabels: { align: 'top', formatter: v => '$' + Number(v).toLocaleString('en-US') } },
+scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
+}
+});
+// ---------------------------------------------------------
+// CHART 5: Seller Revenue Performance (Perfect Axis Alignment)
+// ---------------------------------------------------------
+mountCard('chart5', 'Seller Revenue Performance');
+chartsMap['chart5'] = new Chart(document.getElementById('chart5'), {
+type: 'bar',
+indexAxis: 'y', // Flips cleanly to horizontal format to stop title crowding
+data: { labels: activeSellers, datasets: [{ label: 'Sales Amount', data: activeSellers.map(s => sellerSales[s]), backgroundColor: '#9966ff' }] },
+options: {
+locale: 'en-US', responsive: true, maintainAspectRatio: false,
+plugins: {
+datalabels: {
+color: '#000', anchor: 'end', align: 'right',
+formatter: (v, ctx) => Qty: ${sellerQty[activeSellers[ctx.dataIndex]]} | $${Number(v).toLocaleString('en-US')}
+}
+},
+scales: { x: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
+}
+});
+// ---------------------------------------------------------
+// NEW CHART 6: Reseller Vs Net Gain
+// ---------------------------------------------------------
+mountCard('chart6', 'Reseller Performance Vs Net Gain');
+chartsMap['chart6'] = new Chart(document.getElementById('chart6'), {
+type: 'bar',
+data: { labels: Object.keys(sellerGain), datasets: [{ label: 'Net Profit Realized', data: Object.values(sellerGain), backgroundColor: '#16a34a' }] },
+options: {
+locale: 'en-US', responsive: true, maintainAspectRatio: false,
+plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
+scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
+}
+});
+// ---------------------------------------------------------
+// NEW CHART 7: City Vs Net Gain
+// ---------------------------------------------------------
+mountCard('chart7', 'Geographic Vector Vs Net Gain');
+chartsMap['chart7'] = new Chart(document.getElementById('chart7'), {
+type: 'bar',
+data: { labels: Object.keys(cityGain), datasets: [{ label: 'Net Profit Realized', data: Object.values(cityGain), backgroundColor: '#10b981' }] },
+options: {
+locale: 'en-US', responsive: true, maintainAspectRatio: false,
+plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
+scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
+}
+});
+// ---------------------------------------------------------
+// NEW CHART 8: Product Name vs Gain (With Integrated Unit Gain Row)
+// ---------------------------------------------------------
+const c8Box = mountCard('chart8', 'Product-Name Performance Vs Net Gain');
+chartsMap['chart8'] = new Chart(document.getElementById('chart8'), {
+type: 'bar',
+data: { labels: activeProducts, datasets: [{ label: 'Net Profit Realized', data: activeProducts.map(p => prodGain[p]), backgroundColor: '#059669' }] },
+options: {
+locale: 'en-US', responsive: true, maintainAspectRatio: false,
+plugins: { datalabels: { color: '#000', anchor: 'end', align: 'top', formatter: v => v ? '$' + Number(v).toLocaleString('en-US') : '' } },
+scales: { y: { ticks: { callback: v => '$' + v.toLocaleString('en-US') } } }
+}
+});
+const c8Table = document.createElement('div');
+c8Table.className = 'metric-grid-row';
+c8Table.style.gridTemplateColumns = 120px repeat(${activeProducts.length}, 1fr);
+let c8HTML = <div class="grid-header">Unit Gain</div>;
+activeProducts.forEach(p => {
+const avgUnitGain = Math.round((prodGain[p] || 0) / (prodQty[p] || 1));
+c8HTML += <div class="grid-cell-green">$${avgUnitGain.toLocaleString('en-US')}</div>;
+});
+c8Table.innerHTML = c8HTML;
+c8Box.appendChild(c8Table);
+}
+// -------------------------------------------------------------------------
+// 3. SECURE BROWSER-SIDE POWERPOINT EXPORT ENGINE
+// -------------------------------------------------------------------------
+function exportToPowerPoint() {
+let pptx = new PptxGenJS();
+pptx.layout = 'LAYOUT_16x9';
+// Global cover template slide configuration
+let coverSlide = pptx.addSlide();
+coverSlide.addText("EXECUTIVE ANALYTICS BRIEFING", { x: 1.0, y: 2.2, fontSize: 36, bold: true, color: '3b82f6', fontFace: 'Arial' });
+coverSlide.addText("Automated Operational Matrix Performance Report Package", { x: 1.0, y: 3.2, fontSize: 16, color: '64748b', fontFace: 'Arial' });
+const activeChartIds = Object.keys(chartsMap);
+let completedCaptures = 0;
+activeChartIds.forEach((id, index) => {
+const canvasElement = document.getElementById(id);
+// Forces canvas encoding extraction to vector base64 strings securely
+setTimeout(() => {
+const imageBase64 = canvasElement.toDataURL("image/png");
+let metricSlide = pptx.addSlide();
+// Header title injection rules per presentation card template
+const titleText = canvasElement.closest('.chart-card').querySelector('h3').innerText;
+metricSlide.addText(titleText, { x: 0.5, y: 0.4, fontSize: 20, bold: true, color: '1e293b', fontFace: 'Arial' });
+// Draw the image layout vector box boundaries natively onto presentation slide canvas
+metricSlide.addImage({ data: imageBase64, x: 0.5, y: 1.0, w: 9.0, h: 4.8 });
+completedCaptures++;
+if(completedCaptures === activeChartIds.length) {
+// Trigger instant direct system local downloads folder deployment
+pptx.writeFile({ fileName: 'Executive_Data_Analytics_Report' });
+}
+}, index * 150); // Slight delay prevents browser execution thread blockages
+});
+}
